@@ -11,6 +11,7 @@ from wpimath.units import rotationsToRadians
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.superstructure import Superstructure
+from subsystems.pivot import Pivot
 
 
 class RobotContainer:
@@ -26,7 +27,9 @@ class RobotContainer:
         self._driver_controller = commands2.button.CommandXboxController(0)
 
         self.drivetrain = TunerConstants.create_drivetrain()
-        self.superstructure = Superstructure(self.drivetrain)
+        self.pivot = Pivot()
+
+        self.superstructure = Superstructure(self.drivetrain, self.pivot)
         self._robot_state = RobotState(self.drivetrain)
 
         # Setting up bindings for necessary control of the swerve drive platform
@@ -44,8 +47,8 @@ class RobotContainer:
         self._point = swerve.requests.PointWheelsAt()
 
         # Path follower
-        self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
-        SmartDashboard.putData("Auto Mode", self._auto_chooser)
+        #self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
+        #SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         # Configure the button bindings
         self.configure_button_bindings()
