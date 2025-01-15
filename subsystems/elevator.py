@@ -2,8 +2,8 @@ from enum import Enum, auto
 
 from phoenix6.controls import Follower
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.configs.config_groups import DifferentialSensorSourceValue, DifferentialSensorsConfigs, NeutralModeValue
-from phoenix6.controls import CoastOut, DifferentialFollower, DutyCycleOut, PositionDutyCycle
+from phoenix6.configs.config_groups import NeutralModeValue
+from phoenix6.controls import CoastOut, PositionDutyCycle
 from phoenix6.hardware import TalonFX
 
 from subsystems import StateSubsystem
@@ -26,6 +26,7 @@ class ElevatorSubsystem(StateSubsystem):
         super.__init__("Elevator")
 
         self._master_config = TalonFXConfiguration()
+        self._master_config.motor_output.with_neutral_mode(NeutralModeValue.BRAKE)
 
         self._master_motor = TalonFX(Constants.MotorIDs.LEFT_LIFT_MOTOR)
         self._master_motor.configurator.apply(self._master_config)
@@ -51,7 +52,7 @@ class ElevatorSubsystem(StateSubsystem):
         super().periodic()
 
         match self._subsystem_state:
-            
+
             case self.SubsystemState.INTAKE:
                 self._position_request.position = Constants.LiftConstants.INTAKE_POSITION
                 self._master_motor.set_control(self._position_request)
