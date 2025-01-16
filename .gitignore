@@ -8,3 +8,4 @@ tests/ctre_sim/
 logs/*
 *.wpilog
 __pycache__/
+WPILibNewCommands.json
