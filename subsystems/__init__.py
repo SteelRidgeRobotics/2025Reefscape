@@ -1,15 +1,16 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, ABCMeta
 from enum import Enum
 
 from commands2 import Command, InstantCommand
 from commands2.subsystem import Subsystem
 from ntcore import *
-from phoenix6.hardware import TalonFX
 from phoenix6 import utils
+from phoenix6.hardware import TalonFX
 from wpilib import RobotController
 from wpilib.simulation import DCMotorSim
 from wpimath import units
 from wpimath.system.plant import DCMotor, LinearSystemId
+
 
 class StateSubsystemMeta(ABCMeta, type(Subsystem)):
     pass
@@ -35,12 +36,13 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._current_state_pub = self._network_table.getStringTopic("Current State").publish()
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
-        self._talons: set[tuple[TalonFX, str]] = set()
 
     def set_desired_state(self, desired_state: SubsystemState) -> None: # type: ignore
         """Override this method to handle desired state handling for
         your subsystem!
         """
+        if self._subsystem_state is desired_state:
+            return
         self._subsystem_state = desired_state
 
     def periodic(self):
@@ -83,7 +85,6 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         defaults to 0.001
         :type moi: float, optional
         """
-        self._talons.add(talon)
         self._sim_models.append(
             (DCMotorSim(
                 LinearSystemId.DCMotorSystem(

@@ -30,7 +30,7 @@ class Superstructure(Subsystem):
         
         match self._goal:
             case self.Goal.DEFAULT:
-                self.drivetrain.set_desired_state(SwerveSubsystem.SubsystemState.DEFAULT)
+                pass
         
     def _set_goal(self, goal: Goal) -> None:
         if goal is self._goal:
