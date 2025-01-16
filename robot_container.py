@@ -57,8 +57,8 @@ class RobotContainer:
         self._point = swerve.requests.PointWheelsAt()
 
         # Path follower
-        #self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
-        #SmartDashboard.putData("Auto Mode", self._auto_chooser)
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         # Configure the button bindings
         self.configure_button_bindings()

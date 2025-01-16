@@ -32,7 +32,6 @@ class Superstructure(Subsystem):
         
         match self._goal:
             case self.Goal.DEFAULT:
-                self.drivetrain.set_desired_state(SwerveSubsystem.SubsystemState.DEFAULT)
                 self.pivot.set_desired_state(Pivot.SubsystemState.STOW)
                 
         
