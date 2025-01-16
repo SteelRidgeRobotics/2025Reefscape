@@ -3,7 +3,7 @@ from importlib import metadata
 
 from commands2 import CommandScheduler, TimedCommandRobot
 from packaging.version import Version
-from phoenix6 import utils
+from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
 
 import elasticlib
@@ -79,6 +79,9 @@ class OilSpill(TimedCommandRobot):
         DataLogManager.log("Test period started")
         CommandScheduler.getInstance().cancelAll()
         CommandScheduler.getInstance().disable()
+
+    def disabledInit(self):
+        SignalLogger.stop()
 
     def testExit(self):
         DataLogManager.log("Test period ended")
