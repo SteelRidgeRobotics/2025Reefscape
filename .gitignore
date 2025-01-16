@@ -9,3 +9,4 @@ logs/*
 *.wpilog
 __pycache__/
 WPILibNewCommands.json
+/.wpilib/wpilib_preferences.json

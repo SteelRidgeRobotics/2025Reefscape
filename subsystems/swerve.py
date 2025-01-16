@@ -1,30 +1,30 @@
 import math
-from abc import ABC
-from enum import auto, Enum
+from importlib import metadata
 from typing import Callable, overload
 
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
+from pathplannerlib.util import DriveFeedforwards
+from pathplannerlib.util.swerve import SwerveSetpointGenerator, SwerveSetpoint
 from phoenix6 import swerve, units, utils
 from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from wpilib import DriverStation, Notifier, RobotController
+from wpilib import DriverStation, Notifier, RobotController, DataLogManager
 from wpimath.geometry import Rotation2d
+from wpimath.kinematics import ChassisSpeeds
+from wpimath.units import rotationsToRadians
 
+import robot
 from limelight import LimelightHelpers
-from subsystems import StateSubsystem
 
 
-class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
+class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
     """
-    Class that extends the Phoenix 6 SwerveDrivetrain class and implements
-    Subsystem so it can easily be used in command-based projects.
-    """
-
-    class SubsystemState(Enum):
-        DEFAULT = auto()
+   Class that extends the Phoenix 6 SwerveDrivetrain class and implements
+   Subsystem so it can easily be used in command-based projects.
+   """
 
     _SIM_LOOP_PERIOD: units.second = 0.005
 
@@ -32,6 +32,8 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
     """Blue alliance sees forward as 0 degrees (toward red alliance wall)"""
     _RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.fromDegrees(180)
     """Red alliance sees forward as 180 degrees (toward blue alliance wall)"""
+
+    _MAX_STEERING_VELOCITY: units.radians_per_second = rotationsToRadians(15)
 
     @overload
     def __init__(
@@ -151,7 +153,6 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
             arg2=None,
             arg3=None,
     ):
-        StateSubsystem.__init__(self, "Drivetrain")
         Subsystem.__init__(self)
         swerve.SwerveDrivetrain.__init__(
             self, drive_motor_type, steer_motor_type, encoder_type,
@@ -173,11 +174,7 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
         self._rotation_characterization = swerve.requests.SysIdSwerveRotation()
 
         self._sys_id_routine_translation = SysIdRoutine(
-            SysIdRoutine.Config(
-                # Use default ramp rate (1 V/s) and timeout (10 s)
-                # Reduce dynamic voltage to 4 V to prevent brownout
-                stepVoltage=4.0
-            ),
+            SysIdRoutine.Config(),
             SysIdRoutine.Mechanism(
                 lambda output: self.set_control(
                     self._translation_characterization.with_volts(output)
@@ -186,8 +183,8 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
                 .voltage(self.modules[0].drive_motor.get_motor_voltage().value)
                 .velocity(self.modules[0].drive_motor.get_velocity().value)
                 .position(self.modules[0].drive_motor.get_position().value),
-                self,
-            ),
+                self
+            )
         )
         """SysId routine for characterizing translation. This is used to find PID gains for the drive motors."""
 
@@ -205,8 +202,8 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
                 .voltage(self.modules[0].steer_motor.get_motor_voltage().value)
                 .velocity(self.modules[0].steer_motor.get_velocity().value)
                 .position(self.modules[0].steer_motor.get_position().value),
-                self,
-            ),
+                self
+            )
         )
         """SysId routine for characterizing steer. This is used to find PID gains for the steer motors."""
 
@@ -214,8 +211,7 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
             SysIdRoutine.Config(
                 # This is in radians per second², but SysId only supports "volts per second"
                 rampRate=math.pi / 6,
-                # Use dynamic voltage of 7 V
-                stepVoltage=7.0,
+                stepVoltage=7.0
             ),
             SysIdRoutine.Mechanism(
                 lambda output: (
@@ -237,44 +233,68 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
         See the documentation of swerve.requests.SysIdSwerveRotation for info on importing the log to SysId.
         """
 
-        self._sys_id_routine_to_apply = self._sys_id_routine_translation
+        self._sys_id_routine_to_apply = self._sys_id_routine_rotation
         """The SysId routine to test"""
 
         if utils.is_simulation():
             self._start_sim_thread()
+
+        if robot.has_outdated_pathplanner():
+            DataLogManager.log(f"WARN: robotpy-pathplannerlib is version {metadata.version("robotpy-pathplannerlib")}. "
+                               "PathPlanner must be greater than 2025.2.1 in order to use SetpointGenerator, defaulting"
+                               " to standard control.")
         self._configure_auto_builder()
-        
-    def _configure_auto_builder(self):
+
+    def _configure_auto_builder(self) -> None:
         config = RobotConfig.fromGUISettings()
         AutoBuilder.configure(
-            lambda: self.get_state().pose,   # Supplier of current robot pose
-            self.reset_pose,                 # Consumer for seeding pose against auto
-            lambda: self.get_state().speeds, # Supplier of current robot speeds
+            lambda: self.get_state().pose,  # Supplier of current robot pose
+            self.reset_pose,  # Consumer for seeding pose against auto
+            lambda: self.get_state().speeds,  # Supplier of current robot speeds
             # Consumer of ChassisSpeeds and feedforwards to drive the robot
             lambda speeds, feedforwards: self.set_control(
-                self._apply_robot_speeds
-                .with_speeds(speeds)
-                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
-                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
+                self._apply_robot_speeds_from_setpoint(speeds, feedforwards)
             ),
             PPHolonomicDriveController(
-                # PID constants for translation
                 PIDConstants(10.0, 0.0, 0.0),
-                # PID constants for rotation
                 PIDConstants(7.0, 0.0, 0.0)
             ),
             config,
-            # Assume the path needs to be flipped for Red vs Blue, this is normally the case
             lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed,
-            self # Subsystem for requirements
+            self
+        )
+
+        self._setpoint_generator = SwerveSetpointGenerator(config, self._MAX_STEERING_VELOCITY)
+
+        state = self.get_state()
+        self._prev_setpoint = SwerveSetpoint(state.speeds, state.module_states, DriveFeedforwards.zeros(config.numModules))
+
+    def _apply_robot_speeds_from_setpoint(self, speeds: ChassisSpeeds, feedforwards: DriveFeedforwards) -> ApplyRobotSpeeds:
+        if robot.has_outdated_pathplanner():
+            # https://github.com/mjansen4857/pathplanner/pull/999
+            return (self._apply_robot_speeds
+                .with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
+            )
+
+        self._prev_setpoint = self._setpoint_generator.generateSetpoint(
+            self._prev_setpoint,
+            speeds,
+            0.02
+        )
+
+        return (self._apply_robot_speeds
+            .with_speeds(self._prev_setpoint.robot_relative_speeds)
+            .with_wheel_force_feedforwards_x(self._prev_setpoint.feedforwards.robotRelativeForcesXNewtons)
+            .with_wheel_force_feedforwards_y(self._prev_setpoint.feedforwards.robotRelativeForcesYNewtons)
         )
 
     def apply_request(
-        self, request: Callable[[], swerve.requests.SwerveRequest]
+            self, request: Callable[[], swerve.requests.SwerveRequest]
     ) -> Command:
         """
         Returns a command that applies the specified control request to this swerve drivetrain.
-
         :param request: Lambda returning the request to apply
         :type request: Callable[[], swerve.requests.SwerveRequest]
         :returns: Command to run
@@ -283,37 +303,12 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
         return self.run(lambda: self.set_control(request()))
 
     def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
-        """
-        Runs the SysId Quasistatic test in the given direction for the routine
-        specified by self.sys_id_routine_to_apply.
-
-        :param direction: Direction of the SysId Quasistatic test
-        :type direction: SysIdRoutine.Direction
-        :returns: Command to run
-        :rtype: Command
-        """
         return self._sys_id_routine_to_apply.quasistatic(direction)
 
     def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
-        """
-        Runs the SysId Dynamic test in the given direction for the routine
-        specified by self.sys_id_routine_to_apply.
-
-        :param direction: Direction of the SysId Dynamic test
-        :type direction: SysIdRoutine.Direction
-        :returns: Command to run
-        :rtype: Command
-        """
         return self._sys_id_routine_to_apply.dynamic(direction)
 
-    def periodic(self):
-        super().periodic()
-
-        match self._subsystem_state:
-            case self.SubsystemState.DEFAULT:
-                pass
-
-
+    def periodic(self) -> None:
         # Periodically try to apply the operator perspective.
         # If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
         # This allows us to correct the perspective in case the robot code restarts mid-match.
@@ -332,7 +327,7 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
         if not utils.is_simulation():
             self._add_vision_measurements()
 
-    def _add_vision_measurements(self):
+    def _add_vision_measurements(self) -> None:
         LimelightHelpers.set_robot_orientation(
             "",
             self.pigeon2.get_yaw().value,
@@ -347,7 +342,7 @@ class SwerveSubsystem(StateSubsystem, swerve.SwerveDrivetrain, ABC):
             self.set_vision_measurement_std_devs((0.7, 0.7, 9999999))
             self.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
 
-    def _start_sim_thread(self):
+    def _start_sim_thread(self) -> None:
         def _sim_periodic():
             current_time = utils.get_current_time_seconds()
             delta_time = current_time - self._last_sim_time

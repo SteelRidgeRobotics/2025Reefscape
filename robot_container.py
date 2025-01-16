@@ -33,8 +33,18 @@ class RobotContainer:
         self._robot_state = RobotState(self.drivetrain)
 
         # Setting up bindings for necessary control of the swerve drive platform
-        self._drive = (
+        self._field_centric = (
             swerve.requests.FieldCentric()
+            .with_deadband(self._max_speed * 0.1)
+            .with_rotational_deadband(
+                self._max_angular_rate * 0.1
+            )  # Add a 10% deadband
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )  # Use open-loop control for drive motors
+        )
+        self._robot_centric = (
+            swerve.requests.RobotCentric()
             .with_deadband(self._max_speed * 0.1)
             .with_rotational_deadband(
                 self._max_angular_rate * 0.1
@@ -57,7 +67,7 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(
             self.drivetrain.apply_request(
                 lambda: (
-                    self._drive.with_velocity_x(
+                    self._field_centric.with_velocity_x(
                         -self._driver_controller.getLeftY() * self._max_speed
                     )
                     .with_velocity_y(
@@ -94,6 +104,22 @@ class RobotContainer:
 
         self._driver_controller.leftBumper().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self._driver_controller.rightBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._robot_centric.with_velocity_x(
+                        -self._driver_controller.getLeftY() * self._max_speed
+                    )
+                    .with_velocity_y(
+                        -self._driver_controller.getLeftX() * self._max_speed
+                    )
+                    .with_rotational_rate(
+                        -self._driver_controller.getRightX() * self._max_angular_rate
+                    )
+                )
+            )
         )
 
         self.drivetrain.register_telemetry(

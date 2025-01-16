@@ -1,6 +1,7 @@
-from phoenix6 import CANBus, configs, hardware, swerve, units
-from subsystems.swerve import SwerveSubsystem
+from phoenix6 import CANBus, configs, hardware, signals, swerve, units
 from wpimath.units import inchesToMeters
+
+from subsystems.swerve import SwerveSubsystem
 
 
 class TunerConstants:
@@ -17,10 +18,11 @@ class TunerConstants:
         configs.Slot0Configs()
         .with_k_p(100)
         .with_k_i(0)
-        .with_k_d(2.0)
-        .with_k_s(0.2)
-        .with_k_v(1.5)
+        .with_k_d(0.5)
+        .with_k_s(0.1)
+        .with_k_v(2.66)
         .with_k_a(0)
+        .with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
     )
     # When using closed-loop control, the drive motor uses the control
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -30,7 +32,7 @@ class TunerConstants:
         .with_k_i(0)
         .with_k_d(0)
         .with_k_s(0)
-        .with_k_v(0.12)
+        .with_k_v(0.124)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -66,9 +68,13 @@ class TunerConstants:
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs
     _pigeon_configs: configs.Pigeon2Configuration | None = None
 
+    # CAN bus that the devices are located on;
+    # All swerve devices must share the same CAN bus
+    canbus = CANBus("Drivetrain", "./logs/example.hoot")
+
     # Theoretical free speed (m/s) at 12 V applied output;
     # This needs to be tuned to your individual robot
-    speed_at_12_volts: units.meters_per_second = 4.66
+    speed_at_12_volts: units.meters_per_second = 4.73
 
     # Every 1 rotation of the azimuth results in _couple_ratio drive motor turns;
     # This may need to be tuned to your individual robot
@@ -76,25 +82,23 @@ class TunerConstants:
 
     _drive_gear_ratio = 6.746031746031747
     _steer_gear_ratio = 21.428571428571427
-    _wheel_radius: units.meter = inchesToMeters(1.97)
+    _wheel_radius: units.meter = inchesToMeters(2)
 
     _invert_left_side = False
     _invert_right_side = True
 
-    _canbus = CANBus("", "./logs/example.hoot")
     _pigeon_id = 9
 
-
     # These are only used for simulation
-    _steer_inertia: units.kilogram_square_meter = 0.00001
-    _drive_inertia: units.kilogram_square_meter = 0.001
+    _steer_inertia: units.kilogram_square_meter = 0.01
+    _drive_inertia: units.kilogram_square_meter = 0.01
     # Simulated voltage necessary to overcome friction
-    _steer_friction_voltage: units.volt = 0.25
-    _drive_friction_voltage: units.volt = 0.25
+    _steer_friction_voltage: units.volt = 0.2
+    _drive_friction_voltage: units.volt = 0.2
 
     drivetrain_constants = (
         swerve.SwerveDrivetrainConstants()
-        .with_can_bus_name(_canbus.name)
+        .with_can_bus_name(canbus.name)
         .with_pigeon2_id(_pigeon_id)
         .with_pigeon2_configs(_pigeon_configs)
     )
@@ -128,7 +132,7 @@ class TunerConstants:
     _front_left_drive_motor_id = 1
     _front_left_steer_motor_id = 5
     _front_left_encoder_id = 5
-    _front_left_encoder_offset: units.rotation = -0.229248046875
+    _front_left_encoder_offset: units.rotation = -0.1748046875
     _front_left_steer_motor_inverted = True
     _front_left_encoder_inverted = False
 
@@ -137,9 +141,9 @@ class TunerConstants:
 
     # Front Right
     _front_right_drive_motor_id = 3
-    _front_right_steer_motor_id = 7
+    _front_right_steer_motor_id = 6
     _front_right_encoder_id = 7
-    _front_right_encoder_offset: units.rotation = -0.080078125
+    _front_right_encoder_offset: units.rotation = -0.189453125
     _front_right_steer_motor_inverted = True
     _front_right_encoder_inverted = False
 
@@ -148,9 +152,9 @@ class TunerConstants:
 
     # Back Left
     _back_left_drive_motor_id = 2
-    _back_left_steer_motor_id = 6
+    _back_left_steer_motor_id = 8
     _back_left_encoder_id = 6
-    _back_left_encoder_offset: units.rotation = -0.492919921875
+    _back_left_encoder_offset: units.rotation = 0.15966796875
     _back_left_steer_motor_inverted = True
     _back_left_encoder_inverted = False
 
@@ -159,9 +163,9 @@ class TunerConstants:
 
     # Back Right
     _back_right_drive_motor_id = 4
-    _back_right_steer_motor_id = 8
+    _back_right_steer_motor_id = 7
     _back_right_encoder_id = 8
-    _back_right_encoder_offset: units.rotation = -0.089111328125
+    _back_right_encoder_offset: units.rotation = 0.2958984375
     _back_right_steer_motor_inverted = True
     _back_right_encoder_inverted = False
 
@@ -217,7 +221,7 @@ class TunerConstants:
     @classmethod
     def create_drivetrain(cls) -> SwerveSubsystem:
         """
-        Creates a CommandSwerveDrivetrain instance.
+        Creates a SwerveSubsystem instance.
         This should only be called once in your robot program.
         """
         return SwerveSubsystem(
