@@ -29,11 +29,6 @@ class Pivot(StateSubsystem):
     def periodic(self):
         return super().periodic()
 
-
-    def getState(self) -> str:
-        return self._subsystem_state
-    
-
     def set_desired_state(self, desired_state: SubsystemState):
 
         match desired_state:
