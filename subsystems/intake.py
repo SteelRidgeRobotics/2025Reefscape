@@ -11,7 +11,7 @@ class Intake(StateSubsystem):
     class SubsystemState(Enum):
         DEFAULT = auto()
         INTAKING = auto()
-        OUTTAKING = auto()
+        OUTPUTING = auto()
 
     def __init__(self) -> None:
 
@@ -33,10 +33,10 @@ class Intake(StateSubsystem):
                 self.intakeMotor.set_control(VelocityDutyCycle(0))
 
             case self.SubsystemState.INTAKING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.GROUND_INTAKE_SPEED))
+                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.INTAKE_SPEED))
 
-            case self.SubsystemState.OUTTAKING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.FUNNEL_INTAKE_SPEED))
+            case self.SubsystemState.OUTPUTING:
+                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.OUTPUT_SPEED))
 
         # update information for the state
         self._subsystem_state = desired_state

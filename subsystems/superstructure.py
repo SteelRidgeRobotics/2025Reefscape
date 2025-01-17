@@ -5,7 +5,6 @@ from wpilib import DriverStation, SmartDashboard
 
 from subsystems.swerve import SwerveSubsystem
 from subsystems.pivot import Pivot
-from subsystems.intake import Intake
 
 class Superstructure(Subsystem):
         
