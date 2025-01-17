@@ -12,12 +12,11 @@ class Superstructure(Subsystem):
     class Goal(Enum):
         DEFAULT = auto()
 
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: Pivot, intake: Intake) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: Pivot) -> None:
         super().__init__()
 
         self.drivetrain = drivetrain
         self.pivot = pivot
-        self.intake = intake
         
         self._goal = self.Goal.DEFAULT
         self._last_goal = self.Goal.DEFAULT
