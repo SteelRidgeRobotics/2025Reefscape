@@ -22,7 +22,7 @@ class Pivot(StateSubsystem):
     
         self._subsystem_state = self.SubsystemState.STOW
 
-        self.pivotMotor = TalonFX(0)
+        self.pivotMotor = TalonFX(PivotConstants.PIVOT_MOTOR_ID)
 
     def periodic(self):
         return super().periodic()
