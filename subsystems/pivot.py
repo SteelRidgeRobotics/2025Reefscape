@@ -53,9 +53,3 @@ class Pivot(StateSubsystem):
         # update information for the state
         self._subsystem_state = desired_state
         SmartDashboard.putString("Pivot State", self._subsystem_state.name)
-
-
-        
-
-
-    
