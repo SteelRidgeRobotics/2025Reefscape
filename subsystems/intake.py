@@ -26,17 +26,17 @@ class Intake(StateSubsystem):
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
 
-        # move motor accordingly to set state in superstructure
+        # this subsytem is separated from the superstructure
         match desired_state:
 
             case self.SubsystemState.DEFAULT:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.STOW_ANGLE))
+                self.intakeMotor.set_control(VelocityDutyCycle(0))
 
             case self.SubsystemState.INTAKING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.GROUND_INTAKE_ANGLE))
+                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.GROUND_INTAKE_SPEED))
 
             case self.SubsystemState.OUTTAKING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.FUNNEL_INTAKE_ANGLE))
+                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.FUNNEL_INTAKE_SPEED))
 
         # update information for the state
         self._subsystem_state = desired_state

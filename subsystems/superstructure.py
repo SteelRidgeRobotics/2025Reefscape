@@ -5,18 +5,19 @@ from wpilib import DriverStation, SmartDashboard
 
 from subsystems.swerve import SwerveSubsystem
 from subsystems.pivot import Pivot
-
+from subsystems.intake import Intake
 
 class Superstructure(Subsystem):
         
     class Goal(Enum):
         DEFAULT = auto()
 
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: Pivot) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: Pivot, intake: Intake) -> None:
         super().__init__()
 
         self.drivetrain = drivetrain
         self.pivot = pivot
+        self.intake = intake
         
         self._goal = self.Goal.DEFAULT
         self._last_goal = self.Goal.DEFAULT
