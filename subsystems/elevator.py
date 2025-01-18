@@ -3,7 +3,7 @@ from enum import Enum, auto
 from phoenix6.controls import Follower
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue
-from phoenix6.controls import CoastOut, PositionDutyCycle, StaticBrake
+from phoenix6.controls import PositionDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
 
 from subsystems import StateSubsystem
@@ -17,16 +17,16 @@ class ElevatorSubsystem(StateSubsystem):
     class SubsystemState(Enum):
         L1 = auto()
         L2 = auto()
-        L1 = auto()
+        L3 = auto()
         L4 = auto()
 
-        INTAKE = auto()
+        DEFAULT = auto()
 
-
+    # Initializes the Elevator Subsystem
     def __init__(self):
 
         # Initialize the subsystem with the StateSubsystem parent
-        super.__init__("Elevator")
+        super().__init__("Elevator")
 
         # Creates the main configuration object
         self._master_config = TalonFXConfiguration()
@@ -45,9 +45,9 @@ class ElevatorSubsystem(StateSubsystem):
         # Sets the default subsystem state to intake/ground
         self._subsystem_state = self.SubsystemState.INTAKE
 
-        # Creating a default position request, coast request
+        # Creating a default position request and a brake request
         self._position_request = PositionDutyCycle(0)
-        self._brake_request = StaticBrake()
+        self._brake_request = DutyCycleOut(0)
 
         # Sets the default master motor request to brake
         self._master_motor.set_control(self._brake_request)
@@ -82,7 +82,3 @@ class ElevatorSubsystem(StateSubsystem):
         # Sets the control of the motor to the position request
         self._master_motor.set_control(self._position_request)
                 
-
-    
-        
-        

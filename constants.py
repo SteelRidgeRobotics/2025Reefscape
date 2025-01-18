@@ -6,17 +6,17 @@ apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
 class Constants:
 
-    class MotorIDs(Enum):
+    class MotorIDs():
 
-        LEFT_LIFT_MOTOR = auto()
-        RIGHT_LIFT_MOTOR = auto()
+        LEFT_LIFT_MOTOR = 0
+        RIGHT_LIFT_MOTOR = 1
 
 
-    class LiftConstants(Enum):
+    class LiftConstants():
 
         L1_SCORE_POSITION = 0
         L2_SCORE_POSITION = 0
         L3_SCORE_POSITION = 0
         L4_SCORE_POSITION = 0
 
-        INTAKE_POSITION = 0
+        DEFAULT_POSITION = 0
