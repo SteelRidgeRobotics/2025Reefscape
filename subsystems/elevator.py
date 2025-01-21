@@ -42,8 +42,8 @@ class ElevatorSubsystem(StateSubsystem):
         self._follower_motor = TalonFX(Constants.MotorIDs.RIGHT_LIFT_MOTOR)
         self._follower_motor.configurator.apply(self._master_config)
 
-        # Sets the default subsystem state to intake/ground
-        self._subsystem_state = self.SubsystemState.INTAKE
+        # Sets the default subsystem state to default/ground
+        self._subsystem_state = self.SubsystemState.DEFAULT
 
         # Creating a default position request and a brake request
         self._position_request = PositionDutyCycle(0)
@@ -64,8 +64,8 @@ class ElevatorSubsystem(StateSubsystem):
         # Handles all of the possible subsystem states
         match self._subsystem_state:
 
-            case self.SubsystemState.INTAKE:
-                self._position_request.position = Constants.LiftConstants.INTAKE_POSITION    
+            case self.SubsystemState.DEFAULT:
+                self._position_request.position = Constants.LiftConstants.DEFAULT_POSITION    
 
             case self.SubsystemState.L1:
                 self._position_request.position = Constants.LiftConstants.L1_SCORE_POSITION     
