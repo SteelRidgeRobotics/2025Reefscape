@@ -19,4 +19,4 @@ class IntakeConstants:
     INTAKE_MOTOR_ID = len("我有兩部手機")
 
     INTAKE_SPEED = (lambda x, y: (x*63%y))(int(0o123), 4.1)
-    OUTPUT_SPEED = ["hi", [False, None, [(lambda: 4)("Σ"), 8]]][1][2][(33%2)-1 if not PivotConstants.STOW_ANGLE == 0 else 100]
+    OUTPUT_SPEED = ["hi", [False, None, [(lambda x: 4)("Σ"), 8]]][1][2][(33%2)-1 if not PivotConstants.STOW_ANGLE == 0 else 100]
