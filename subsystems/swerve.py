@@ -8,10 +8,11 @@ from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from pathplannerlib.util import DriveFeedforwards
 from pathplannerlib.util.swerve import SwerveSetpointGenerator, SwerveSetpoint
-from phoenix6 import swerve, units, utils
+from phoenix6 import swerve, units, utils, SignalLogger
 from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
 from wpilib import DriverStation, Notifier, RobotController, DataLogManager
+from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import rotationsToRadians
@@ -142,6 +143,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         """
         ...
 
+    # noinspection PyTypeChecker
     def __init__(
             self,
             drive_motor_type: type[DriveMotorT],
@@ -174,17 +176,22 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._rotation_characterization = swerve.requests.SysIdSwerveRotation()
 
         self._sys_id_routine_translation = SysIdRoutine(
-            SysIdRoutine.Config(),
+            SysIdRoutine.Config(
+                # Use default ramp rate (1 V/s) and timeout (10 s)
+                # Reduce dynamic voltage to 4 V to prevent brownout
+                stepVoltage=4.0,
+                # Log state with SignalLogger class
+                recordState=lambda state: SignalLogger.write_string(
+                    "SysIdTranslation_State", SysIdRoutineLog.stateEnumToString(state)
+                ),
+            ),
             SysIdRoutine.Mechanism(
                 lambda output: self.set_control(
                     self._translation_characterization.with_volts(output)
                 ),
-                lambda log: log.motor("drive")
-                .voltage(self.modules[0].drive_motor.get_motor_voltage().value)
-                .velocity(self.modules[0].drive_motor.get_velocity().value)
-                .position(self.modules[0].drive_motor.get_position().value),
-                self
-            )
+                lambda log: None,
+                self,
+            ),
         )
         """SysId routine for characterizing translation. This is used to find PID gains for the drive motors."""
 
@@ -192,18 +199,19 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             SysIdRoutine.Config(
                 # Use default ramp rate (1 V/s) and timeout (10 s)
                 # Use dynamic voltage of 7 V
-                stepVoltage=7.0
+                stepVoltage=7.0,
+                # Log state with SignalLogger class
+                recordState=lambda state: SignalLogger.write_string(
+                    "SysIdSteer_State", SysIdRoutineLog.stateEnumToString(state)
+                ),
             ),
             SysIdRoutine.Mechanism(
                 lambda output: self.set_control(
                     self._steer_characterization.with_volts(output)
                 ),
-                lambda log: log.motor("steer")
-                .voltage(self.modules[0].steer_motor.get_motor_voltage().value)
-                .velocity(self.modules[0].steer_motor.get_velocity().value)
-                .position(self.modules[0].steer_motor.get_position().value),
-                self
-            )
+                lambda log: None,
+                self,
+            ),
         )
         """SysId routine for characterizing steer. This is used to find PID gains for the steer motors."""
 
@@ -211,21 +219,26 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             SysIdRoutine.Config(
                 # This is in radians per second², but SysId only supports "volts per second"
                 rampRate=math.pi / 6,
-                stepVoltage=7.0
+                # Use dynamic voltage of 7 V
+                stepVoltage=7.0,
+                # Use default timeout (10 s)
+                # Log state with SignalLogger class
+                recordState=lambda state: SignalLogger.write_string(
+                    "SysIdSteer_State", SysIdRoutineLog.stateEnumToString(state)
+                ),
             ),
             SysIdRoutine.Mechanism(
                 lambda output: (
                     # output is actually radians per second, but SysId only supports "volts"
                     self.set_control(
                         self._rotation_characterization.with_rotational_rate(output)
-                    )
+                    ),
+                    # also log the requested output for SysId
+                    SignalLogger.write_double("Rotational_Rate", output),
                 ),
-                lambda log: log.motor("drivetrainRotation")
-                .voltage(self._sys_id_routine_rotation.outputVolts)
-                .position(self.pigeon2.get_yaw().value)
-                .velocity(self.pigeon2.get_angular_velocity_z_world().value),
-                self
-            )
+                lambda log: None,
+                self,
+            ),
         )
         """
         SysId routine for characterizing rotation.
@@ -233,7 +246,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         See the documentation of swerve.requests.SysIdSwerveRotation for info on importing the log to SysId.
         """
 
-        self._sys_id_routine_to_apply = self._sys_id_routine_rotation
+        self._sys_id_routine_to_apply = self._sys_id_routine_translation
         """The SysId routine to test"""
 
         if utils.is_simulation():

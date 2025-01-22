@@ -4,7 +4,7 @@ from subsystems import StateSubsystem
 from wpilib import SmartDashboard
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import VelocityDutyCycle
-from constants import IntakeConstants
+from constants import Constants
 
 class Intake(StateSubsystem):
 
@@ -19,7 +19,7 @@ class Intake(StateSubsystem):
     
         self._subsystem_state = self.SubsystemState.DEFAULT
 
-        self.intakeMotor = TalonFX(IntakeConstants.INTAKE_MOTOR_ID)
+        self.intakeMotor = TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID)
 
     def periodic(self):
         return super().periodic()
@@ -33,10 +33,10 @@ class Intake(StateSubsystem):
                 self.intakeMotor.set_control(VelocityDutyCycle(0))
 
             case self.SubsystemState.INTAKING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.INTAKE_SPEED))
+                self.intakeMotor.set_control(VelocityDutyCycle(Constants.IntakeConstants.INTAKE_SPEED))
 
             case self.SubsystemState.OUTPUTING:
-                self.intakeMotor.set_control(VelocityDutyCycle(IntakeConstants.OUTPUT_SPEED))
+                self.intakeMotor.set_control(VelocityDutyCycle(Constants.IntakeConstants.OUTPUT_SPEED))
 
         # update information for the state
         self._subsystem_state = desired_state
