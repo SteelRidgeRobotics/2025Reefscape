@@ -19,7 +19,7 @@ class Intake(StateSubsystem):
     
         self._subsystem_state = self.SubsystemState.DEFAULT
 
-        self.intakeMotor = TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID)
+        self.intakeMotor = TalonFX(Constants.MotorIDs.INTAKE_MOTOR)
 
     def periodic(self):
         return super().periodic()
