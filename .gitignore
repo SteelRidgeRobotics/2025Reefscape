@@ -7,6 +7,10 @@ ctre_sim/
 tests/ctre_sim/
 logs/*
 *.wpilog
+.DS_Store
+*.pyc
+=======
 __pycache__/
 WPILibNewCommands.json
 /.wpilib/wpilib_preferences.json
+

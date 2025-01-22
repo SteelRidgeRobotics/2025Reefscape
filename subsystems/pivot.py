@@ -6,15 +6,18 @@ from phoenix6.hardware import TalonFX
 from phoenix6.controls import PositionDutyCycle
 from constants import Constants
 
-class Pivot(StateSubsystem):
+class PivotSubsystem(StateSubsystem):
 
     class SubsystemState(Enum):
         STOW = auto()
         GROUND_INTAKE = auto()
         FUNNEL_INTAKE = auto()
+        ALGAE_INTAKE = auto()
         HIGH_SCORING = auto()
         MID_SCORING = auto()
         LOW_SCORING = auto()
+        NET_SCORING = auto()
+        PROCESSOR_SCORING = auto()
 
     def __init__(self) -> None:
 
@@ -49,6 +52,15 @@ class Pivot(StateSubsystem):
 
             case self.SubsystemState.LOW_SCORING:
                 self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.LOW_SCORING_ANGLE))
+
+            case self.SubsystemState.NET_SCORING:
+                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.NET_SCORING_ANGLE))
+
+            case self.SubsystemState.PROCESSOR_SCORING:
+                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.PROCESSOR_SCORING_ANGLE))
+
+            case self.SubsystemState.ALGAE_INTAKE:
+                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.ALGAE_INTAKE_ANGLE))
 
         # update information for the state
         self._subsystem_state = desired_state

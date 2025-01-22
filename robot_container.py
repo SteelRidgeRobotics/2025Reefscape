@@ -12,8 +12,12 @@ from wpimath.units import rotationsToRadians
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.superstructure import Superstructure
-from subsystems.pivot import Pivot
-from subsystems.intake import Intake
+
+from subsystems.climber import ClimberSubsystem
+from subsystems.pivot import PivotSubsystem
+from subsystems.intake import IntakeSubsystem
+from subsystems.elevator import ElevatorSubsystem
+
 
 class RobotContainer:
 
@@ -26,14 +30,18 @@ class RobotContainer:
         )  # 3/4 of a rotation per second max angular velocity
 
         self._driver_controller = commands2.button.CommandXboxController(0)
+        self._function_controller = commands2.button.CommandXboxController(1)
         self.path_constraints = PathConstraints(1, 1, 1, 1, unlimited=False)
         self.trigger_margin = .75
 
         self.drivetrain = TunerConstants.create_drivetrain()
-        self.pivot = Pivot()
-        self.intake = Intake()
 
-        self.superstructure = Superstructure(self.drivetrain, self.pivot)
+        self.climber = ClimberSubsystem()
+        self.pivot = PivotSubsystem()
+        self.intake = IntakeSubsystem()
+        self.elevator = ElevatorSubsystem()
+
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
         self._robot_state = RobotState(self.drivetrain)
 
         # Setting up bindings for necessary control of the swerve drive platform
@@ -168,6 +176,7 @@ class RobotContainer:
             case _:
                 pass
 
+        
 
         self._driver_controller.rightBumper().whileTrue(
             self.drivetrain.apply_request(
@@ -184,7 +193,15 @@ class RobotContainer:
                 )
             )
         )
-
+        self._function_controller.y().whileTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)).onFalse(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
+        )
+        
+        self._function_controller.x().whileTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)).onFalse(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
+        )
         self.drivetrain.register_telemetry(
             lambda state: self._robot_state.log_swerve_state(state)
         )

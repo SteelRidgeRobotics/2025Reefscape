@@ -6,7 +6,7 @@ from phoenix6.hardware import TalonFX
 from phoenix6.controls import VelocityDutyCycle
 from constants import Constants
 
-class Intake(StateSubsystem):
+class IntakeSubsystem(StateSubsystem):
 
     class SubsystemState(Enum):
         DEFAULT = auto()
