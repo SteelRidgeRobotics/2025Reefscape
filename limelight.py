@@ -3,29 +3,32 @@ Translated into Python from https://github.com/LimelightVision/limelightlib-wpij
 Version 1.11
 """
 
-from collections import defaultdict
-from dataclasses import dataclass
 import threading
+from dataclasses import dataclass
+from math import radians
 from urllib.parse import urlparse, ParseResult
 
 from ntcore import NetworkTable, NetworkTableEntry, NetworkTableInstance, DoubleArrayEntry
-from wpilib import DataLogManager
+from wpimath import units
 from wpimath.geometry import (
 	Pose2d,
 	Pose3d,
 	Rotation2d,
 	Rotation3d,
 	Translation2d,
-	Translation3d,
+	Translation3d
 )
-from wpimath import units
 
-from math import radians
 
-class ConcurrentDefaultDict(defaultdict):
+class ConcurrentDict(dict):
+	"""
+	Thread-safe dictionary that ensures atomic operations for concurrent access.
 
-	def __init__(self, default_factory=None, **kw):
-		super().__init__(default_factory, **kw)
+	Similar to Java's ConcurrentHashMap.
+	"""
+
+	def __init__(self):
+		super().__init__()
 		self._lock = threading.Lock()
 
 	def __getitem__(self, key):
@@ -37,10 +40,12 @@ class ConcurrentDefaultDict(defaultdict):
 			super().__setitem__(key, value)
 
 	def compute_if_absent(self, key, mapping_function):
+		"""Computes and stores the value if the key is absent, ensuring thread safety."""
+		if key in self:
+			return super().__getitem__(key)
+
 		with self._lock:
-			if key not in self:
-				value = mapping_function()
-				super().__setitem__(key, value)
+			super().__setitem__(key, mapping_function())
 			return super().__getitem__(key)
 
 @dataclass
@@ -129,7 +134,7 @@ class LimelightHelpers:
 	LimelightHelpers provides static methods and classes for interfacing with Limelight vision cameras in FRC.
 	This library supports all Limelight features including AprilTag tracking, Neural Networks, and standard color/retroreflective tracking.
 	"""
-	_double_array_entries = ConcurrentDefaultDict(DoubleArrayEntry)
+	_double_array_entries = ConcurrentDict()
 
 	@staticmethod
 	def _sanitize_name(name: str | None) -> str:
