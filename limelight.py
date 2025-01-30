@@ -9,6 +9,7 @@ import threading
 from urllib.parse import urlparse, ParseResult
 
 from ntcore import NetworkTable, NetworkTableEntry, NetworkTableInstance, DoubleArrayEntry
+from wpilib import DataLogManager
 from wpimath.geometry import (
 	Pose2d,
 	Pose3d,
@@ -25,21 +26,22 @@ class ConcurrentDefaultDict(defaultdict):
 
 	def __init__(self, default_factory=None, **kw):
 		super().__init__(default_factory, **kw)
-		self.lock = threading.Lock()
+		self._lock = threading.Lock()
 
 	def __getitem__(self, key):
-		with self.lock:
+		with self._lock:
 			return super().__getitem__(key)
 
 	def __setitem__(self, key, value):
-		with self.lock:
+		with self._lock:
 			super().__setitem__(key, value)
 
 	def compute_if_absent(self, key, mapping_function):
-		with self.lock:
+		with self._lock:
 			if key not in self:
-				self[key] = mapping_function()
-			return self[key]
+				value = mapping_function()
+				super().__setitem__(key, value)
+			return super().__getitem__(key)
 
 @dataclass
 class RawFiducial:

@@ -161,6 +161,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             drivetrain_constants, arg0, arg1, arg2, arg3
         )
 
+        self.pigeon2.reset()
+
         self._sim_notifier: Notifier | None = None
         self._last_sim_time: units.second = 0.0
 
