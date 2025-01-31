@@ -6,7 +6,6 @@ from phoenix6 import swerve
 from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
-from wpiutil import Sendable
 
 from subsystems.swerve import SwerveSubsystem
 
@@ -25,33 +24,18 @@ class RobotState:
 
         # Robot speeds for general checking
         self._table = NetworkTableInstance.getDefault().getTable("Telemetry")
-        self._current_pose = self._table.getStructTopic("currentPose", Pose2d).publish()
-        self._chassis_speeds = self._table.getStructTopic("chassisSpeeds", ChassisSpeeds).publish()
-        self._odom_freq = self._table.getDoubleTopic("Odometry Frequency").publish()
-        self._teleop_speed = self._table.getDoubleTopic("Current Speed").publish()
+        self._current_pose = self._table.getStructTopic("current_pose", Pose2d).publish()
+        self._chassis_speeds = self._table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
+        self._odom_freq = self._table.getDoubleTopic("odometry_frequency").publish()
+        self._teleop_speed = self._table.getDoubleTopic("current_speed").publish()
 
         # Additional swerve info
-        self._module_states = self._table.getStructArrayTopic("moduleStates", SwerveModuleState).publish()
-        self._module_targets = self._table.getStructArrayTopic("moduleTargets", SwerveModuleState).publish()
+        self._module_states = self._table.getStructArrayTopic("module_states", SwerveModuleState).publish()
+        self._module_targets = self._table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
 
-        class SendableSwerveDrive(Sendable):
-            def __init__(self):
-                super().__init__()
-
-            def initSendable(self, builder):
-                state = drivetrain.get_state()
-                builder.setSmartDashboardType("SwerveDrive")
-                builder.addDoubleProperty("Front Left Angle", lambda: state.module_states[0].angle.radians(), lambda _: None)
-                builder.addDoubleProperty("Front Left Velocity", lambda: state.module_states[0].speed, lambda _: None)
-                builder.addDoubleProperty("Front Right Angle", lambda: state.module_states[1].angle.radians(), lambda _: None)
-                builder.addDoubleProperty("Front Right Velocity", lambda: state.module_states[1].speed, lambda _: None)
-                builder.addDoubleProperty("Back Left Angle", lambda: state.module_states[2].angle.radians(), lambda _: None)
-                builder.addDoubleProperty("Back Left Velocity", lambda: state.module_states[2].speed, lambda _: None)
-                builder.addDoubleProperty("Back Right Angle", lambda: state.module_states[3].angle.radians(), lambda _: None)
-                builder.addDoubleProperty("Back Right Velocity", lambda: state.module_states[3].speed, lambda _: None)
-                builder.addDoubleProperty("Robot Angle", lambda: state.pose.rotation().radians(), lambda _: None)
-
-        SmartDashboard.putData("Swerve Drive", SendableSwerveDrive())
+        # Swerve Data
+        self._swerve_data = self._table.getSubTable("Swerve Data")
+        self._swerve_data.getEntry(".type").setString("SwerveDrive") # Tells Elastic what widget this is
 
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._field.getObject("targetPose").setPose(pose))
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
@@ -73,6 +57,18 @@ class RobotState:
         self._chassis_speeds.set(state.speeds)
 
         self._teleop_speed.set(abs(math.sqrt(state.speeds.vx**2+state.speeds.vy**2)))
+
+        self._swerve_data.getEntry("Front Left Angle").setDouble(state.module_states[0].angle.radians())
+        self._swerve_data.getEntry("Front Left Velocity").setDouble(state.module_states[0].speed)
+        self._swerve_data.getEntry("Front Right Angle").setDouble(state.module_states[1].angle.radians())
+        self._swerve_data.getEntry("Front Right Velocity").setDouble(state.module_states[1].speed)
+        self._swerve_data.getEntry("Back Left Angle").setDouble(state.module_states[2].angle.radians())
+        self._swerve_data.getEntry("Back Left Velocity").setDouble(state.module_states[2].speed)
+        self._swerve_data.getEntry("Back Right Angle").setDouble(state.module_states[3].angle.radians())
+        self._swerve_data.getEntry("Back Right Velocity").setDouble(state.module_states[3].speed)
+        self._swerve_data.getEntry("Robot Angle").setDouble((self.swerve.get_operator_forward_direction() + state.pose.rotation()).radians())
+
+        NetworkTableInstance.getDefault().flush()
 
     def get_current_pose(self) -> Pose2d:
         
