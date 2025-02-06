@@ -1,9 +1,13 @@
 from enum import auto, Enum
 
+from commands2 import Command
+from commands2.sysid import SysIdRoutine
+from phoenix6 import SignalLogger
 from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.controls import PositionDutyCycle
-from wpilib import SmartDashboard
+from phoenix6.controls import PositionDutyCycle, VoltageOut
+from wpilib import SmartDashboard, DriverStation
+from wpilib.sysid import SysIdRoutineLog
 from wpimath.system.plant import DCMotor
 
 from constants import Constants
@@ -36,10 +40,28 @@ class PivotSubsystem(StateSubsystem):
         self._pivot_motor.configurator.apply(self._master_config)
         self._add_talon_sim_model(self._pivot_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO)
 
+        self._sys_id_request = VoltageOut(0)
+
+        self._sys_id_routine = SysIdRoutine(
+            SysIdRoutine.Config(
+                recordState=lambda state: SignalLogger.write_string(
+                    "SysIdPivot_State", SysIdRoutineLog.stateEnumToString(state)
+                )  # Log to .hoot for ease of access
+            ),
+            SysIdRoutine.Mechanism(
+                lambda output: self._pivot_motor.set_control(self._sys_id_request.with_output(output)),
+                lambda log: None,
+                self,
+            ),
+        )
+
     def periodic(self):
         return super().periodic()
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
+
+        if DriverStation.isTest():
+            return
 
         # move motor accordingly to set state in superstructure
         match desired_state:
@@ -74,6 +96,15 @@ class PivotSubsystem(StateSubsystem):
         # update information for the state
         self._subsystem_state = desired_state
         SmartDashboard.putString("Pivot State", self._subsystem_state.name)
+
+    def stop(self) -> Command:
+        return self.runOnce(lambda: self._pivot_motor.set_control(self._sys_id_request.with_output(0)))
+
+    def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
+        return self._sys_id_routine.quasistatic(direction).andThen(self.stop())
+
+    def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
+        return self._sys_id_routine.dynamic(direction).andThen(self.stop())
 
     def get_angle(self) -> float:
         """Returns the current angle of the pivot, in degrees."""
