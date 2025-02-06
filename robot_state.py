@@ -2,18 +2,20 @@ import math
 
 from ntcore import NetworkTableInstance
 from pathplannerlib.logging import PathPlannerLogging
-from phoenix6 import swerve
-from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard
+from phoenix6 import swerve, utils
+from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mechanism2d, Color8Bit
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
+from subsystems.elevator import ElevatorSubsystem
 from subsystems.swerve import SwerveSubsystem
 
 
 class RobotState:
 
-    def __init__(self, drivetrain: SwerveSubsystem):
-        self.swerve = drivetrain
+    def __init__(self, drivetrain: SwerveSubsystem, elevator: ElevatorSubsystem):
+        self._swerve = drivetrain
+        self._elevator = elevator
 
         DriverStation.startDataLog(DataLogManager.getLog())
 
@@ -39,7 +41,15 @@ class RobotState:
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._field.getObject("targetPose").setPose(pose))
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
 
-    def log_swerve_state(self, state: swerve.SwerveDrivetrain.SwerveDriveState):
+        if utils.is_simulation():
+            self._superstructure_mechanism = Mechanism2d(0.5334, 2.286, Color8Bit("#000058"))
+            self._root = self._superstructure_mechanism.getRoot("Root", 0.5334 / 2, 0.125)
+
+            self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit("#FFFFFF"))
+
+            SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
+
+    def log_swerve_state(self, state: swerve.SwerveDrivetrain.SwerveDriveState) -> None:
         """
         Logs desired info with the given swerve state. Called by the
         Phoenix 6 drivetrain method every time the odometry thread is
@@ -65,13 +75,18 @@ class RobotState:
         self._swerve_data.getEntry("Back Left Velocity").setDouble(state.module_states[2].speed)
         self._swerve_data.getEntry("Back Right Angle").setDouble(state.module_states[3].angle.radians())
         self._swerve_data.getEntry("Back Right Velocity").setDouble(state.module_states[3].speed)
-        self._swerve_data.getEntry("Robot Angle").setDouble((self.swerve.get_operator_forward_direction() + state.pose.rotation()).radians())
+        self._swerve_data.getEntry("Robot Angle").setDouble((self._swerve.get_operator_forward_direction() + state.pose.rotation()).radians())
 
         NetworkTableInstance.getDefault().flush()
 
+    def update_mechanisms(self) -> None:
+        self._elevator_mech.setLength(
+            self._elevator.get_height()
+        )
+
     def get_current_pose(self) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin)."""
-        return self.swerve.get_state().pose
+        return self._swerve.get_state().pose
 
     def get_latency_compensated_pose(self, dt: float) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin),
@@ -84,7 +99,7 @@ class RobotState:
             latency compensation.
         :rtype: Pose2d
         """
-        state = self.swerve.get_state()
+        state = self._swerve.get_state()
         speeds = state.speeds
         pose = state.pose
 

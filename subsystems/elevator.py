@@ -1,5 +1,7 @@
+import math
 from enum import Enum, auto
 
+from phoenix6 import StatusSignal
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue
 from phoenix6.controls import Follower
@@ -101,4 +103,7 @@ class ElevatorSubsystem(StateSubsystem):
             
         # Sets the control of the motor to the position request
         self._master_motor.set_control(self._position_request)
-                
+
+    def get_height(self) -> float:
+        """Returns the height of the elevator, in meters."""
+        return (self._master_motor.get_position().value / Constants.ElevatorConstants.GEAR_RATIO) * (2 * math.pi * 0.508)

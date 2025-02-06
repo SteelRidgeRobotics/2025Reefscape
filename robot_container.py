@@ -42,7 +42,7 @@ class RobotContainer:
         self.elevator = ElevatorSubsystem()
 
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
-        self._robot_state = RobotState(self.drivetrain)
+        self.robot_state = RobotState(self.drivetrain, self.elevator)
 
         # Setting up bindings for necessary control of the swerve drive platform
         self._field_centric = (
@@ -190,7 +190,7 @@ class RobotContainer:
 
 
         self.drivetrain.register_telemetry(
-            lambda state: self._robot_state.log_swerve_state(state)
+            lambda state: self.robot_state.log_swerve_state(state)
         )
 
     def get_autonomous_command(self) -> commands2.Command:
