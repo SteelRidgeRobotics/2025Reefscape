@@ -1,17 +1,17 @@
 from enum import Enum, auto
 
-from phoenix6.controls import Follower
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue
+from phoenix6.controls import Follower
 from phoenix6.controls import PositionDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
-
-from subsystems import StateSubsystem
-from wpilib import SmartDashboard
+from wpimath.system.plant import DCMotor
 
 from constants import Constants
+from subsystems import StateSubsystem
 
-# Elevator Subsystem class inhereting from StateSubsystem
+
+# Elevator Subsystem class inheriting from StateSubsystem
 class ElevatorSubsystem(StateSubsystem):
 
     # All possible states the elevator can be in
@@ -38,6 +38,12 @@ class ElevatorSubsystem(StateSubsystem):
         # Setting the neutral mode to brake
         self._master_config.motor_output.with_neutral_mode(NeutralModeValue.BRAKE)
 
+        # Set the mechanism gear ratio
+        self._master_config.feedback.with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO)
+
+        # Set PID and feedforward gains
+        self._master_config.with_slot0(Constants.ElevatorConstants.GAINS)
+
         # Creates the master lift motor (left) and applies the configuration
         self._master_motor = TalonFX(Constants.MotorIDs.LEFT_LIFT_MOTOR)
         self._master_motor.configurator.apply(self._master_config)
@@ -58,13 +64,15 @@ class ElevatorSubsystem(StateSubsystem):
 
         # Follower motor follows the control of the master motor
         self._follower_motor.set_control(Follower(self._master_motor.device_id, False))
+
+        self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.ElevatorConstants.GEAR_RATIO)
     
     # Runs periodically                                             
     def periodic(self):
 
         super().periodic()
 
-        # Handles all of the possible subsystem states
+        # Handles all the possible subsystem states
         match self._subsystem_state:
 
             case self.SubsystemState.DEFAULT:
@@ -93,7 +101,4 @@ class ElevatorSubsystem(StateSubsystem):
             
         # Sets the control of the motor to the position request
         self._master_motor.set_control(self._position_request)
-
-        self._subsystem_state = self._subsystem_state
-        SmartDashboard.putString("Elevator State", self._subsystem_state.name)
                 
