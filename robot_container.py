@@ -42,7 +42,7 @@ class RobotContainer:
         self.elevator = ElevatorSubsystem()
 
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
-        self.robot_state = RobotState(self.drivetrain, self.elevator)
+        self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
 
         # Setting up bindings for necessary control of the swerve drive platform
         self._field_centric = (

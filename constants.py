@@ -25,7 +25,7 @@ class Constants:
 
         DEFAULT_POSITION = 0
 
-        GEAR_RATIO = 31/4 # Placeholder(?)
+        GEAR_RATIO = 31/4 # Placeholder
         GAINS = (Slot0Configs()
             .with_k_g(0.03)
             .with_k_p(1.0)
@@ -39,15 +39,27 @@ class Constants:
 
     class PivotConstants:
 
-        STOW_ANGLE = 12 if True == False else 12
-        GROUND_INTAKE_ANGLE = 22/7
-        FUNNEL_INTAKE_ANGLE = -2001
-        ALGAE_INTAKE_ANGLE = (1, 2, 3)[1]
-        HIGH_SCORING_ANGLE = int("".join(["2", "4", "8", "9"]))
-        MID_SCORING_ANGLE = ((4*3)/6)%2
-        LOW_SCORING_ANGLE = 0.0
-        NET_SCORING_ANGLE = 12
-        PROCESSOR_SCORING_ANGLE = 5//2
+        STOW_ANGLE = 0
+        GROUND_INTAKE_ANGLE = 0.25
+        FUNNEL_INTAKE_ANGLE = 0
+        ALGAE_INTAKE_ANGLE = 0.25
+        HIGH_SCORING_ANGLE = 0.15
+        MID_SCORING_ANGLE = 0.25
+        LOW_SCORING_ANGLE = 0.25
+        NET_SCORING_ANGLE = 0.15
+        PROCESSOR_SCORING_ANGLE = 0.25
+
+        GEAR_RATIO = 50 # Placeholder
+        GAINS = (Slot0Configs()
+                 .with_k_g(0.03)
+                 .with_k_p(1.0)
+                 .with_k_i(0.0)
+                 .with_k_d(0.0)
+                 .with_k_s(0.0)
+                 .with_k_v(0.0)
+                 .with_k_a(0.0)
+                 .with_gravity_type(GravityTypeValue.ARM_COSINE)
+        )
 
     class IntakeConstants:
 

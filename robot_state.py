@@ -8,13 +8,15 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
 from subsystems.elevator import ElevatorSubsystem
+from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 
 
 class RobotState:
 
-    def __init__(self, drivetrain: SwerveSubsystem, elevator: ElevatorSubsystem):
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem):
         self._swerve = drivetrain
+        self._pivot = pivot
         self._elevator = elevator
 
         DriverStation.startDataLog(DataLogManager.getLog())
@@ -46,6 +48,7 @@ class RobotState:
             self._root = self._superstructure_mechanism.getRoot("Root", 0.5334 / 2, 0.125)
 
             self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit("#FFFFFF"))
+            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 0, 4, Color8Bit("#FEFEFE"))
 
             SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
@@ -80,9 +83,8 @@ class RobotState:
         NetworkTableInstance.getDefault().flush()
 
     def update_mechanisms(self) -> None:
-        self._elevator_mech.setLength(
-            self._elevator.get_height()
-        )
+        self._elevator_mech.setLength(self._elevator.get_height())
+        self._pivot_mech.setAngle(self._pivot.get_angle())
 
     def get_current_pose(self) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin)."""

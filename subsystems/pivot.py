@@ -1,10 +1,13 @@
 from enum import auto, Enum
 
-from subsystems import StateSubsystem
-from wpilib import SmartDashboard
 from phoenix6.hardware import TalonFX
+from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import PositionDutyCycle
+from wpilib import SmartDashboard
+from wpimath.system.plant import DCMotor
+
 from constants import Constants
+from subsystems import StateSubsystem
 
 class PivotSubsystem(StateSubsystem):
 
@@ -19,13 +22,19 @@ class PivotSubsystem(StateSubsystem):
         NET_SCORING = auto()
         PROCESSOR_SCORING = auto()
 
+    _master_config = TalonFXConfiguration()
+    _master_config.feedback.with_sensor_to_mechanism_ratio(Constants.PivotConstants.GEAR_RATIO)
+    _master_config.with_slot0(Constants.PivotConstants.GAINS)
+
     def __init__(self) -> None:
 
         super().__init__("Pivot")
     
         self._subsystem_state = self.SubsystemState.STOW
 
-        self.pivotMotor = TalonFX(Constants.MotorIDs.PIVOT_MOTOR)
+        self._pivot_motor = TalonFX(Constants.MotorIDs.PIVOT_MOTOR)
+        self._pivot_motor.configurator.apply(self._master_config)
+        self._add_talon_sim_model(self._pivot_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO)
 
     def periodic(self):
         return super().periodic()
@@ -36,32 +45,36 @@ class PivotSubsystem(StateSubsystem):
         match desired_state:
 
             case self.SubsystemState.STOW:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.STOW_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.STOW_ANGLE))
 
             case self.SubsystemState.GROUND_INTAKE:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.GROUND_INTAKE_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.GROUND_INTAKE_ANGLE))
 
             case self.SubsystemState.FUNNEL_INTAKE:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.FUNNEL_INTAKE_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.FUNNEL_INTAKE_ANGLE))
 
             case self.SubsystemState.HIGH_SCORING:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.HIGH_SCORING_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.HIGH_SCORING_ANGLE))
 
             case self.SubsystemState.MID_SCORING:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.MID_SCORING_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.MID_SCORING_ANGLE))
 
             case self.SubsystemState.LOW_SCORING:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.LOW_SCORING_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.LOW_SCORING_ANGLE))
 
             case self.SubsystemState.NET_SCORING:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.NET_SCORING_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.NET_SCORING_ANGLE))
 
             case self.SubsystemState.PROCESSOR_SCORING:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.PROCESSOR_SCORING_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.PROCESSOR_SCORING_ANGLE))
 
             case self.SubsystemState.ALGAE_INTAKE:
-                self.pivotMotor.set_control(PositionDutyCycle(Constants.PivotConstants.ALGAE_INTAKE_ANGLE))
+                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.ALGAE_INTAKE_ANGLE))
 
         # update information for the state
         self._subsystem_state = desired_state
         SmartDashboard.putString("Pivot State", self._subsystem_state.name)
+
+    def get_angle(self) -> float:
+        """Returns the current angle of the pivot, in degrees."""
+        return self._pivot_motor.get_position().value * 360
