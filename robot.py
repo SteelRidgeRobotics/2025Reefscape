@@ -81,14 +81,12 @@ class OilSpill(TimedCommandRobot):
     def testInit(self):
         DataLogManager.log("Test period started")
         CommandScheduler.getInstance().cancelAll()
-        CommandScheduler.getInstance().disable()
 
     def disabledInit(self):
         SignalLogger.stop()
 
     def testExit(self):
         DataLogManager.log("Test period ended")
-        CommandScheduler.getInstance().enable()
     
     def disabledPeriodic(self) -> None:
         pass

@@ -1,12 +1,16 @@
 import math
 from enum import Enum, auto
 
-from phoenix6 import StatusSignal
+from commands2 import Command
+from commands2.sysid import SysIdRoutine
+from phoenix6 import SignalLogger
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue
-from phoenix6.controls import Follower
+from phoenix6.controls import Follower, VoltageOut
 from phoenix6.controls import PositionDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
+from wpilib import DriverStation
+from wpilib.sysid import SysIdRoutineLog
 from wpimath.system.plant import DCMotor
 
 from constants import Constants
@@ -60,6 +64,7 @@ class ElevatorSubsystem(StateSubsystem):
         # Creating a default position request and a brake request
         self._position_request = PositionDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
+        self._sys_id_request = VoltageOut(0)
 
         # Sets the default master motor request to brake
         self._master_motor.set_control(self._brake_request)
@@ -68,11 +73,27 @@ class ElevatorSubsystem(StateSubsystem):
         self._follower_motor.set_control(Follower(self._master_motor.device_id, False))
 
         self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.ElevatorConstants.GEAR_RATIO)
+
+        self._sys_id_routine = SysIdRoutine(
+            SysIdRoutine.Config(
+                recordState=lambda state: SignalLogger.write_string(
+                    "SysIdElevator_State", SysIdRoutineLog.stateEnumToString(state)
+                ) # Log to .hoot for ease of access
+            ),
+            SysIdRoutine.Mechanism(
+                lambda output: self._master_motor.set_control(self._sys_id_request.with_output(output)),
+                lambda log: None,
+                self,
+            ),
+        )
     
     # Runs periodically                                             
     def periodic(self):
 
         super().periodic()
+
+        if DriverStation.isTest():
+            return
 
         # Handles all the possible subsystem states
         match self._subsystem_state:
@@ -103,6 +124,15 @@ class ElevatorSubsystem(StateSubsystem):
             
         # Sets the control of the motor to the position request
         self._master_motor.set_control(self._position_request)
+
+    def stop(self) -> Command:
+        return self.runOnce(lambda: self._master_motor.set_control(self._brake_request))
+
+    def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
+        return self._sys_id_routine.quasistatic(direction).andThen(self.stop())
+
+    def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
+        return self._sys_id_routine.dynamic(direction).andThen(self.stop())
 
     def get_height(self) -> float:
         """Returns the height of the elevator, in meters."""

@@ -188,6 +188,18 @@ class RobotContainer:
             self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
         )
 
+        (self._function_controller.povUp() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_dynamic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povUp() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_dynamic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povDown() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_quasistatic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povDown() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_quasistatic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
 
         self.drivetrain.register_telemetry(
             lambda state: self.robot_state.log_swerve_state(state)

@@ -62,6 +62,9 @@ class Superstructure(Subsystem):
         """
         Periodic method
         """
+        # Do nothing if in test mode
+        if DriverStation.isTest():
+            return
 
         # if the driver station is disabled, set the default goal with the requirement of the superstructure.
         if DriverStation.isDisabled():
