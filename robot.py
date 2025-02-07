@@ -1,13 +1,10 @@
 import os.path
-from importlib import metadata
 
 from commands2 import CommandScheduler, TimedCommandRobot
-from packaging.version import Version
 from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
 from wpinet import WebServer
 
-from lib import elasticlib
 from robot_container import RobotContainer
 
 
@@ -50,15 +47,6 @@ class OilSpill(TimedCommandRobot):
     def autonomousInit(self) -> None:
         DataLogManager.log("Autonomous period started")
 
-        if has_outdated_pathplanner():
-            elasticlib.send_notification(
-                elasticlib.Notification(
-                    level="WARNING",
-                    title="Incorrect PathPlannerLib Version",
-                    description="Must be newer than 2025.2.1!"
-                )
-            )
-
         selected_auto = self.container.get_autonomous_command()
         if selected_auto is not None:
             selected_auto.schedule()
@@ -90,7 +78,3 @@ class OilSpill(TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         pass
-
-
-def has_outdated_pathplanner() -> bool:
-    return Version(metadata.version("robotpy-pathplannerlib")) <= Version("2025.2.1")

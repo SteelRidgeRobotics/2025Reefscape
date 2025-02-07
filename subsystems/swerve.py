@@ -261,12 +261,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         if utils.is_simulation():
             self._start_sim_thread()
-
-        # If PathPlanner is outdated, warn the user.
-        if robot.has_outdated_pathplanner():
-            DataLogManager.log(f"WARN: robotpy-pathplannerlib is version {metadata.version("robotpy-pathplannerlib")}. "
-                               "PathPlanner must be greater than 2025.2.1 in order to use SetpointGenerator, defaulting"
-                               " to standard control.")
         self._configure_auto_builder()
     
     def _configure_auto_builder(self) -> None:
