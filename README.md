@@ -32,3 +32,15 @@ Contains test code executed before code is deployed to the robot. This ensures t
 [`robot_state.py`](robot_state.py)
 
 Handles all robot position data and mechanism logging for dashboard use and analysis.
+
+## Credits
+
+This robot could not have been programmed without the incredible talent, skills, and determination from the following:
+- James Haddix, Software Director
+- Caden Dalley, President
+- Christopher Snelson, Software Mentor
+- Raiden Snelson, Vision Specialist
+- Chimaraoke Okafor, Auto Specialist
+- Chase Funk, Auto Specialist
+- Micah Nguyen, End Effector Specialist
+- Matthew Murten, Elevator Specialist
