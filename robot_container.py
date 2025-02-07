@@ -1,9 +1,9 @@
 import commands2
 import commands2.button
-import commands2.cmd
+from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.path import PathConstraints, PathPlannerPath
+from pathplannerlib.path import PathConstraints
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
@@ -11,12 +11,11 @@ from wpimath.units import rotationsToRadians
 
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
-from subsystems.superstructure import Superstructure
-
 from subsystems.climber import ClimberSubsystem
-from subsystems.pivot import PivotSubsystem
-from subsystems.intake import IntakeSubsystem
 from subsystems.elevator import ElevatorSubsystem
+from subsystems.intake import IntakeSubsystem
+from subsystems.pivot import PivotSubsystem
+from subsystems.superstructure import Superstructure
 
 
 class RobotContainer:
@@ -167,11 +166,21 @@ class RobotContainer:
         )
 
         self._function_controller.leftBumper().whileTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+            )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+            )
+        )
+
+        self._function_controller.rightBumper().whileTrue(
+            self.intake.set_desired_state_command(self.intake.SubsystemState.OUTPUTTING)
         )
 
         (self._function_controller.leftStick() & self._function_controller.rightStick()).whileTrue(
@@ -179,12 +188,14 @@ class RobotContainer:
         )
 
         self._function_controller.povLeft().whileTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)).onFalse(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)
+        ).onFalse(
             self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
         )
-        
+
         self._function_controller.povRight().whileTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)).onFalse(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)
+        ).onFalse(
             self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
         )
 
