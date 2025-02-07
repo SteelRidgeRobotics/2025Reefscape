@@ -16,12 +16,10 @@ from subsystems.elevator import ElevatorSubsystem
 
 class Superstructure(Subsystem):
     """
-    Superstructure that drives the logic of all subsystems
-    """    
+    The Superstructure is in charge of controlling the elevator and the end effector.
+    """
+
     class Goal(Enum):
-        """
-        All "goals" for the superstructure. These will move each subsystem to a desired position based on what the goal of the entire superstructure is.
-        """
         DEFAULT = auto()
         L4_SCORING = auto()
         L3_SCORING = auto()
@@ -59,9 +57,6 @@ class Superstructure(Subsystem):
         self._last_goal = self.Goal.DEFAULT
     
     def periodic(self):
-        """
-        Periodic method
-        """
         # Do nothing if in test mode
         if DriverStation.isTest():
             return

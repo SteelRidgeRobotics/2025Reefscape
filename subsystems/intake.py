@@ -9,6 +9,10 @@ from phoenix6.controls import VelocityDutyCycle
 from constants import Constants
 
 class IntakeSubsystem(StateSubsystem):
+    """
+    The IntakeSubsystem is responsible for controlling the end effector's compliant wheels.
+    It uses a VelocityDutyCycle request to control the speed of the wheels.
+    """
 
     class SubsystemState(Enum):
         DEFAULT = auto()

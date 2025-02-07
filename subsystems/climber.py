@@ -11,6 +11,10 @@ from constants import Constants
 from subsystems import StateSubsystem
 
 class ClimberSubsystem(StateSubsystem):
+    """
+    The ClimberSubsystem is responsible for controlling the robot's climber mechanism.
+    """
+
     class SubsystemState(Enum):
         STOP = 1
         CLIMB_POSITIVE = 2

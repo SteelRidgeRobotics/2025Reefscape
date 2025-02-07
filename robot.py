@@ -7,7 +7,7 @@ from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
 from wpinet import WebServer
 
-import elasticlib
+from lib import elasticlib
 from robot_container import RobotContainer
 
 

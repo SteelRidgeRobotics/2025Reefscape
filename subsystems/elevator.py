@@ -17,8 +17,11 @@ from constants import Constants
 from subsystems import StateSubsystem
 
 
-# Elevator Subsystem class inheriting from StateSubsystem
 class ElevatorSubsystem(StateSubsystem):
+    """
+    The ElevatorSubsystem is responsible for controlling the elevator mechanism.
+    It manages motor positions and uses MotionMagic to smoothly transition between set points.
+    """
 
     # All possible states the elevator can be in
     class SubsystemState(Enum):

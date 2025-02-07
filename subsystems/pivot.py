@@ -14,6 +14,10 @@ from constants import Constants
 from subsystems import StateSubsystem
 
 class PivotSubsystem(StateSubsystem):
+    """
+    The PivotSubsystem is responsible for controlling the end effector's current rotation.
+    It uses a PositionDutyCycle to quickly transition between set points and is tuned through the use of SysId routines.
+    """
 
     class SubsystemState(Enum):
         STOW = auto()

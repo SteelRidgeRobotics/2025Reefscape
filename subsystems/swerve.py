@@ -25,7 +25,7 @@ from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import rotationsToRadians
 
 import robot
-from limelight import LimelightHelpers
+from lib.limelight import LimelightHelpers
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
