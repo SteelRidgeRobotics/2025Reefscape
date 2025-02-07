@@ -35,15 +35,13 @@ class PivotSubsystem(StateSubsystem):
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
 
     def __init__(self) -> None:
-
         super().__init__("Pivot")
-    
-        self._subsystem_state = self.SubsystemState.STOW
 
         self._pivot_motor = TalonFX(Constants.MotorIDs.PIVOT_MOTOR)
         self._pivot_motor.configurator.apply(self._master_config)
         self._add_talon_sim_model(self._pivot_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO)
 
+        self._position_request = PositionDutyCycle(0)
         self._sys_id_request = VoltageOut(0)
 
         self._sys_id_routine = SysIdRoutine(
@@ -67,39 +65,28 @@ class PivotSubsystem(StateSubsystem):
         if DriverStation.isTest():
             return
 
-        # move motor accordingly to set state in superstructure
         match desired_state:
-
             case self.SubsystemState.STOW:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.STOW_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.STOW_ANGLE
             case self.SubsystemState.GROUND_INTAKE:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.GROUND_INTAKE_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.GROUND_INTAKE_ANGLE
             case self.SubsystemState.FUNNEL_INTAKE:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.FUNNEL_INTAKE_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.FUNNEL_INTAKE_ANGLE
             case self.SubsystemState.HIGH_SCORING:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.HIGH_SCORING_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.HIGH_SCORING_ANGLE
             case self.SubsystemState.MID_SCORING:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.MID_SCORING_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.MID_SCORING_ANGLE
             case self.SubsystemState.LOW_SCORING:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.LOW_SCORING_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.LOW_SCORING_ANGLE
             case self.SubsystemState.NET_SCORING:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.NET_SCORING_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.NET_SCORING_ANGLE
             case self.SubsystemState.PROCESSOR_SCORING:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.PROCESSOR_SCORING_ANGLE))
-
+                self._position_request.position = Constants.PivotConstants.PROCESSOR_SCORING_ANGLE
             case self.SubsystemState.ALGAE_INTAKE:
-                self._pivot_motor.set_control(PositionDutyCycle(Constants.PivotConstants.ALGAE_INTAKE_ANGLE))
+                self._position_request.position = Constants.PivotConstants.ALGAE_INTAKE_ANGLE
 
-        # update information for the state
         self._subsystem_state = desired_state
-        SmartDashboard.putString("Pivot State", self._subsystem_state.name)
+        self._pivot_motor.set_control(self._position_request)
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._pivot_motor.set_control(self._sys_id_request.with_output(0)))
