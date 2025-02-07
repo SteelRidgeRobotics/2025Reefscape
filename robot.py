@@ -5,6 +5,7 @@ from commands2 import CommandScheduler, TimedCommandRobot
 from packaging.version import Version
 from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
+from wpinet import WebServer
 
 import elasticlib
 from robot_container import RobotContainer
@@ -24,11 +25,7 @@ class OilSpill(TimedCommandRobot):
             DataLogManager.start()
         DriverStation.startDataLog(DataLogManager.getLog())
 
-        if utils.is_simulation():
-            elasticlib.start_elastic_server("127.0.0.1")
-        else:
-            elasticlib.start_elastic_server("10.63.43.2")
-            elasticlib.start_elastic_server("10.0.1.200")
+        WebServer.getInstance().start(5800, self.get_deploy_directory())
 
         DataLogManager.log("Robot initialized")
 
