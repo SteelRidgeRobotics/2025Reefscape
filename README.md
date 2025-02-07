@@ -36,11 +36,11 @@ Handles all robot position data and mechanism logging for dashboard use and anal
 ## Credits
 
 This robot could not have been programmed without the incredible talent, skills, and determination from the following:
-- James Haddix, Software Director
-- Caden Dalley, President
 - Christopher Snelson, Software Mentor
-- Raiden Snelson, Vision Specialist
-- Chimaraoke Okafor, Auto Specialist
+- James Haddix, Software Director
+- Caden Dalley, Swerve Specialist
 - Chase Funk, Auto Specialist
-- Micah Nguyen, End Effector Specialist
 - Matthew Murten, Elevator Specialist
+- Micah Nguyen, End Effector Specialist
+- Chimaraoke Okafor, Auto Specialist
+- Raiden Snelson, Vision Specialist
