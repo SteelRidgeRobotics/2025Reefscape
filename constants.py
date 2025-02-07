@@ -10,8 +10,20 @@ class Constants:
 
         LEFT_LIFT_MOTOR = 10
         RIGHT_LIFT_MOTOR = 11
-        INTAKE_MOTOR= 12
+        INTAKE_MOTOR = 12
         PIVOT_MOTOR = 13
+        CLIMB_MOTOR = 14
+
+    class ClimberConstants:
+        GEAR_RATIO = 100
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )
 
     class ElevatorConstants:
 
@@ -63,5 +75,15 @@ class Constants:
 
     class IntakeConstants:
 
-        INTAKE_SPEED = (lambda x, y: (x*63%y))(int(0o123), 4.1)
-        OUTPUT_SPEED = 0
+        INTAKE_SPEED = 1
+        OUTPUT_SPEED = 1
+
+        GEAR_RATIO = 4
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )

@@ -6,10 +6,9 @@ from phoenix6.hardware import TalonFX
 
 
 from enum import auto, Enum
+
+from constants import Constants
 from subsystems import StateSubsystem
-
-_CLIMBMOTOR_ID = 10
-
 
 class ClimberSubsystem(StateSubsystem):
     class SubsystemState(Enum):
@@ -20,9 +19,11 @@ class ClimberSubsystem(StateSubsystem):
     def __init__(self) -> None:
         super().__init__("Climber")
 
-        self.climbMotor = TalonFX(_CLIMBMOTOR_ID)
+        self.climbMotor = TalonFX(Constants.MotorIDs.CLIMB_MOTOR)
         climbing_config = TalonFXConfiguration()
         climbing_config.motor_output.with_neutral_mode(NeutralModeValue.BRAKE)
+        climbing_config.feedback.with_sensor_to_mechanism_ratio(Constants.ClimberConstants.GEAR_RATIO)
+        climbing_config.with_slot0(Constants.ClimberConstants.GAINS)
 
     def periodic(self):
         super().periodic()
