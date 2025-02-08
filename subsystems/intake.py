@@ -40,6 +40,7 @@ class IntakeSubsystem(StateSubsystem):
         super().periodic()
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
+        # TODO: Add beam break sensors to help determine correct state.
         match desired_state:
             case self.SubsystemState.DEFAULT:
                 self._velocity_request.velocity = 0
