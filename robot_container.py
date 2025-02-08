@@ -44,6 +44,7 @@ class RobotContainer:
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
         self._robot_state = RobotState(self.drivetrain)
 
+        # These are the paths for pathfinding to look for
         self.preloaded_paths = {
             "Coral A" : PathPlannerPath.fromPathFile("Coral A"),
             "Coral B" : PathPlannerPath.fromPathFile("Coral B"),
@@ -59,7 +60,7 @@ class RobotContainer:
             "Coral L" : PathPlannerPath.fromPathFile("Coral L"),
             "Coral Station 1" : PathPlannerPath.fromPathFile("Coral Station 1"),
             "Coral Station 2" : PathPlannerPath.fromPathFile("Coral Station 2"),
-        }
+        } # Ends the dictionary
 
         # Setting up bindings for necessary control of the swerve drive platform
         self._field_centric = (
@@ -184,7 +185,7 @@ class RobotContainer:
 
         
 
-        (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < .75) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < .75) & self._driver_controller.rightBumper()).whileTrue(
+        (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < .75) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < .75) & self._driver_controller.rightBumper()).whileTrue( #Only does this function if the triggers aren't pressed
             self.drivetrain.apply_request(
                 lambda: (
                     self._robot_centric.with_velocity_x(
