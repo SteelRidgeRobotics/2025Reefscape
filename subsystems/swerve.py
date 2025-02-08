@@ -290,6 +290,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             ),
             config,
             lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise
+            self
         )
 
         # create set point generator
