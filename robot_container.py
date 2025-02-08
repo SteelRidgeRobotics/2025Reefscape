@@ -1,9 +1,9 @@
 import commands2
 import commands2.button
-import commands2.cmd
+from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.path import PathConstraints, PathPlannerPath
+from pathplannerlib.path import PathConstraints
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
@@ -11,12 +11,11 @@ from wpimath.units import rotationsToRadians
 
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
-from subsystems.superstructure import Superstructure
-
 from subsystems.climber import ClimberSubsystem
-from subsystems.pivot import PivotSubsystem
-from subsystems.intake import IntakeSubsystem
 from subsystems.elevator import ElevatorSubsystem
+from subsystems.intake import IntakeSubsystem
+from subsystems.pivot import PivotSubsystem
+from subsystems.superstructure import Superstructure
 
 
 class RobotContainer:
@@ -42,7 +41,7 @@ class RobotContainer:
         self.elevator = ElevatorSubsystem()
 
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
-        self._robot_state = RobotState(self.drivetrain)
+        self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
 
         # These are the paths for pathfinding to look for
         self.preloaded_paths = {
@@ -136,7 +135,6 @@ class RobotContainer:
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-
         
         (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= .75) & self._driver_controller.y()).whileTrue(
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral A"], self.path_constraints)
@@ -183,9 +181,8 @@ class RobotContainer:
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 2"], self.path_constraints)
                 )
 
-        
-
         (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < .75) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < .75) & self._driver_controller.rightBumper()).whileTrue( #Only does this function if the triggers aren't pressed
+
             self.drivetrain.apply_request(
                 lambda: (
                     self._robot_centric.with_velocity_x(
@@ -200,17 +197,101 @@ class RobotContainer:
                 )
             )
         )
-        self._function_controller.y().whileTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)).onFalse(
+
+        self._function_controller.y().onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L4_SCORING)
+        )
+
+        self._function_controller.x().onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L3_SCORING)
+        )
+
+        self._function_controller.b().onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L2_SCORING)
+        )
+
+        self._function_controller.a().onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L1_SCORING)
+        )
+
+        (self._function_controller.y() & self._function_controller.start()).onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET)
+        )
+
+        (self._function_controller.x() & self._function_controller.start()).onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE)
+        )
+
+        (self._function_controller.b() & self._function_controller.start()).onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE)
+        )
+
+        (self._function_controller.a() & self._function_controller.start()).onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR)
+        )
+
+        self._function_controller.leftBumper().whileTrue(
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+            )
+        )
+
+        (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+            )
+        )
+
+        self._function_controller.rightBumper().whileTrue(
+            self.intake.set_desired_state_command(self.intake.SubsystemState.OUTPUTTING)
+        )
+
+        (self._function_controller.leftStick() & self._function_controller.rightStick()).whileTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT)
+        )
+
+        self._function_controller.povLeft().whileTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)
+        ).onFalse(
             self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
         )
-        
-        self._function_controller.x().whileTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)).onFalse(
+
+        self._function_controller.povRight().whileTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)
+        ).onFalse(
             self.climber.set_desired_state_command(self.climber.SubsystemState.STOP)
         )
+
+        (self._function_controller.povUp() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_dynamic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povUp() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_dynamic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povDown() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_quasistatic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povDown() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.elevator.sys_id_quasistatic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+
+        (self._function_controller.povLeft() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.pivot.sys_id_dynamic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povLeft() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.pivot.sys_id_dynamic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povRight() & self._function_controller.y()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.pivot.sys_id_quasistatic(SysIdRoutine.Direction.kForward).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+        (self._function_controller.povRight() & self._function_controller.a()).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(
+            self.pivot.sys_id_quasistatic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
+        )
+
         self.drivetrain.register_telemetry(
-            lambda state: self._robot_state.log_swerve_state(state)
+            lambda state: self.robot_state.log_swerve_state(state)
         )
 
     def get_autonomous_command(self) -> commands2.Command:
