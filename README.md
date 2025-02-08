@@ -36,6 +36,7 @@ Handles all robot position data and mechanism logging for dashboard use and anal
 ## Credits
 
 This robot could not have been programmed without the incredible talent, skills, and determination from the following:
+- Richard Amerman, Software Mentor
 - Christopher Snelson, Software Mentor
 - James Haddix, Software Director
 - Caden Dalley, Swerve Specialist
