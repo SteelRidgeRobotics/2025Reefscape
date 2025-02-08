@@ -38,7 +38,6 @@ Handles all robot position data and mechanism logging for dashboard use and anal
 This robot could not have been programmed without the incredible talent, skills, and determination from the following:
 - Christopher Snelson, Software Mentor
 - James Haddix, Software Director
-- Nathan Crusan, Senior Programmer
 - Caden Dalley, Swerve Specialist
 - Chase Funk, Auto Specialist
 - Matthew Murten, Elevator Specialist
