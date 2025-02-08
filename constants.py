@@ -1,17 +1,37 @@
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
+
 from enum import Enum, auto
+
+from phoenix6.configs.config_groups import Slot0Configs
+from wpimath import units
+
 
 apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
 class Constants:
 
-    class MotorIDs():
 
-        LEFT_LIFT_MOTOR = 0 # Placeholders
-        RIGHT_LIFT_MOTOR = 1
-        INTAKE_MOTOR= len("我有兩部手機")
-        PIVOT_MOTOR = 0
+    class MotorIDs:
+
+        LEFT_LIFT_MOTOR = 10
+        RIGHT_LIFT_MOTOR = 11
+        INTAKE_MOTOR = 12
+        LEFT_PIVOT_MOTOR = 13
+        RIGHT_PIVOT_MOTOR = 14
+        CLIMB_MOTOR = 15
+
+    class ClimberConstants:
+        GEAR_RATIO = 15376/135
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )
+
 
     class ElevatorConstants():
 
@@ -24,12 +44,27 @@ class Constants:
 
     class PivotConstants:
 
-        STOW_ANGLE = 12 if True == False else 12
-        GROUND_INTAKE_ANGLE = 22/7
-        FUNNEL_INTAKE_ANGLE = -2001
-        HIGH_SCORING_ANGLE = int("".join(["2", "4", "8", "9"]))
-        MID_SCORING_ANGLE = ((4*3)/6)%2
-        LOW_SCORING_ANGLE = 0.0
+        STOW_ANGLE = 0
+        GROUND_INTAKE_ANGLE = units.degreesToRotations(90)
+        FUNNEL_INTAKE_ANGLE = 0
+        ALGAE_INTAKE_ANGLE = units.degreesToRotations(90)
+        HIGH_SCORING_ANGLE = units.degreesToRotations(54)
+        MID_SCORING_ANGLE = units.degreesToRotations(90)
+        LOW_SCORING_ANGLE = units.degreesToRotations(90)
+        NET_SCORING_ANGLE = units.degreesToRotations(54)
+        PROCESSOR_SCORING_ANGLE = units.degreesToRotations(90)
+
+        GEAR_RATIO = 961/36
+        GAINS = (Slot0Configs()
+                 .with_k_g(0.03)
+                 .with_k_p(1.0)
+                 .with_k_i(0.0)
+                 .with_k_d(0.0)
+                 .with_k_s(0.0)
+                 .with_k_v(0.0)
+                 .with_k_a(0.0)
+                 .with_gravity_type(GravityTypeValue.ARM_COSINE)
+        )
 
     class IntakeConstants:
 
