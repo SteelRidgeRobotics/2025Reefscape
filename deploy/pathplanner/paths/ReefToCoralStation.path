@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.362,
-        "y": 3.863
+        "x": 3.731754195601851,
+        "y": 2.95294777199074
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7875711198819033,
-        "y": 3.907891639149951
+        "x": 3.0660812421818555,
+        "y": 2.133818277480581
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ReefEnd2"
     },
     {
       "anchor": {
-        "x": 3.091,
-        "y": 3.863
+        "x": 1.8425314670138877,
+        "y": 0.5610076678240727
       },
       "prevControl": {
-        "x": 2.471572324195934,
-        "y": 3.8458120320838263
+        "x": 2.8229480552420947,
+        "y": 1.7432003922638286
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "CoralStationEnd"
     }
   ],
   "rotationTargets": [],
@@ -38,17 +38,17 @@
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 450.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 55.0
   },
   "reversed": false,
-  "folder": "driving autos",
+  "folder": "MAXAUTO",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

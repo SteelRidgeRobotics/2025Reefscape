@@ -1,10 +1,3 @@
-"""
-File: swerve.py
-Description: The swerve subsystem, plus method to add MegaTag2 pose estimate.
-Main Author: Caden Dalley
-Co-Authors: James Haddix
-"""
-
 import math
 from importlib import metadata
 from typing import Callable, overload
@@ -25,7 +18,7 @@ from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import rotationsToRadians
 
 import robot
-from lib.limelight import LimelightHelpers
+from limelight import LimelightHelpers
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
@@ -168,14 +161,11 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             drivetrain_constants, arg0, arg1, arg2, arg3
         )
 
-        self.pigeon2.reset()
-
         self._sim_notifier: Notifier | None = None
         self._last_sim_time: units.second = 0.0
 
-        # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
-        
+        """Keep track if we've ever applied the operator perspective before or not"""
 
         # Swerve request to apply during path following
         self._apply_robot_speeds = ApplyRobotSpeeds()
@@ -261,14 +251,14 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         if utils.is_simulation():
             self._start_sim_thread()
-        self._configure_auto_builder()
-    
-    def _configure_auto_builder(self) -> None:
-        """
-        Method to configure the auto builder
-        """
 
-        #Create config from GUI settings
+        if robot.has_outdated_pathplanner():
+            DataLogManager.log(f"WARN: robotpy-pathplannerlib is version {metadata.version("robotpy-pathplannerlib")}. "
+                               "PathPlanner must be greater than 2025.2.1 in order to use SetpointGenerator, defaulting"
+                               " to standard control.")
+        self._configure_auto_builder()
+
+    def _configure_auto_builder(self) -> None:
         config = RobotConfig.fromGUISettings()
         AutoBuilder.configure(
             lambda: self.get_state().pose,  # Supplier of current robot pose
@@ -283,26 +273,30 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 PIDConstants(7.0, 0.0, 0.0)
             ),
             config,
-            lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise
+            lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed,
             self
         )
 
-        # create set point generator
         self._setpoint_generator = SwerveSetpointGenerator(config, self._MAX_STEERING_VELOCITY)
 
-        # set up the first setpoint using the robot's current state
         state = self.get_state()
         self._prev_setpoint = SwerveSetpoint(state.speeds, state.module_states, DriveFeedforwards.zeros(config.numModules))
 
     def _apply_robot_speeds_from_setpoint(self, speeds: ChassisSpeeds, feedforwards: DriveFeedforwards) -> ApplyRobotSpeeds:
-        # get new previous setpoint using the current setpoint and given speeds
+        if robot.has_outdated_pathplanner():
+            # https://github.com/mjansen4857/pathplanner/pull/999
+            return (self._apply_robot_speeds
+                .with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
+            )
+
         self._prev_setpoint = self._setpoint_generator.generateSetpoint(
             self._prev_setpoint,
             speeds,
             0.02
         )
 
-        # apply the speeds and feedforwards we get from this setpoint
         return (self._apply_robot_speeds
             .with_speeds(self._prev_setpoint.robot_relative_speeds)
             .with_wheel_force_feedforwards_x(self._prev_setpoint.feedforwards.robotRelativeForcesXNewtons)
@@ -328,10 +322,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         return self._sys_id_routine_to_apply.dynamic(direction)
 
     def periodic(self) -> None:
-        """
-        Method to run the swerve drive periodically
-        """
-        
         # Periodically try to apply the operator perspective.
         # If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
         # This allows us to correct the perspective in case the robot code restarts mid-match.
@@ -347,15 +337,10 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 )
                 self._has_applied_operator_perspective = True
 
-        # if we are not in simulation, add vision measurement
         if not utils.is_simulation():
             self._add_vision_measurements()
 
     def _add_vision_measurements(self) -> None:
-        """
-        Add vision measurement to MegaTag2
-        """
-
         LimelightHelpers.set_robot_orientation(
             "",
             self.pigeon2.get_yaw().value,
@@ -365,31 +350,20 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             self.pigeon2.get_roll().value,
             self.pigeon2.get_angular_velocity_x_world().value
         )
-
-        # get botpose estimate with origin on blue side of field
         mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2("")
-        
-        #if we are spinning slower than 720 deg/sec and we see tags
-        if abs(self.pigeon2.get_angular_velocity_z_world().value) <= 720 and mega_tag2.tag_count > 0:
-            
-            # set and add vision measurement
+        if not abs(self.pigeon2.get_angular_velocity_z_world().value) > 720 and not mega_tag2.tag_count == 0:
             self.set_vision_measurement_std_devs((0.7, 0.7, 9999999))
             self.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
-    
-    def _start_sim_thread(self) -> None:
-        """
-        Start the simulation thread
-        """
-        def _sim_periodic():
 
-            # the current timestamp, then find change from last time update.
+    def _start_sim_thread(self) -> None:
+        def _sim_periodic():
             current_time = utils.get_current_time_seconds()
             delta_time = current_time - self._last_sim_time
             self._last_sim_time = current_time
 
             # use the measured time delta, get battery voltage from WPILib
             self.update_sim_state(delta_time, RobotController.getBatteryVoltage())
-            
+
         self._last_sim_time = utils.get_current_time_seconds()
         self._sim_notifier = Notifier(_sim_periodic)
         self._sim_notifier.startPeriodic(self._SIM_LOOP_PERIOD)
