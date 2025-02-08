@@ -3,7 +3,7 @@ import commands2.button
 from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.path import PathConstraints
+from pathplannerlib.path import PathConstraints, PathPlannerPath
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
@@ -43,7 +43,7 @@ class RobotContainer:
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator)
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
 
-        # These are the paths for pathfinding to look for
+        # These are the paths that the robot can follow, which are preloaded so we reference them later and reduce lag.
         self.preloaded_paths = {
             "Coral A" : PathPlannerPath.fromPathFile("Coral A"),
             "Coral B" : PathPlannerPath.fromPathFile("Coral B"),
@@ -135,7 +135,7 @@ class RobotContainer:
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-        
+        #Left reef sides
         (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= .75) & self._driver_controller.y()).whileTrue(
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral A"], self.path_constraints)
                 )
@@ -155,6 +155,7 @@ class RobotContainer:
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral K"], self.path_constraints)
                 )  
 
+        #right reef sides
         (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= .75) & self._driver_controller.y()).whileTrue(
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral B"], self.path_constraints)
                 )
@@ -174,6 +175,7 @@ class RobotContainer:
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral L"], self.path_constraints)
                 )
         
+        #coral stations
         (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= .75) & commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= .75) & self._driver_controller.leftBumper()).whileTrue(
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 1"], self.path_constraints)
                 )
