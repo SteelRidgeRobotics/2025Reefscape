@@ -17,8 +17,8 @@ class StateSubsystemMeta(ABCMeta, type(Subsystem)):
 
 
 class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
-    """A helper class designed to help make logging easier, as well as
-    make simulation easier.
+    """
+    Subsystem class for handling subsystem state transitions and motor sim models.
     """
 
     class SubsystemState(Enum):
