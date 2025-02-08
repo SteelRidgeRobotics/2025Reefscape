@@ -11,15 +11,15 @@
             "title": "Field",
             "x": 0.0,
             "y": 0.0,
-            "width": 896.0,
-            "height": 384.0,
+            "width": 1152.0,
+            "height": 512.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
               "period": 0.03,
               "field_game": "Reefscape",
-              "robot_width": 0.91,
-              "robot_length": 0.91,
+              "robot_width": 0.8636,
+              "robot_length": 0.8636,
               "show_other_objects": true,
               "show_trajectories": true,
               "field_rotation": 0.0,
@@ -28,14 +28,28 @@
             }
           },
           {
-            "title": "Odometry Frequency",
-            "x": 896.0,
+            "title": "Swerve Drive",
+            "x": 1152.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
+            "width": 512.0,
+            "height": 512.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Radians"
+            }
+          },
+          {
+            "title": "Odometry Frequency",
+            "x": 1408.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "Radial Gauge",
             "properties": {
-              "topic": "/Telemetry/odometry_frequency",
+              "topic": "/Telemetry/Odometry Frequency",
               "period": 0.06,
               "data_type": "double",
               "start_angle": -140.0,
@@ -50,9 +64,9 @@
           },
           {
             "title": "Auto Mode",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 256.0,
+            "x": 0.0,
+            "y": 512.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -63,9 +77,9 @@
           },
           {
             "title": "Match Time",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 384.0,
+            "x": 0.0,
+            "y": 640.0,
+            "width": 256.0,
             "height": 256.0,
             "type": "Match Time",
             "properties": {
@@ -78,56 +92,9 @@
             }
           },
           {
-            "title": "FMSInfo",
-            "x": 896.0,
-            "y": 384.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "FMSInfo",
-            "properties": {
-              "topic": "/FMSInfo",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "Current Speed",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/Telemetry/current_speed",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -90.0,
-              "end_angle": 140.0,
-              "min_value": 0.0,
-              "max_value": 4.73,
-              "number_of_labels": 2,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Swerve Data",
-            "x": 1280.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/Telemetry/Swerve Data",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
             "title": "Battery Voltage",
-            "x": 1280.0,
-            "y": 384.0,
+            "x": 1024.0,
+            "y": 512.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Voltage View",
@@ -141,6 +108,39 @@
               "inverted": false,
               "orientation": "horizontal"
             }
+          },
+          {
+            "title": "FMSInfo",
+            "x": 640.0,
+            "y": 512.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Current Speed",
+            "x": 256.0,
+            "y": 640.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/Telemetry/Current Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -90.0,
+              "end_angle": 140.0,
+              "min_value": 0.0,
+              "max_value": 4.73,
+              "number_of_labels": 2,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
           }
         ]
       }
@@ -152,10 +152,10 @@
         "containers": [
           {
             "title": "Match Time",
-            "x": 256.0,
+            "x": 384.0,
             "y": 0.0,
             "width": 896.0,
-            "height": 512.0,
+            "height": 640.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Match Time",
@@ -168,13 +168,13 @@
           },
           {
             "title": "Odometry Frequency",
-            "x": 1408.0,
+            "x": 1280.0,
             "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
+            "width": 384.0,
+            "height": 384.0,
             "type": "Radial Gauge",
             "properties": {
-              "topic": "/Telemetry/odometry_frequency",
+              "topic": "/Telemetry/Odometry Frequency",
               "period": 0.06,
               "data_type": "double",
               "start_angle": -135.0,
@@ -189,8 +189,8 @@
           },
           {
             "title": "FMSInfo",
-            "x": 256.0,
-            "y": 512.0,
+            "x": 1280.0,
+            "y": 384.0,
             "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
@@ -201,9 +201,9 @@
           },
           {
             "title": "Battery Voltage",
-            "x": 640.0,
+            "x": 1280.0,
             "y": 512.0,
-            "width": 512.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
@@ -221,8 +221,8 @@
             "title": "Field",
             "x": 0.0,
             "y": 0.0,
-            "width": 256.0,
-            "height": 640.0,
+            "width": 384.0,
+            "height": 896.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -232,20 +232,20 @@
               "robot_length": 0.85,
               "show_other_objects": true,
               "show_trajectories": true,
-              "field_rotation": 90.0,
+              "field_rotation": -90.0,
               "robot_color": 4294198070,
               "trajectory_color": 4294967295
             }
           },
           {
             "title": "Current Speed",
-            "x": 1152.0,
-            "y": 0.0,
+            "x": 384.0,
+            "y": 640.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Radial Gauge",
             "properties": {
-              "topic": "/Telemetry/current_speed",
+              "topic": "/Telemetry/Current Speed",
               "period": 0.06,
               "data_type": "double",
               "start_angle": -90.0,
@@ -256,20 +256,6 @@
               "wrap_value": false,
               "show_pointer": true,
               "show_ticks": true
-            }
-          },
-          {
-            "title": "Swerve Drive",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/SmartDashboard/Swerve Drive",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
             }
           }
         ]

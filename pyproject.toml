@@ -1,6 +1,6 @@
 [tool.robotpy]
 
-robotpy_version = "2025.2.1.3"
+robotpy_version = "2025.2.1.0"
 
 robotpy_extras = [
     "apriltag",
@@ -10,5 +10,6 @@ robotpy_extras = [
 
 # Other pip packages to install
 requires = [
-    "robotpy-pathplannerlib==2025.2.2"
+    "robotpy-pathplannerlib==2025.2.1",
+    "packaging"
 ]
