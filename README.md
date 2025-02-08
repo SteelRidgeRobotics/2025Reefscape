@@ -42,5 +42,5 @@ This robot could not have been programmed without the incredible talent, skills,
 - Chase Funk, Auto Specialist
 - Matthew Murten, Elevator Specialist
 - Micah Nguyen, End Effector Specialist
-- Chimaraoke Okafor, Auto Specialist
+- Chimaraoke Okafor, Auto and Climber Specialist
 - Raiden Snelson, Vision Specialist
