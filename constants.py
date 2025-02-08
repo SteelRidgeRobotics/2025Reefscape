@@ -61,7 +61,7 @@ class Constants:
         NET_SCORING_ANGLE = 0.15
         PROCESSOR_SCORING_ANGLE = 0.25
 
-        GEAR_RATIO = 50 # Placeholder
+        GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(0.03)
                  .with_k_p(1.0)

@@ -31,7 +31,7 @@ class PivotSubsystem(StateSubsystem):
         PROCESSOR_SCORING = auto()
 
     _master_config = TalonFXConfiguration()
-    _master_config.feedback.with_sensor_to_mechanism_ratio(Constants.PivotConstants.GEAR_RATIO)
+    _master_config.feedback.with_rotor_to_sensor_ratio(Constants.PivotConstants.GEAR_RATIO)
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
 
     def __init__(self) -> None:
