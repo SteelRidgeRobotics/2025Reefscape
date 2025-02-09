@@ -17,7 +17,7 @@ class Constants:
         CLIMB_MOTOR = 15
 
     class ClimberConstants:
-        GEAR_RATIO = 15376/135
+        GEAR_RATIO = (15376/135) * 3
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
