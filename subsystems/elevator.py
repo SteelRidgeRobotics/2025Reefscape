@@ -52,7 +52,7 @@ class ElevatorSubsystem(StateSubsystem):
         self._follower_motor.configurator.apply(self._motor_config)
 
         self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
-        self._candi.configurator.apply(self._candi)
+        self._candi.configurator.apply(self._candi_config)
 
         self._position_request = PositionDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
