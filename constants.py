@@ -7,17 +7,20 @@ apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
 class Constants:
 
-    class MotorIDs:
+    class CanIDs:
+        LEFT_ELEVATOR_TALON = 10
+        RIGHT_ELEVATOR_TALON = 11
+        INTAKE_TALON = 12
+        LEFT_PIVOT_TALON = 13
+        RIGHT_PIVOT_TALON = 14
+        CLIMB_TALON = 15
 
-        LEFT_LIFT_MOTOR = 10
-        RIGHT_LIFT_MOTOR = 11
-        INTAKE_MOTOR = 12
-        LEFT_PIVOT_MOTOR = 13
-        RIGHT_PIVOT_MOTOR = 14
-        CLIMB_MOTOR = 15
+        ELEVATOR_CANDI = 20
+        PIVOT_CANCODER = 21
+
 
     class ClimberConstants:
-        GEAR_RATIO = 15376/135
+        GEAR_RATIO = 15376/45
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
@@ -28,7 +31,6 @@ class Constants:
         )
 
     class ElevatorConstants:
-
         L1_SCORE_POSITION = 1 # Placeholders
         L2_SCORE_POSITION = 2
         L3_SCORE_POSITION = 3
@@ -52,7 +54,6 @@ class Constants:
         )
 
     class PivotConstants:
-
         STOW_ANGLE = 0
         GROUND_INTAKE_ANGLE = units.degreesToRotations(90)
         FUNNEL_INTAKE_ANGLE = 0
@@ -74,6 +75,7 @@ class Constants:
                  .with_k_a(0.0)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
+        CANCODER_OFFSET = 0.0069
 
     class IntakeConstants:
 

@@ -31,7 +31,7 @@ class IntakeSubsystem(StateSubsystem):
     def __init__(self) -> None:
         super().__init__("Intake")
 
-        self._intake_motor = TalonFX(Constants.MotorIDs.INTAKE_MOTOR)
+        self._intake_motor = TalonFX(Constants.CanIDs.INTAKE_TALON)
         self._intake_motor.configurator.apply(self._motor_config)
 
         self._velocity_request = VelocityDutyCycle(0)

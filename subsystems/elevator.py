@@ -4,11 +4,12 @@ from enum import Enum, auto
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger
-from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
+from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, QuadratureConfigs, DigitalInputsConfigs
 from phoenix6.configs.config_groups import NeutralModeValue
 from phoenix6.controls import Follower, VoltageOut
 from phoenix6.controls import PositionDutyCycle, DutyCycleOut
-from phoenix6.hardware import TalonFX
+from phoenix6.hardware import CANdi, TalonFX
+from phoenix6.signals import S1CloseStateValue
 from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.system.plant import DCMotor
@@ -33,6 +34,8 @@ class ElevatorSubsystem(StateSubsystem):
         L3_ALGAE = auto()
         NET = auto()
 
+    _candi_config = CANdiConfiguration()
+
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ElevatorConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
@@ -42,11 +45,14 @@ class ElevatorSubsystem(StateSubsystem):
     def __init__(self) -> None:
         super().__init__("Elevator")
 
-        self._master_motor = TalonFX(Constants.MotorIDs.LEFT_LIFT_MOTOR)
+        self._master_motor = TalonFX(Constants.CanIDs.LEFT_ELEVATOR_TALON)
         self._master_motor.configurator.apply(self._motor_config)
 
-        self._follower_motor = TalonFX(Constants.MotorIDs.RIGHT_LIFT_MOTOR)
+        self._follower_motor = TalonFX(Constants.CanIDs.RIGHT_ELEVATOR_TALON)
         self._follower_motor.configurator.apply(self._motor_config)
+
+        self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
+        self._candi.configurator.apply(self._candi)
 
         self._position_request = PositionDutyCycle(0)
         self._brake_request = DutyCycleOut(0)

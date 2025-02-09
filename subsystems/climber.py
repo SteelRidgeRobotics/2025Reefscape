@@ -28,7 +28,7 @@ class ClimberSubsystem(StateSubsystem):
     def __init__(self) -> None:
         super().__init__("Climber")
 
-        self._climb_motor = TalonFX(Constants.MotorIDs.CLIMB_MOTOR)
+        self._climb_motor = TalonFX(Constants.CanIDs.CLIMB_TALON)
         self._climb_motor.configurator.apply(self._motor_config)
 
         self._climb_request = DutyCycleOut(0)
