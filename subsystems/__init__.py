@@ -29,11 +29,13 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self.setName(name.title())
 
         self._subsystem_state = current_state
+        self._freeze = False
 
         # Create NT folder for organization
         self._network_table = NetworkTableInstance.getDefault().getTable(name.title())
         self._nt_publishers = []
         self._current_state_pub = self._network_table.getStringTopic("Current State").publish()
+        self._frozen_pub = self._network_table.getBooleanTopic("Frozen").publish()
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
@@ -47,6 +49,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
     def periodic(self):
         self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
+        self._frozen_pub.set(self.is_frozen())
 
         # Update sim models
         if not utils.is_simulation():
@@ -63,6 +66,17 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
                                        * model[0].getGearing())
             sim.set_rotor_acceleration(units.radiansToRotations(model[0].getAngularAcceleration())
                                        * model[0].getGearing())
+
+    def freeze(self) -> None:
+        """Prevents new state changes."""
+        self._freeze = True
+
+    def unfreeze(self) -> None:
+        """Allows state changes."""
+        self._freeze = False
+
+    def is_frozen(self) -> bool:
+        return self._freeze
             
     def get_current_state(self) -> SubsystemState:
         return self._subsystem_state

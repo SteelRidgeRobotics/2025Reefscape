@@ -83,6 +83,16 @@ class ElevatorSubsystem(StateSubsystem):
     def periodic(self) -> None:
         super().periodic()
 
+        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
+            self._master_motor.get_position(), self._master_motor.get_velocity()
+        )
+        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE)
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+
+    def set_desired_state(self, desired_state: SubsystemState) -> None:
+        if DriverStation.isTest() or self.is_frozen():
+            return
+
         match self._subsystem_state:
             case self.SubsystemState.IDLE:
                 pass
@@ -103,19 +113,12 @@ class ElevatorSubsystem(StateSubsystem):
             case self.SubsystemState.NET:
                 self._position_request.position = Constants.ElevatorConstants.NET_SCORE_POSITION
 
-        if DriverStation.isTest():
-            return
+        self._subsystem_state = desired_state
 
-        if self.get_current_state() is not self.SubsystemState.IDLE:
+        if desired_state is not self.SubsystemState.IDLE:
             self._master_motor.set_control(self._position_request)
         else:
             self._master_motor.set_control(self._brake_request)
-
-        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
-            self._master_motor.get_position(), self._master_motor.get_velocity()
-        )
-        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE)
-        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
 
     def is_at_setpoint(self) -> bool:
         return self._at_setpoint

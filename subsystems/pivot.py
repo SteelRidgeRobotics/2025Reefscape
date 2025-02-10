@@ -24,7 +24,7 @@ class PivotSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        ELEVATOR_PRIORITY = auto()
+        AVOID_ELEVATOR = auto()
         STOW = auto()
         GROUND_INTAKE = auto()
         FUNNEL_INTAKE = auto()
@@ -94,6 +94,7 @@ class PivotSubsystem(StateSubsystem):
         )
         self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.PivotConstants.SETPOINT_TOLERANCE)
         self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+        self.get_network_table().getEntry("In Elevator").setBoolean(self.is_in_elevator())
 
         # Update CANcoder sim state
         if utils.is_simulation():
@@ -104,16 +105,12 @@ class PivotSubsystem(StateSubsystem):
             cancoder_sim.set_raw_position(talon_sim.getAngularPosition() / Constants.PivotConstants.GEAR_RATIO)
             cancoder_sim.set_velocity(talon_sim.getAngularVelocity() / Constants.PivotConstants.GEAR_RATIO)
 
-    def is_at_setpoint(self) -> bool:
-        return self._at_setpoint
-
     def set_desired_state(self, desired_state: SubsystemState) -> None:
-
-        if DriverStation.isTest():
+        if DriverStation.isTest() or self.is_frozen():
             return
 
         match desired_state:
-            case self.SubsystemState.ELEVATOR_PRIORITY:
+            case self.SubsystemState.AVOID_ELEVATOR:
                 self._position_request.position = Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE
             case self.SubsystemState.STOW:
                 self._position_request.position = Constants.PivotConstants.STOW_ANGLE
@@ -136,10 +133,13 @@ class PivotSubsystem(StateSubsystem):
 
         self._subsystem_state = desired_state
 
-        if self.get_current_state() is not self.SubsystemState.ELEVATOR_PRIORITY:
-            self._master_motor.set_control(self._position_request)
-        else:
-            self._master_motor.set_control(self._brake_request)
+        self._master_motor.set_control(self._position_request)
+
+    def is_at_setpoint(self) -> bool:
+        return self._at_setpoint
+
+    def is_in_elevator(self) -> bool:
+        return self.get_angle() <= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._sys_id_request.with_output(0)))
