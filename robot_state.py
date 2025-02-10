@@ -90,6 +90,9 @@ class RobotState:
         """Returns the current pose of the robot on the field (blue-side origin)."""
         return self._swerve.get_state().pose
 
+    def should_pivot_move(self) -> bool:
+        return self._elevator.is_at_setpoint()
+
     def get_latency_compensated_pose(self, dt: float) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin),
         compensated for latency.

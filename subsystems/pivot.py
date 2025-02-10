@@ -2,17 +2,19 @@ from enum import auto, Enum
 
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
-from phoenix6 import SignalLogger, utils
+from phoenix6 import SignalLogger, utils, BaseStatusSignal
+from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration
+from phoenix6.controls import PositionDutyCycle, VoltageOut, Follower, DutyCycleOut
 from phoenix6.hardware import CANcoder, TalonFX
-from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration, MagnetSensorConfigs
-from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, SensorDirectionValue
-from phoenix6.controls import PositionDutyCycle, VoltageOut, Follower
-from wpilib import SmartDashboard, DriverStation, RobotController
+from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue
+from wpilib import DriverStation, RobotController
 from wpilib.sysid import SysIdRoutineLog
+from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
 
 from constants import Constants
 from subsystems import StateSubsystem
+
 
 class PivotSubsystem(StateSubsystem):
     """
@@ -22,6 +24,7 @@ class PivotSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
+        ELEVATOR_PRIORITY = auto()
         STOW = auto()
         GROUND_INTAKE = auto()
         FUNNEL_INTAKE = auto()
@@ -61,7 +64,11 @@ class PivotSubsystem(StateSubsystem):
 
         self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO)
 
+        self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
+        self._at_setpoint = True
+
         self._position_request = PositionDutyCycle(0)
+        self._brake_request = DutyCycleOut(0)
         self._sys_id_request = VoltageOut(0)
 
         self._follower_motor.set_control(Follower(self._master_motor.device_id, False))
@@ -82,6 +89,12 @@ class PivotSubsystem(StateSubsystem):
     def periodic(self):
         super().periodic()
 
+        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
+            self._master_motor.get_position(), self._master_motor.get_velocity()
+        )
+        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.PivotConstants.SETPOINT_TOLERANCE)
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+
         # Update CANcoder sim state
         if utils.is_simulation():
             talon_sim = self._sim_models[0][0]
@@ -91,12 +104,17 @@ class PivotSubsystem(StateSubsystem):
             cancoder_sim.set_raw_position(talon_sim.getAngularPosition() / Constants.PivotConstants.GEAR_RATIO)
             cancoder_sim.set_velocity(talon_sim.getAngularVelocity() / Constants.PivotConstants.GEAR_RATIO)
 
+    def is_at_setpoint(self) -> bool:
+        return self._at_setpoint
+
     def set_desired_state(self, desired_state: SubsystemState) -> None:
 
         if DriverStation.isTest():
             return
 
         match desired_state:
+            case self.SubsystemState.ELEVATOR_PRIORITY:
+                self._position_request.position = Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE
             case self.SubsystemState.STOW:
                 self._position_request.position = Constants.PivotConstants.STOW_ANGLE
             case self.SubsystemState.GROUND_INTAKE:
@@ -117,7 +135,11 @@ class PivotSubsystem(StateSubsystem):
                 self._position_request.position = Constants.PivotConstants.ALGAE_INTAKE_ANGLE
 
         self._subsystem_state = desired_state
-        self._master_motor.set_control(self._position_request)
+
+        if self.get_current_state() is not self.SubsystemState.ELEVATOR_PRIORITY:
+            self._master_motor.set_control(self._position_request)
+        else:
+            self._master_motor.set_control(self._brake_request)
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._sys_id_request.with_output(0)))

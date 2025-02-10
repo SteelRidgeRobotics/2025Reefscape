@@ -44,7 +44,7 @@ class Constants:
         GEAR_RATIO = 31/4 # Placeholder
         GAINS = (Slot0Configs()
             .with_k_g(0.03)
-            .with_k_p(1.0)
+            .with_k_p(2.5)
             .with_k_i(0.0)
             .with_k_d(0.0)
             .with_k_s(0.0)
@@ -53,10 +53,14 @@ class Constants:
             .with_gravity_type(GravityTypeValue.ELEVATOR_STATIC)
         )
 
+        SETPOINT_TOLERANCE = 0.1
+
     class PivotConstants:
+        INSIDE_ELEVATOR_ANGLE = units.degreesToRotations(-20) # Used for subsystem collision checking
+        ELEVATOR_PRIORITY_ANGLE = units.degreesToRotations(20) # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0
         GROUND_INTAKE_ANGLE = units.degreesToRotations(90)
-        FUNNEL_INTAKE_ANGLE = 0
+        FUNNEL_INTAKE_ANGLE = units.degreesToRotations(-20)
         ALGAE_INTAKE_ANGLE = units.degreesToRotations(90)
         HIGH_SCORING_ANGLE = units.degreesToRotations(54)
         MID_SCORING_ANGLE = units.degreesToRotations(90)
@@ -67,7 +71,7 @@ class Constants:
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(0.03)
-                 .with_k_p(1.0)
+                 .with_k_p(5.0)
                  .with_k_i(0.0)
                  .with_k_d(0.0)
                  .with_k_s(0.0)
@@ -76,6 +80,8 @@ class Constants:
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
         CANCODER_OFFSET = 0.0069
+
+        SETPOINT_TOLERANCE = 0.03125
 
     class IntakeConstants:
 

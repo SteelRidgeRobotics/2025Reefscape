@@ -3,15 +3,15 @@ from enum import Enum, auto
 
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
-from phoenix6 import SignalLogger
-from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, QuadratureConfigs, DigitalInputsConfigs
+from ntcore import NetworkTableInstance
+from phoenix6 import SignalLogger, BaseStatusSignal
+from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue
-from phoenix6.controls import Follower, VoltageOut
-from phoenix6.controls import PositionDutyCycle, DutyCycleOut
+from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut
 from phoenix6.hardware import CANdi, TalonFX
-from phoenix6.signals import S1CloseStateValue
 from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
+from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
 
 from constants import Constants
@@ -25,6 +25,7 @@ class ElevatorSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
+        IDLE = auto()
         DEFAULT = auto()
         L1 = auto()
         L2 = auto()
@@ -63,6 +64,9 @@ class ElevatorSubsystem(StateSubsystem):
 
         self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.ElevatorConstants.GEAR_RATIO)
 
+        self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
+        self._at_setpoint = True
+
         self._sys_id_routine = SysIdRoutine(
             SysIdRoutine.Config(
                 recordState=lambda state: SignalLogger.write_string(
@@ -80,6 +84,8 @@ class ElevatorSubsystem(StateSubsystem):
         super().periodic()
 
         match self._subsystem_state:
+            case self.SubsystemState.IDLE:
+                pass
             case self.SubsystemState.DEFAULT:
                 self._position_request.position = Constants.ElevatorConstants.DEFAULT_POSITION
             case self.SubsystemState.L1:
@@ -97,8 +103,22 @@ class ElevatorSubsystem(StateSubsystem):
             case self.SubsystemState.NET:
                 self._position_request.position = Constants.ElevatorConstants.NET_SCORE_POSITION
 
-        if not DriverStation.isTest():
+        if DriverStation.isTest():
+            return
+
+        if self.get_current_state() is not self.SubsystemState.IDLE:
             self._master_motor.set_control(self._position_request)
+        else:
+            self._master_motor.set_control(self._brake_request)
+
+        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
+            self._master_motor.get_position(), self._master_motor.get_velocity()
+        )
+        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE)
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+
+    def is_at_setpoint(self) -> bool:
+        return self._at_setpoint
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._brake_request))

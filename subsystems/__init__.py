@@ -67,6 +67,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     def get_current_state(self) -> SubsystemState:
         return self._subsystem_state
 
+    def get_network_table(self) -> NetworkTable:
+        return self._network_table
+
     def _add_talon_sim_model(self, talon: TalonFX, motor: DCMotor, gearing: float, 
                              moi: float=0.001) -> None:
         """Creates a DCMotorSim that updates periodically during 
