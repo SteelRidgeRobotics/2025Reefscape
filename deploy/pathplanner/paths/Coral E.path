@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.33452868852459,
-        "y": 2.208862704918032
+        "x": 5.802049180327868,
+        "y": 1.2618340163934432
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.1471731299209305,
-        "y": 2.5685281127389277
+        "x": 5.647399773072052,
+        "y": 1.567643000341206
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 2.7722848360655736
       },
       "prevControl": {
-        "x": 5.230330985204511,
-        "y": 2.4554159447876485
+        "x": 5.212710853201184,
+        "y": 2.4036594165034657
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "Auto Align Oil Spill",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 119.99999999999999
