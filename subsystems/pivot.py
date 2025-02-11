@@ -53,7 +53,6 @@ class PivotSubsystem(StateSubsystem):
 
     def __init__(self) -> None:
         super().__init__("Pivot")
-
         self._encoder = CANcoder(Constants.CanIDs.PIVOT_CANCODER)
         self._master_motor = TalonFX(Constants.CanIDs.LEFT_PIVOT_TALON)
         self._follower_motor = TalonFX(Constants.CanIDs.RIGHT_PIVOT_TALON)
@@ -104,7 +103,7 @@ class PivotSubsystem(StateSubsystem):
             cancoder_sim.set_supply_voltage(RobotController.getBatteryVoltage())
             cancoder_sim.set_raw_position(talon_sim.getAngularPosition() / Constants.PivotConstants.GEAR_RATIO)
             cancoder_sim.set_velocity(talon_sim.getAngularVelocity() / Constants.PivotConstants.GEAR_RATIO)
-
+            
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if DriverStation.isTest() or self.is_frozen():
             return
@@ -112,22 +111,31 @@ class PivotSubsystem(StateSubsystem):
         match desired_state:
             case self.SubsystemState.AVOID_ELEVATOR:
                 self._position_request.position = Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE
+
             case self.SubsystemState.STOW:
                 self._position_request.position = Constants.PivotConstants.STOW_ANGLE
+            
             case self.SubsystemState.GROUND_INTAKE:
                 self._position_request.position = Constants.PivotConstants.GROUND_INTAKE_ANGLE
+            
             case self.SubsystemState.FUNNEL_INTAKE:
                 self._position_request.position = Constants.PivotConstants.FUNNEL_INTAKE_ANGLE
+            
             case self.SubsystemState.HIGH_SCORING:
                 self._position_request.position = Constants.PivotConstants.HIGH_SCORING_ANGLE
+            
             case self.SubsystemState.MID_SCORING:
                 self._position_request.position = Constants.PivotConstants.MID_SCORING_ANGLE
+            
             case self.SubsystemState.LOW_SCORING:
                 self._position_request.position = Constants.PivotConstants.LOW_SCORING_ANGLE
+            
             case self.SubsystemState.NET_SCORING:
                 self._position_request.position = Constants.PivotConstants.NET_SCORING_ANGLE
+            
             case self.SubsystemState.PROCESSOR_SCORING:
                 self._position_request.position = Constants.PivotConstants.PROCESSOR_SCORING_ANGLE
+            
             case self.SubsystemState.ALGAE_INTAKE:
                 self._position_request.position = Constants.PivotConstants.ALGAE_INTAKE_ANGLE
 
