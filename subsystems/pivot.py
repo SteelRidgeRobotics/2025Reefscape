@@ -24,6 +24,7 @@ class PivotSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
+        IDLE = auto()
         AVOID_ELEVATOR = auto()
         STOW = auto()
         GROUND_INTAKE = auto()
@@ -36,7 +37,11 @@ class PivotSubsystem(StateSubsystem):
         PROCESSOR_SCORING = auto()
 
     _encoder_config = CANcoderConfiguration()
-    _encoder_config.magnet_sensor.with_magnet_offset(Constants.PivotConstants.CANCODER_OFFSET)
+    (
+        _encoder_config.magnet_sensor
+        .with_magnet_offset(Constants.PivotConstants.CANCODER_OFFSET)
+        .with_absolute_sensor_discontinuity_point(Constants.PivotConstants.CANCODER_DISCONTINUITY)
+    )
 
     _master_config = TalonFXConfiguration()
     (_master_config.feedback
@@ -44,6 +49,7 @@ class PivotSubsystem(StateSubsystem):
      .with_feedback_sensor_source(FeedbackSensorSourceValue.FUSED_CANCODER)
      .with_feedback_remote_sensor_id(Constants.CanIDs.PIVOT_CANCODER)
     )
+    _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
 
     _follower_config = TalonFXConfiguration()
@@ -70,10 +76,13 @@ class PivotSubsystem(StateSubsystem):
         self._brake_request = DutyCycleOut(0)
         self._sys_id_request = VoltageOut(0)
 
-        self._follower_motor.set_control(Follower(self._master_motor.device_id, False))
+        self._follower_motor.set_control(Follower(self._master_motor.device_id, True))
 
         self._sys_id_routine = SysIdRoutine(
             SysIdRoutine.Config(
+                rampRate=0.15,
+                stepVoltage=0.75,
+                timeout=7.5,
                 recordState=lambda state: SignalLogger.write_string(
                     "SysIdPivot_State", SysIdRoutineLog.stateEnumToString(state)
                 )  # Log to .hoot for ease of access
@@ -84,6 +93,9 @@ class PivotSubsystem(StateSubsystem):
                 self,
             )
         )
+
+        self._master_motor.set_position(self._encoder.get_position().value)
+        self._follower_motor.set_position(self._encoder.get_position().value)
 
     def periodic(self):
         super().periodic()
@@ -141,7 +153,10 @@ class PivotSubsystem(StateSubsystem):
 
         self._subsystem_state = desired_state
 
-        self._master_motor.set_control(self._position_request)
+        if self.get_current_state() is self.SubsystemState.IDLE:
+            self._master_motor.set_control(self._brake_request)
+        else:
+            self._master_motor.set_control(self._position_request)
 
     def is_at_setpoint(self) -> bool:
         return self._at_setpoint
