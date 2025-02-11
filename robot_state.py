@@ -11,6 +11,7 @@ from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 
+from lib.limelight import LimelightHelpers
 
 class RobotState:
 
@@ -89,6 +90,27 @@ class RobotState:
     def get_current_pose(self) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin)."""
         return self._swerve.get_state().pose
+    
+    def _add_vision_measurements(self, limelight_name, standard_deviation = (0.7, 0.7, 9999999)) -> None:
+
+        LimelightHelpers.set_robot_orientation(
+            limelight_name,
+            self._swerve.pigeon2.get_yaw().value,
+            self._swerve.pigeon2.get_angular_velocity_z_world().value,
+            self._swerve.pigeon2.get_pitch().value,
+            self._swerve.pigeon2.get_angular_velocity_y_world().value,
+            self._swerve.pigeon2.get_roll().value,
+            self._swerve.pigeon2.get_angular_velocity_x_world().value
+        )
+        # get botpose estimate with origin on blue side of field
+        mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(limelight_name)
+
+        #if we are spinning slower than 720 deg/sec and we see tags
+        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720 and mega_tag2.tag_count > 0:
+            
+            # set and add vision measurement
+            self._swerve.set_vision_measurement_std_devs(standard_deviation)
+            self._swerve.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
 
     def get_latency_compensated_pose(self, dt: float) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin),

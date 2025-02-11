@@ -349,33 +349,11 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         # if we are not in simulation, add vision measurement
         if not utils.is_simulation():
-            self._add_vision_measurements()
+            self._add_vision_measurements("front_left")
+            self._add_vision_measurements("front_right")
+            self._add_vision_measurements("back_left")
+            self._add_vision_measurements("back_right")      
 
-    def _add_vision_measurements(self) -> None:
-        """
-        Add vision measurement to MegaTag2
-        """
-
-        LimelightHelpers.set_robot_orientation(
-            "",
-            self.pigeon2.get_yaw().value,
-            self.pigeon2.get_angular_velocity_z_world().value,
-            self.pigeon2.get_pitch().value,
-            self.pigeon2.get_angular_velocity_y_world().value,
-            self.pigeon2.get_roll().value,
-            self.pigeon2.get_angular_velocity_x_world().value
-        )
-
-        # get botpose estimate with origin on blue side of field
-        mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2("")
-        
-        #if we are spinning slower than 720 deg/sec and we see tags
-        if abs(self.pigeon2.get_angular_velocity_z_world().value) <= 720 and mega_tag2.tag_count > 0:
-            
-            # set and add vision measurement
-            self.set_vision_measurement_std_devs((0.7, 0.7, 9999999))
-            self.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
-    
     def _start_sim_thread(self) -> None:
         """
         Start the simulation thread

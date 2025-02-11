@@ -24,6 +24,11 @@ class OilSpill(TimedCommandRobot):
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
 
+        self.addPeriodic(self.container.robot_state._add_vision_measurements("front_left"))
+        self.addPeriodic(self.container.robot_state._add_vision_measurements("front_right"))
+        self.addPeriodic(self.container.robot_state._add_vision_measurements("back_left"))
+        self.addPeriodic(self.container.robot_state._add_vision_measurements("back_right"))
+
         DataLogManager.log("Robot initialized")
 
     @staticmethod
