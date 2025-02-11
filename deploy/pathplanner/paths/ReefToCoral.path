@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2177254098360653,
-        "y": 2.4606045081967203
+        "x": 3.6846692101430083,
+        "y": 5.110739704713983
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0232903290538644,
-        "y": 2.189978702275432
+        "x": 2.839482221352729,
+        "y": 4.856210163476682
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2CoralAutoEnd"
     },
     {
       "anchor": {
-        "x": 1.2285000000000001,
-        "y": 1.060999999999999
+        "x": 1.648072116657839,
+        "y": 4.025532557600636
       },
       "prevControl": {
-        "x": 1.4158281718190766,
-        "y": 1.3248016593297731
+        "x": 2.6454318765758167,
+        "y": 4.119461566490654
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "GroundCoral2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.19853329809725154,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -38,19 +43,17 @@
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 450.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 180.0
   },
   "reversed": false,
-
-  "folder": null,
-
+  "folder": "(GC) Level 3 Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

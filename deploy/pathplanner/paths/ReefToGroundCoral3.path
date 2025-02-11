@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2177254098360653,
-        "y": 2.4606045081967203
+        "x": 3.1899231991525427,
+        "y": 4.184186308262712
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0232903290538644,
-        "y": 2.189978702275432
+        "x": 2.9059532744717416,
+        "y": 2.740387893867392
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3CoralAutoEnd"
     },
     {
       "anchor": {
-        "x": 1.2285000000000001,
-        "y": 1.060999999999999
+        "x": 1.529708839699073,
+        "y": 2.501998697916666
       },
       "prevControl": {
-        "x": 1.4158281718190766,
-        "y": 1.3248016593297731
+        "x": 2.4310185486467457,
+        "y": 3.1457103873768917
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "GroundCoral3"
     }
   ],
   "rotationTargets": [],
@@ -38,19 +38,17 @@
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 450.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": -135.0
   },
   "reversed": false,
-
-  "folder": null,
-
+  "folder": "MAXAUTO",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
