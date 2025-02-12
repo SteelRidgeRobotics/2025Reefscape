@@ -16,6 +16,7 @@ from subsystems.elevator import ElevatorSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve.requests import FieldCentricReefAlign
 
 
 class RobotContainer:
@@ -63,8 +64,8 @@ class RobotContainer:
         } # Ends the dictionary
 
         # Setting up bindings for necessary control of the swerve drive platform
-        self._field_centric = (
-            swerve.requests.FieldCentric()
+        self._field_centric_reef_align = (
+            FieldCentricReefAlign()
             .with_deadband(self._max_speed * 0.01)
             .with_rotational_deadband(
                 self._max_angular_rate * 0.01
@@ -73,6 +74,8 @@ class RobotContainer:
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
         )
+        self._field_centric_reef_align.translation_x_controller.setPID(10.0, 0.0, 0.0)
+        self._field_centric_reef_align.translation_y_controller.setPID(10.0, 0.0, 0.0)
         self._robot_centric = (
             swerve.requests.RobotCentric()
             .with_deadband(self._max_speed * 0.01)
@@ -97,7 +100,7 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(
             self.drivetrain.apply_request(
                 lambda: (
-                    self._field_centric.with_velocity_x(
+                    self._field_centric_reef_align.with_velocity_x(
                         -self._driver_controller.getLeftY() * self._max_speed
                     )
                     .with_velocity_y(

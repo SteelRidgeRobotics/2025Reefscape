@@ -2,9 +2,9 @@ from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
-apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
-
 class Constants:
+
+    FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
     class CanIDs:
         LEFT_ELEVATOR_TALON = 10

@@ -12,3 +12,6 @@ requires = [
     "robotpy-pathplannerlib==2025.2.2",
     "phoenix6==25.2.2"
 ]
+
+[tool.robotpy.pyfrc]
+isolated = true
