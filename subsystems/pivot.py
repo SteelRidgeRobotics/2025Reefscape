@@ -3,10 +3,10 @@ from enum import auto, Enum
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger, utils, BaseStatusSignal
-from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration
-from phoenix6.controls import PositionDutyCycle, VoltageOut, Follower, DutyCycleOut
+from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration, MotionMagicConfigs
+from phoenix6.controls import VoltageOut, Follower, DutyCycleOut, MotionMagicDutyCycle
 from phoenix6.hardware import CANcoder, TalonFX
-from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue
+from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue
 from wpilib import DriverStation, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.filter import Debouncer
@@ -50,10 +50,13 @@ class PivotSubsystem(StateSubsystem):
      .with_feedback_remote_sensor_id(Constants.CanIDs.PIVOT_CANCODER)
     )
     _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
+    _master_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
+    _master_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.PivotConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.PivotConstants.MM_ACCELERATION))
 
     _follower_config = TalonFXConfiguration()
     _follower_config.feedback.with_rotor_to_sensor_ratio(Constants.PivotConstants.GEAR_RATIO)
+    _follower_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
     _follower_config.with_slot0(Constants.PivotConstants.GAINS)
     _follower_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
@@ -72,7 +75,7 @@ class PivotSubsystem(StateSubsystem):
         self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
         self._at_setpoint = True
 
-        self._position_request = PositionDutyCycle(0)
+        self._position_request = MotionMagicDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
         self._sys_id_request = VoltageOut(0)
 
@@ -162,7 +165,7 @@ class PivotSubsystem(StateSubsystem):
         return self._at_setpoint
 
     def is_in_elevator(self) -> bool:
-        return self.get_angle() <= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
+        return self._master_motor.get_position().value >= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._sys_id_request.with_output(0)))

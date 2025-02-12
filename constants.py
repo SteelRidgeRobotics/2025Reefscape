@@ -1,7 +1,6 @@
+from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from phoenix6.configs.config_groups import Slot0Configs
-from wpimath import units
 
 apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
@@ -31,13 +30,14 @@ class Constants:
         )
 
     class ElevatorConstants:
-        L1_SCORE_POSITION = 1 # Placeholders
-        L2_SCORE_POSITION = 2
-        L3_SCORE_POSITION = 3
-        L4_SCORE_POSITION = 4
-        L2_ALGAE_POSITION = 2.5
-        L3_ALGAE_POSITION = 3.5
-        NET_SCORE_POSITION = 5
+        L1_SCORE_POSITION = -2.512207 # Placeholders
+        L2_SCORE_POSITION = -3.250244
+        L3_SCORE_POSITION = -5.451172
+        L4_SCORE_POSITION = -6.087158
+        L2_ALGAE_POSITION = -3.549561
+        L3_ALGAE_POSITION = -4.732666
+        NET_SCORE_POSITION = -6.052246
+        ELEVATOR_MAX = -6.096924
 
         DEFAULT_POSITION = 0
 
@@ -68,10 +68,13 @@ class Constants:
         NET_SCORING_ANGLE = 0.114258
         PROCESSOR_SCORING_ANGLE = -0.041016
 
+        CRUISE_VELOCITY = 1
+        MM_ACCELERATION = 1
+
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(0.03)
-                 .with_k_p(9.0)
+                 .with_k_p(1.0)
                  .with_k_i(0.0)
                  .with_k_d(0.0)
                  .with_k_s(0.0)

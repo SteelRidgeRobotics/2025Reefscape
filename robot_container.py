@@ -249,7 +249,7 @@ class RobotContainer:
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.OUTPUTTING)
-        )
+        ).onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.DEFAULT))
 
         (self._function_controller.leftStick() & self._function_controller.rightStick()).whileTrue(
             self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT)

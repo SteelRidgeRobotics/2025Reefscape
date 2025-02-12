@@ -2,12 +2,13 @@ import math
 from enum import Enum, auto
 
 from commands2 import Command
+from commands2 import cmd
+from commands2.button import Trigger
 from commands2.sysid import SysIdRoutine
-from ntcore import NetworkTableInstance
 from phoenix6 import SignalLogger, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration
-from phoenix6.configs.config_groups import NeutralModeValue
-from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut
+from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
+from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut, MotionMagicDutyCycle
 from phoenix6.hardware import CANdi, TalonFX
 from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
@@ -41,6 +42,7 @@ class ElevatorSubsystem(StateSubsystem):
                      .with_slot0(Constants.ElevatorConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
+                     .with_motion_magic(MotionMagicConfigs().with_motion_magic_acceleration(6).with_motion_magic_cruise_velocity(6))
                      )
 
     def __init__(self) -> None:
@@ -55,7 +57,7 @@ class ElevatorSubsystem(StateSubsystem):
         self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
         self._candi.configurator.apply(self._candi_config)
 
-        self._position_request = PositionDutyCycle(0)
+        self._position_request = MotionMagicDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
         self._sys_id_request = VoltageOut(0)
 
@@ -66,6 +68,8 @@ class ElevatorSubsystem(StateSubsystem):
 
         self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
         self._at_setpoint = True
+
+        self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION)
 
         self._sys_id_routine = SysIdRoutine(
             SysIdRoutine.Config(
@@ -79,6 +83,9 @@ class ElevatorSubsystem(StateSubsystem):
                 self,
             )
         )
+
+        Trigger(lambda: self._candi.get_s1_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.ELEVATOR_MAX))) # Top Limit Switch
+        Trigger(lambda: self._candi.get_s2_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION))) # Bottom Limit Switch
 
     def periodic(self) -> None:
         super().periodic()
