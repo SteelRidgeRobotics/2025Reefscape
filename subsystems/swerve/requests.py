@@ -248,9 +248,11 @@ class FieldCentricReefAlign(SwerveRequest):
     def apply(self, parameters: SwerveControlParameters, modules_to_apply: list[SwerveModule]) -> StatusCode:
         current_pose = parameters.current_pose
 
-
         # Get nearest reef side targets (2 poses per side) (O(2n))
-        closest_index, closest_target = min(enumerate(RobotState.get_reef_targets()), key=lambda p: p[1].translation().distance(current_pose.translation()))
+        closest_index, closest_target = min(
+            enumerate(RobotState.get_reef_targets()),
+            key=lambda p: p[1].translation().distance(current_pose.translation())
+        )
         if closest_index % 2 == 0:
             closest_direction = self.BranchSide.LEFT
         else:
@@ -261,10 +263,6 @@ class FieldCentricReefAlign(SwerveRequest):
             if abs(target.rotation().radians() - target.rotation().radians()) <= 1e-6 and target is not closest_target:
                 side_target = target
                 break
-        if closest_direction is self.BranchSide.LEFT:
-            side_direction = self.BranchSide.RIGHT
-        else:
-            side_direction = self.BranchSide.LEFT
 
         # Depending on the direction parameter, select the target
         if self.direction is self.BranchSide.CLOSEST:
