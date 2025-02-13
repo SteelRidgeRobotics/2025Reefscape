@@ -74,6 +74,7 @@ class RobotContainer:
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
         )
+        self._field_centric_reef_align.heading_controller.setPID(10.0, 0.0, 0.0)
         self._field_centric_reef_align.translation_x_controller.setPID(10.0, 0.0, 0.0)
         self._field_centric_reef_align.translation_y_controller.setPID(10.0, 0.0, 0.0)
         self._robot_centric = (
@@ -109,6 +110,7 @@ class RobotContainer:
                     .with_rotational_rate(
                         -self._driver_controller.getRightX() * self._max_angular_rate
                     )
+                    .with_direction(FieldCentricReefAlign.BranchSide.CLOSEST)
                 )
             )
         )
@@ -137,6 +139,44 @@ class RobotContainer:
 
         self._driver_controller.leftBumper().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self._driver_controller.povLeft().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._field_centric_reef_align.with_velocity_x(
+                        -self._driver_controller.getLeftY() * self._max_speed
+                    )
+                    .with_velocity_y(
+                        -self._driver_controller.getLeftX() * self._max_speed
+                    )
+                    .with_rotational_rate(
+                        -self._driver_controller.getRightX() * self._max_angular_rate
+                    )
+                    .with_direction(
+                        FieldCentricReefAlign.BranchSide.LEFT
+                    )
+                )
+            )
+        )
+
+        self._driver_controller.povLeft().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._field_centric_reef_align.with_velocity_x(
+                        -self._driver_controller.getLeftY() * self._max_speed
+                    )
+                    .with_velocity_y(
+                        -self._driver_controller.getLeftX() * self._max_speed
+                    )
+                    .with_rotational_rate(
+                        -self._driver_controller.getRightX() * self._max_angular_rate
+                    )
+                    .with_direction(
+                        FieldCentricReefAlign.BranchSide.RIGHT
+                    )
+                )
+            )
         )
 
         #Left reef sides

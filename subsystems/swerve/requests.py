@@ -2,10 +2,11 @@ from enum import Enum, auto
 
 from phoenix6 import StatusCode
 from phoenix6.swerve import Translation2d, SwerveModule, SwerveControlParameters
-from phoenix6.swerve.requests import SwerveRequest, ForwardPerspectiveValue, FieldCentric
+from phoenix6.swerve.requests import SwerveRequest, ForwardPerspectiveValue, FieldCentric, FieldCentricFacingAngle
 from phoenix6.swerve.utility.phoenix_pid_controller import PhoenixPIDController
 from phoenix6.units import *
 from robotpy_ext.autonomous.selector_tests import test_all_autonomous
+from wpimath.geometry import Rotation2d
 
 from robot_state import RobotState
 
@@ -69,7 +70,9 @@ class FieldCentricReefAlign(SwerveRequest):
         """
 
         self._field_centric = FieldCentric()
+        self._field_centric_facing_angle = FieldCentricFacingAngle()
 
+        self.heading_controller = self._field_centric_facing_angle.heading_controller
         self.translation_x_controller = PhoenixPIDController(0.0, 0.0, 0.0)
         self.translation_y_controller = PhoenixPIDController(0.0, 0.0, 0.0)
 
@@ -248,35 +251,17 @@ class FieldCentricReefAlign(SwerveRequest):
     def apply(self, parameters: SwerveControlParameters, modules_to_apply: list[SwerveModule]) -> StatusCode:
         current_pose = parameters.current_pose
 
-        # Get nearest reef side targets (2 poses per side) (O(2n))
-        closest_index, closest_target = min(
-            enumerate(RobotState.get_reef_targets()),
-            key=lambda p: p[1].translation().distance(current_pose.translation())
+        # Get nearest target
+        target = min(
+            RobotState.get_reef_targets(),
+            key=lambda p: p.translation().distance(current_pose.translation())
         )
-        if closest_index % 2 == 0:
-            closest_direction = self.BranchSide.LEFT
-        else:
-            closest_direction = self.BranchSide.RIGHT
-
-        side_target = None
-        for target in RobotState.get_reef_targets():
-            if abs(target.rotation().radians() - target.rotation().radians()) <= 1e-6 and target is not closest_target:
-                side_target = target
-                break
-
-        # Depending on the direction parameter, select the target
-        if self.direction is self.BranchSide.CLOSEST:
-            target = closest_target
-        elif self.direction is closest_direction:
-            target = closest_target
-        else:
-            target = side_target
 
         # Check if we should enable the PID controllers
         should_align = True
-        if abs(target.rotation().degrees() - current_pose.rotation().degrees()) > 20:
+        if abs(target.rotation().degrees() - current_pose.rotation().degrees()) > 35:
             should_align = False
-        if target.translation().distance(current_pose.translation()) > 0.5:
+        if target.translation().distance(current_pose.translation()) > 0.6:
             should_align = False
 
         if should_align and target is not None:
@@ -295,17 +280,34 @@ class FieldCentricReefAlign(SwerveRequest):
                 target_translation_y,
                 parameters.timestamp
             )
+            if abs(translation_x_output) < abs(self.velocity_x):
+                velocity_x_output = self.velocity_x
+            else:
+                velocity_x_output = translation_x_output
+            if abs(translation_y_output) < abs(self.velocity_y):
+                velocity_y_output = self.velocity_y
+            else:
+                velocity_y_output = translation_y_output
 
-            velocity_x_output = translation_x_output
-            velocity_y_output = translation_y_output
-        else:
-            velocity_x_output = self.velocity_x
-            velocity_y_output = self.velocity_y
+            return (
+                self._field_centric_facing_angle
+                .with_velocity_x(velocity_x_output)
+                .with_velocity_y(velocity_y_output)
+                .with_target_direction(target.rotation() + Rotation2d.fromDegrees(180))
+                .with_deadband(self.deadband)
+                .with_rotational_deadband(self.rotational_deadband)
+                .with_center_of_rotation(self.center_of_rotation)
+                .with_drive_request_type(self.drive_request_type)
+                .with_steer_request_type(self.steer_request_type)
+                .with_desaturate_wheel_speeds(self.desaturate_wheel_speeds)
+                .with_forward_perspective(self.forward_perspective)
+                .apply(parameters, modules_to_apply)
+            )
 
         return (
             self._field_centric
-            .with_velocity_x(velocity_x_output)
-            .with_velocity_y(velocity_y_output)
+            .with_velocity_x(self.velocity_x)
+            .with_velocity_y(self.velocity_y)
             .with_rotational_rate(self.rotational_rate)
             .with_deadband(self.deadband)
             .with_rotational_deadband(self.rotational_deadband)
@@ -316,11 +318,3 @@ class FieldCentricReefAlign(SwerveRequest):
             .with_forward_perspective(self.forward_perspective)
             .apply(parameters, modules_to_apply)
         )
-
-
-
-
-
-
-
-
