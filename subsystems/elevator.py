@@ -2,13 +2,11 @@ import math
 from enum import Enum, auto
 
 from commands2 import Command
-from commands2 import cmd
-from commands2.button import Trigger
 from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, HardwareLimitSwitchConfigs
 from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
-from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut, MotionMagicDutyCycle
+from phoenix6.controls import Follower, VoltageOut, DutyCycleOut, MotionMagicDutyCycle
 from phoenix6.hardware import CANdi, TalonFX
 from phoenix6.signals import ForwardLimitSourceValue
 from wpilib import DriverStation
