@@ -208,7 +208,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.translation_y_controller.setPID(kp, ki, kd)
         return self
 
-    def with_velocity_x(self, new_velocity_x: meters_per_second) -> 'FieldCentricReefAlign':
+    def with_velocity_x(self, new_velocity_x: meters_per_second) -> Self:
         """
         Modifies the velocity_x parameter and returns itself.
 
@@ -224,7 +224,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.velocity_x = new_velocity_x
         return self
 
-    def with_velocity_y(self, new_velocity_y: meters_per_second) -> 'FieldCentricReefAlign':
+    def with_velocity_y(self, new_velocity_y: meters_per_second) -> Self:
         """
         Modifies the velocity_y parameter and returns itself.
 
@@ -240,7 +240,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.velocity_y = new_velocity_y
         return self
 
-    def with_rotational_rate(self, new_rotational_rate: radians_per_second) -> 'FieldCentricReefAlign':
+    def with_rotational_rate(self, new_rotational_rate: radians_per_second) -> Self:
         """
         Modifies the rotational_rate parameter and returns itself.
 
@@ -256,7 +256,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.rotational_rate = new_rotational_rate
         return self
 
-    def with_deadband(self, new_deadband: meters_per_second) -> 'FieldCentricReefAlign':
+    def with_deadband(self, new_deadband: meters_per_second) -> Self:
         """
         Modifies the deadband parameter and returns itself.
 
@@ -271,7 +271,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.deadband = new_deadband
         return self
 
-    def with_rotational_deadband(self, new_rotational_deadband: radians_per_second) -> 'FieldCentricReefAlign':
+    def with_rotational_deadband(self, new_rotational_deadband: radians_per_second) -> Self:
         """
         Modifies the rotational_deadband parameter and returns itself.
 
@@ -286,7 +286,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.rotational_deadband = new_rotational_deadband
         return self
 
-    def with_center_of_rotation(self, new_center_of_rotation: Translation2d) -> 'FieldCentricReefAlign':
+    def with_center_of_rotation(self, new_center_of_rotation: Translation2d) -> Self:
         """
         Modifies the center_of_rotation parameter and returns itself.
 
@@ -302,7 +302,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.center_of_rotation = new_center_of_rotation
         return self
 
-    def with_drive_request_type(self, new_drive_request_type: SwerveModule.DriveRequestType) -> 'FieldCentricReefAlign':
+    def with_drive_request_type(self, new_drive_request_type: SwerveModule.DriveRequestType) -> Self:
         """
         Modifies the drive_request_type parameter and returns itself.
 
@@ -317,7 +317,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.drive_request_type = new_drive_request_type
         return self
 
-    def with_steer_request_type(self, new_steer_request_type: SwerveModule.SteerRequestType) -> 'FieldCentricReefAlign':
+    def with_steer_request_type(self, new_steer_request_type: SwerveModule.SteerRequestType) -> Self:
         """
         Modifies the steer_request_type parameter and returns itself.
 
@@ -332,7 +332,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.steer_request_type = new_steer_request_type
         return self
 
-    def with_desaturate_wheel_speeds(self, new_desaturate_wheel_speeds: bool) -> 'FieldCentricReefAlign':
+    def with_desaturate_wheel_speeds(self, new_desaturate_wheel_speeds: bool) -> Self:
         """
         Modifies the desaturate_wheel_speeds parameter and returns itself.
 
@@ -348,7 +348,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.desaturate_wheel_speeds = new_desaturate_wheel_speeds
         return self
 
-    def with_forward_perspective(self, new_forward_perspective: ForwardPerspectiveValue) -> 'FieldCentricReefAlign':
+    def with_forward_perspective(self, new_forward_perspective: ForwardPerspectiveValue) -> Self:
         """
         Modifies the forward_perspective parameter and returns itself.
 
@@ -363,7 +363,7 @@ class FieldCentricReefAlign(SwerveRequest):
         self.forward_perspective = new_forward_perspective
         return self
 
-    def with_direction(self, new_direction: BranchSide) -> 'FieldCentricReefAlign':
+    def with_direction(self, new_direction: BranchSide) -> Self:
         """
         Modified the direction parameter and returns itself.
 
@@ -539,4 +539,3 @@ class FieldCentricReefAlign(SwerveRequest):
 
             case _:
                 return [Pose2d(), Pose2d()]
-
