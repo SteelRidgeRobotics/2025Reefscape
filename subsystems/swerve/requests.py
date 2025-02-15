@@ -394,21 +394,18 @@ class FieldCentricReefAlign(SwerveRequest):
             target = reef_targets[1]
         self._reef_target_pub.set(target)
 
-        current_translation_x = current_pose.translation().X()
-        target_translation_x = target.translation().X()
         translation_x_output = -self.translation_x_controller.calculate(
-            current_translation_x,
-            target_translation_x,
+            current_pose.translation().X(),
+            target.translation().X(),
             parameters.timestamp
         )
 
-        current_translation_y = current_pose.translation().Y()
-        target_translation_y = target.translation().Y()
         translation_y_output = -self.translation_y_controller.calculate(
-            current_translation_y,
-            target_translation_y,
+            current_pose.translation().Y(),
+            target.translation().Y(),
             parameters.timestamp
         )
+
         if abs(translation_x_output) < abs(self.velocity_x):
             velocity_x_output = self.velocity_x
         else:
