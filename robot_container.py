@@ -110,7 +110,7 @@ class RobotContainer:
                     .with_rotational_rate(
                         -self._driver_controller.getRightX() * self._max_angular_rate
                     )
-                    .with_direction(FieldCentricReefAlign.BranchSide.CLOSEST)
+                    .with_direction(FieldCentricReefAlign.BranchSide.NO_TARGET)
                 )
             )
         )
@@ -137,11 +137,11 @@ class RobotContainer:
             self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
         )
 
-        self._driver_controller.leftBumper().onTrue(
+        self._driver_controller.povUp().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-        self._driver_controller.povLeft().whileTrue(
+        self._driver_controller.leftBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: (
                     self._field_centric_reef_align.with_velocity_x(
@@ -160,7 +160,7 @@ class RobotContainer:
             )
         )
 
-        self._driver_controller.povLeft().whileTrue(
+        self._driver_controller.rightBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: (
                     self._field_centric_reef_align.with_velocity_x(
@@ -227,8 +227,7 @@ class RobotContainer:
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 2"], self.path_constraints)
                 )
 
-        (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < .75) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < .75) & self._driver_controller.rightBumper()).whileTrue( #Only does this function if the triggers aren't pressed
-
+        self._driver_controller.y().whileTrue( #Only does this function if the triggers aren't pressed
             self.drivetrain.apply_request(
                 lambda: (
                     self._robot_centric.with_velocity_x(

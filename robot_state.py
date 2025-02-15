@@ -4,40 +4,15 @@ from ntcore import NetworkTableInstance
 from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, utils
 from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mechanism2d, Color8Bit
-from wpimath.geometry import Pose2d, Rotation2d
+from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
-from wpimath.units import degreesToRadians
 
-from constants import Constants
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 
 
 class RobotState:
-
-    _blue_reef_targets = [
-        Pose2d(3.091, 4.181, degreesToRadians(0)), # A
-        Pose2d(3.091, 3.863, degreesToRadians(0)), # B
-        Pose2d(3.656, 2.916, degreesToRadians(60)), # C
-        Pose2d(3.956, 2.748, degreesToRadians(60)), # D
-        Pose2d(5.023, 2.772, degreesToRadians(120)), # E
-        Pose2d(5.323, 2.928, degreesToRadians(120)), # F
-        Pose2d(5.850, 3.851, degreesToRadians(180)), # G
-        Pose2d(5.862, 4.187, degreesToRadians(180)), # H
-        Pose2d(5.347, 5.134, degreesToRadians(-120)), # I
-        Pose2d(5.047, 5.290, degreesToRadians(-120)), # J
-        Pose2d(3.932, 5.302, degreesToRadians(-60)), # K
-        Pose2d(3.668, 5.110, degreesToRadians(-60)), # L
-    ]
-
-    _red_reef_targets = [
-        Pose2d(
-            Constants.FIELD_LAYOUT.getFieldLength() - pose.X(),
-            Constants.FIELD_LAYOUT.getFieldWidth() - pose.Y(),
-            pose.rotation() + Rotation2d.fromDegrees(180)
-        ) for pose in _blue_reef_targets
-    ]
 
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem):
         self._swerve = drivetrain
@@ -106,13 +81,6 @@ class RobotState:
         self._swerve_data.getEntry("Robot Angle").setDouble((self._swerve.get_operator_forward_direction() + state.pose.rotation()).radians())
 
         NetworkTableInstance.getDefault().flush()
-
-    @staticmethod
-    def get_reef_targets() -> list[Pose2d]:
-        """Returns all reef scoring poses."""
-        if (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed:
-            return RobotState._red_reef_targets
-        return RobotState._blue_reef_targets
 
     def update_mechanisms(self) -> None:
         self._elevator_mech.setLength(self._elevator.get_height())
