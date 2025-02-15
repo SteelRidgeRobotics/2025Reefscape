@@ -47,6 +47,7 @@ class ElevatorSubsystem(StateSubsystem):
                      )
 
     # Limit switch config (separate since it's only applied to the master motor)
+    ### NOTE: Flip positions when inverting motor output
     _limit_switch_config = HardwareLimitSwitchConfigs()
     _limit_switch_config.forward_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
     _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2 # Bottom Limit Switch
