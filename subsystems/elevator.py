@@ -2,15 +2,17 @@ import math
 from enum import Enum, auto
 
 from commands2 import Command
+from commands2 import cmd
+from commands2.button import Trigger
 from commands2.sysid import SysIdRoutine
-from phoenix6 import SignalLogger
-from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
-from phoenix6.configs.config_groups import NeutralModeValue
-from phoenix6.controls import Follower, VoltageOut
-from phoenix6.controls import PositionDutyCycle, DutyCycleOut
-from phoenix6.hardware import TalonFX
+from phoenix6 import SignalLogger, BaseStatusSignal
+from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration
+from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
+from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut, MotionMagicDutyCycle
+from phoenix6.hardware import CANdi, TalonFX
 from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
+from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
 
 from constants import Constants
@@ -24,6 +26,7 @@ class ElevatorSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
+        IDLE = auto()
         DEFAULT = auto()
         L1 = auto()
         L2 = auto()
@@ -33,22 +36,28 @@ class ElevatorSubsystem(StateSubsystem):
         L3_ALGAE = auto()
         NET = auto()
 
+    _candi_config = CANdiConfiguration()
+
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ElevatorConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
+                     .with_motion_magic(MotionMagicConfigs().with_motion_magic_acceleration(6).with_motion_magic_cruise_velocity(6))
                      )
 
     def __init__(self) -> None:
         super().__init__("Elevator")
 
-        self._master_motor = TalonFX(Constants.MotorIDs.LEFT_LIFT_MOTOR)
+        self._master_motor = TalonFX(Constants.CanIDs.LEFT_ELEVATOR_TALON)
         self._master_motor.configurator.apply(self._motor_config)
 
-        self._follower_motor = TalonFX(Constants.MotorIDs.RIGHT_LIFT_MOTOR)
+        self._follower_motor = TalonFX(Constants.CanIDs.RIGHT_ELEVATOR_TALON)
         self._follower_motor.configurator.apply(self._motor_config)
 
-        self._position_request = PositionDutyCycle(0)
+        self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
+        self._candi.configurator.apply(self._candi_config)
+
+        self._position_request = MotionMagicDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
         self._sys_id_request = VoltageOut(0)
 
@@ -56,6 +65,11 @@ class ElevatorSubsystem(StateSubsystem):
         self._follower_motor.set_control(Follower(self._master_motor.device_id, False))
 
         self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.ElevatorConstants.GEAR_RATIO)
+
+        self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
+        self._at_setpoint = True
+
+        self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION)
 
         self._sys_id_routine = SysIdRoutine(
             SysIdRoutine.Config(
@@ -70,10 +84,25 @@ class ElevatorSubsystem(StateSubsystem):
             )
         )
 
+        Trigger(lambda: self._candi.get_s1_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.ELEVATOR_MAX))) # Top Limit Switch
+        Trigger(lambda: self._candi.get_s2_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION))) # Bottom Limit Switch
+
     def periodic(self) -> None:
         super().periodic()
 
+        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
+            self._master_motor.get_position(), self._master_motor.get_velocity()
+        )
+        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE)
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+
+    def set_desired_state(self, desired_state: SubsystemState) -> None:
+        if DriverStation.isTest() or self.is_frozen():
+            return
+
         match self._subsystem_state:
+            case self.SubsystemState.IDLE:
+                pass
             case self.SubsystemState.DEFAULT:
                 self._position_request.position = Constants.ElevatorConstants.DEFAULT_POSITION
             case self.SubsystemState.L1:
@@ -91,8 +120,15 @@ class ElevatorSubsystem(StateSubsystem):
             case self.SubsystemState.NET:
                 self._position_request.position = Constants.ElevatorConstants.NET_SCORE_POSITION
 
-        if not DriverStation.isTest():
+        self._subsystem_state = desired_state
+
+        if desired_state is not self.SubsystemState.IDLE:
             self._master_motor.set_control(self._position_request)
+        else:
+            self._master_motor.set_control(self._brake_request)
+
+    def is_at_setpoint(self) -> bool:
+        return self._at_setpoint
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._brake_request))
