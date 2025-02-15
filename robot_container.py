@@ -73,10 +73,9 @@ class RobotContainer:
             .with_drive_request_type(
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
+            .with_heading_pid(10.0, 0.0, 0.0)
+            .with_translation_pid(10.0, 0.0, 0.0)
         )
-        self._field_centric_reef_align.heading_controller.setPID(10.0, 0.0, 0.0)
-        self._field_centric_reef_align.translation_x_controller.setPID(10.0, 0.0, 0.0)
-        self._field_centric_reef_align.translation_y_controller.setPID(10.0, 0.0, 0.0)
         self._robot_centric = (
             swerve.requests.RobotCentric()
             .with_deadband(self._max_speed * 0.01)

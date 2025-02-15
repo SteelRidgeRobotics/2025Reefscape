@@ -1,5 +1,6 @@
 import math
 from enum import Enum, auto
+from typing import Self
 
 from ntcore import NetworkTableInstance
 from phoenix6 import StatusCode, utils
@@ -109,6 +110,103 @@ class FieldCentricReefAlign(SwerveRequest):
         self._table = NetworkTableInstance.getDefault().getTable("Telemetry").getSubTable("Auto Align")
         self._tag_target_pub = self._table.getStructTopic("Tag Target", Pose3d).publish()
         self._reef_target_pub = self._table.getStructTopic("Reef Target", Pose2d).publish()
+
+    def with_heading_pid(self, kp: float, ki: float, kd: float) -> Self:
+        """
+        Modifies the PID gains of the heading_controller parameter and returns itself.
+
+        Sets the proportional, integral, and differential coefficients used to maintain
+        the desired heading. Users can specify the PID gains to change how aggressively to
+        maintain heading.
+
+        This PID controller operates on heading radians and outputs a target
+        rotational rate in radians per second.
+
+        :param kp: The proportional coefficient; must be >= 0
+        :type kp: float
+        :param ki: The integral coefficient; must be >= 0
+        :type ki: float
+        :param kd: The differential coefficient; must be >= 0
+        :type kd: float
+        :returns: this object
+        :rtype: FieldCentricReefAlign
+        """
+
+        self.heading_controller.setPID(kp, ki, kd)
+        return self
+
+    def with_translation_pid(self, kp: float, ki: float, kd: float) -> Self:
+        """
+        Modifies the PID gains of the translation_x_controller and translation_y_controller parameters and returns itself.
+
+        Sets the proportional, integral, and differential coefficients used to maintain
+        the desired translation. Users can specify the PID gains to change how aggressively to
+        maintain position.
+
+        The PID controllers operate on meters and outputs a target
+        translational velocity in meters per second.
+
+        :param kp: The proportional coefficient; must be >= 0
+        :type kp: float
+        :param ki: The integral coefficient; must be >= 0
+        :type ki: float
+        :param kd: The differential coefficient; must be >= 0
+        :type kd: float
+        :returns: this object
+        :rtype: FieldCentricReefAlign
+        """
+
+        self.translation_x_controller.setPID(kp, ki, kd)
+        self.translation_y_controller.setPID(kp, ki, kd)
+        return self
+
+    def with_translation_x_pid(self, kp: float, ki: float, kd: float) -> Self:
+        """
+        Modifies the PID gains of the translation_x_controller parameter and returns itself.
+
+        Sets the proportional, integral, and differential coefficients used to maintain
+        the desired translation. Users can specify the PID gains to change how aggressively to
+        maintain position.
+
+        This PID controller operates on meters and outputs a target
+        horizontal translational velocity in meters per second.
+
+        :param kp: The proportional coefficient; must be >= 0
+        :type kp: float
+        :param ki: The integral coefficient; must be >= 0
+        :type ki: float
+        :param kd: The differential coefficient; must be >= 0
+        :type kd: float
+        :returns: this object
+        :rtype: FieldCentricReefAlign
+        """
+
+        self.translation_x_controller.setPID(kp, ki, kd)
+        return self
+
+    def with_translation_y_pid(self, kp: float, ki: float, kd: float) -> Self:
+        """
+        Modifies the PID gains of the translation_y_controller parameter and returns itself.
+
+        Sets the proportional, integral, and differential coefficients used to maintain
+        the desired vertical translation. Users can specify the PID gains to change how aggressively to
+        maintain position.
+
+        This PID controller operates on meters and outputs a target
+        vertical translational velocity in meters per second.
+
+        :param kp: The proportional coefficient; must be >= 0
+        :type kp: float
+        :param ki: The integral coefficient; must be >= 0
+        :type ki: float
+        :param kd: The differential coefficient; must be >= 0
+        :type kd: float
+        :returns: this object
+        :rtype: FieldCentricReefAlign
+        """
+
+        self.translation_y_controller.setPID(kp, ki, kd)
+        return self
 
     def with_velocity_x(self, new_velocity_x: meters_per_second) -> 'FieldCentricReefAlign':
         """
