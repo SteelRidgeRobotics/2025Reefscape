@@ -345,14 +345,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                     if alliance_color == DriverStation.Alliance.kRed
                     else self._BLUE_ALLIANCE_PERSPECTIVE_ROTATION
                 )
-                self._has_applied_operator_perspective = True
-
-        # if we are not in simulation, add vision measurement
-        if not utils.is_simulation():
-            self._add_vision_measurements("front_left")
-            self._add_vision_measurements("front_right")
-            self._add_vision_measurements("back_left")
-            self._add_vision_measurements("back_right")      
+                self._has_applied_operator_perspective = True 
 
     def _start_sim_thread(self) -> None:
         """
