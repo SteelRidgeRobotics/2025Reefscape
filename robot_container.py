@@ -16,6 +16,7 @@ from subsystems.elevator import ElevatorSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve.requests import FieldCentricReefAlign
 
 
 class RobotContainer:
@@ -63,8 +64,8 @@ class RobotContainer:
         } # Ends the dictionary
 
         # Setting up bindings for necessary control of the swerve drive platform
-        self._field_centric = (
-            swerve.requests.FieldCentric()
+        self._field_centric_reef_align = (
+            FieldCentricReefAlign()
             .with_deadband(self._max_speed * 0.01)
             .with_rotational_deadband(
                 self._max_angular_rate * 0.01
@@ -72,6 +73,8 @@ class RobotContainer:
             .with_drive_request_type(
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
+            .with_heading_pid(10.0, 0.0, 0.0)
+            .with_translation_pid(10.0, 0.0, 0.0)
         )
         self._robot_centric = (
             swerve.requests.RobotCentric()
@@ -97,7 +100,7 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(
             self.drivetrain.apply_request(
                 lambda: (
-                    self._field_centric.with_velocity_x(
+                    self._field_centric_reef_align.with_velocity_x(
                         -self._driver_controller.getLeftY() * self._max_speed
                     )
                     .with_velocity_y(
@@ -106,6 +109,7 @@ class RobotContainer:
                     .with_rotational_rate(
                         -self._driver_controller.getRightX() * self._max_angular_rate
                     )
+                    .with_direction(FieldCentricReefAlign.BranchSide.NO_TARGET)
                 )
             )
         )
@@ -132,8 +136,46 @@ class RobotContainer:
             self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse).onlyIf(lambda: not DriverStation.isFMSAttached())
         )
 
-        self._driver_controller.leftBumper().onTrue(
+        self._driver_controller.povUp().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self._driver_controller.leftBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._field_centric_reef_align.with_velocity_x(
+                        -self._driver_controller.getLeftY() * self._max_speed
+                    )
+                    .with_velocity_y(
+                        -self._driver_controller.getLeftX() * self._max_speed
+                    )
+                    .with_rotational_rate(
+                        -self._driver_controller.getRightX() * self._max_angular_rate
+                    )
+                    .with_direction(
+                        FieldCentricReefAlign.BranchSide.LEFT
+                    )
+                )
+            )
+        )
+
+        self._driver_controller.rightBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._field_centric_reef_align.with_velocity_x(
+                        -self._driver_controller.getLeftY() * self._max_speed
+                    )
+                    .with_velocity_y(
+                        -self._driver_controller.getLeftX() * self._max_speed
+                    )
+                    .with_rotational_rate(
+                        -self._driver_controller.getRightX() * self._max_angular_rate
+                    )
+                    .with_direction(
+                        FieldCentricReefAlign.BranchSide.RIGHT
+                    )
+                )
+            )
         )
 
         #Left reef sides
@@ -184,8 +226,7 @@ class RobotContainer:
                     AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 2"], self.path_constraints)
                 )
 
-        (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < .75) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < .75) & self._driver_controller.rightBumper()).whileTrue( #Only does this function if the triggers aren't pressed
-
+        self._driver_controller.y().whileTrue( #Only does this function if the triggers aren't pressed
             self.drivetrain.apply_request(
                 lambda: (
                     self._robot_centric.with_velocity_x(
