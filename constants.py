@@ -19,7 +19,7 @@ class Constants:
 
 
     class ClimberConstants:
-        GEAR_RATIO = (15376/135) * 3
+        GEAR_RATIO = 15376/135
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
@@ -102,3 +102,16 @@ class Constants:
             .with_k_v(0.0)
             .with_k_a(0.0)
         )
+
+    class FunnelConstants:
+
+        CORAL_STATION_POSITION = 10 # All Placeholders
+        STOWED_POSITION = 20
+
+        GEAR_RATIO = 1/10
+
+        CRUSIE_VELOCITY = 10 
+
+        SETPOINT_TOLERANCE = 0.01
+
+        MM_ACCELERATION = 10
