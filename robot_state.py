@@ -7,11 +7,11 @@ from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mecha
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
+from lib.limelight import LimelightHelpers
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 
-from lib.limelight import LimelightHelpers
 
 class RobotState:
 
@@ -91,8 +91,19 @@ class RobotState:
         """Returns the current pose of the robot on the field (blue-side origin)."""
         return self._swerve.get_state().pose
     
-    def _add_vision_measurements(self, limelight_name, standard_deviation = (0.7, 0.7, 9999999)) -> None:
+    def add_vision_measurements(self, limelight_name: str, standard_deviation: tuple[float, float, float] = (0.7, 0.7, 9999999)) -> None:
+        """
+        Adds MegaTag2 Pose Estimates from the given limelight.
 
+        Modified from Limelight's MegaTag 2 documentation, which can be found at
+        https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
+
+        :param limelight_name: The name of the Limelight
+        :type limelight_name: str
+        :param standard_deviation: The standard deviations of the pose estimate. Lower values tell the pose estimator to trust the pose estimate more
+        :type standard_deviation: tuple[float, float, float]
+        :rtype: None
+        """
         LimelightHelpers.set_robot_orientation(
             limelight_name,
             self._swerve.pigeon2.get_yaw().value,
@@ -102,13 +113,9 @@ class RobotState:
             self._swerve.pigeon2.get_roll().value,
             self._swerve.pigeon2.get_angular_velocity_x_world().value
         )
-        # get botpose estimate with origin on blue side of field
-        mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(limelight_name)
 
-        #if we are spinning slower than 720 deg/sec and we see tags
+        mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(limelight_name)
         if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720 and mega_tag2.tag_count > 0:
-            
-            # set and add vision measurement
             self._swerve.set_vision_measurement_std_devs(standard_deviation)
             self._swerve.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
 
