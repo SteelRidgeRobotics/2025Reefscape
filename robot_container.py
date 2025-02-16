@@ -44,7 +44,6 @@ class RobotContainer:
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
 
-
         # These are the paths that the robot can follow, which are preloaded so we reference them later and reduce lag.
         self.preloaded_paths = {
             "Coral A" : PathPlannerPath.fromPathFile("Coral A"),
