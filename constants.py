@@ -17,9 +17,11 @@ class Constants:
         ELEVATOR_CANDI = 20
         PIVOT_CANCODER = 21
 
+        FUNNEL_PIVOT_TALON = 22
+
 
     class ClimberConstants:
-        GEAR_RATIO = 15376/135
+        GEAR_RATIO = 15376/45
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
