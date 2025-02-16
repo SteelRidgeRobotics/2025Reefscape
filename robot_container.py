@@ -2,7 +2,7 @@ import commands2
 import commands2.button
 from commands2 import cmd
 from commands2.sysid import SysIdRoutine
-from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.auto import AutoBuilder, NamedCommands
 from pathplannerlib.path import PathConstraints, PathPlannerPath
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard
@@ -42,6 +42,26 @@ class RobotContainer:
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
+
+        # PathPlanner Commands
+
+        NamedCommands.registerCommand("Ground Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE))
+        NamedCommands.registerCommand("Funnel Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE))
+
+        NamedCommands.registerCommand("L1 Coral Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.L1_SCORING))
+        NamedCommands.registerCommand("L2 Coral Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.L2_SCORING))
+        NamedCommands.registerCommand("L3 Coral Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.L3_SCORING))
+        NamedCommands.registerCommand("L4 Coral Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.L4_SCORING))
+
+        NamedCommands.registerCommand("Algae Proccessor Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR))
+        NamedCommands.registerCommand("Algae Net Scoring", self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET))
+
+        NamedCommands.registerCommand("L2 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE))
+        NamedCommands.registerCommand("L3 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE))
+
+        NamedCommands.registerCommand("Intake Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.INTAKING))
+        NamedCommands.registerCommand("Output Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.OUTPUTTING))
+        NamedCommands.registerCommand("Stop Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.DEFAULT))
 
 
         # These are the paths that the robot can follow, which are preloaded so we reference them later and reduce lag.
