@@ -17,7 +17,7 @@ class Constants:
         ELEVATOR_CANDI = 20
         PIVOT_CANCODER = 21
 
-        FUNNEL_PIVOT_TALON = 22
+        FUNNEL_TALON = 22
 
 
     class ClimberConstants:
@@ -112,8 +112,10 @@ class Constants:
 
         GEAR_RATIO = 1/10
 
-        CRUSIE_VELOCITY = 10 
+        CRUISE_VELOCITY = 10 
 
         SETPOINT_TOLERANCE = 0.01
 
         MM_ACCELERATION = 10
+
+        GAINS = 10
