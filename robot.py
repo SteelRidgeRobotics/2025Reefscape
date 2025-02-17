@@ -5,6 +5,7 @@ from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
 from wpinet import WebServer
 
+from constants import Constants
 from robot_container import RobotContainer
 
 
@@ -24,10 +25,11 @@ class OilSpill(TimedCommandRobot):
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
 
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("front_left"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("front_right"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("back_left"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("back_right"), 0.02)
+        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_LEFT), 0.02)
+        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_RIGHT), 0.02)
+        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.BACK_LEFT), 0.02)
+        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.BACK_RIGHT), 0.02)
+        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_CENTER), 0.02)
 
         DataLogManager.log("Robot initialized")
 

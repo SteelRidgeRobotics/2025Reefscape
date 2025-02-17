@@ -102,3 +102,11 @@ class Constants:
             .with_k_v(0.0)
             .with_k_a(0.0)
         )
+
+    class VisionConstants:
+
+        BACK_LEFT = "limelight-bl"
+        BACK_RIGHT = "limelight-br"
+        FRONT_LEFT = "limelight-fl"
+        FRONT_RIGHT = "limelight-fr"
+        FRONT_CENTER = "limelight-front"

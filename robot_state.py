@@ -7,6 +7,7 @@ from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mecha
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
+from constants import Constants
 from lib.limelight import LimelightHelpers
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
@@ -104,6 +105,9 @@ class RobotState:
         :type standard_deviation: tuple[float, float, float]
         :rtype: None
         """
+        if limelight_name == Constants.VisionConstants.FRONT_CENTER:
+            LimelightHelpers.set_imu_mode(Constants.VisionConstants.FRONT_CENTER, 1)
+
         LimelightHelpers.set_robot_orientation(
             limelight_name,
             self._swerve.pigeon2.get_yaw().value,
