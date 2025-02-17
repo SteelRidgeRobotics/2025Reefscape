@@ -21,22 +21,22 @@ class FunnelSubsystem(StateSubsystem):
         UP = auto()
         DOWN = auto()
 
-    _pivot_config = TalonFXConfiguration()
-    (_pivot_config.feedback
+    _funnel_config = TalonFXConfiguration()
+    (_funnel_config.feedback
      .with_rotor_to_sensor_ratio(Constants.FunnelConstants.GEAR_RATIO)
      .with_feedback_sensor_source(FeedbackSensorSourceValue.FUSED_CANCODER)
     )
-    _pivot_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
-    _pivot_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
-    _pivot_config.with_slot0(Constants.FunnelConstants.GAINS)
-    _pivot_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.FunnelConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.FunnelConstants.MM_ACCELERATION))
+    _funnel_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
+    _funnel_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
+    _funnel_config.with_slot0(Constants.FunnelConstants.GAINS)
+    _funnel_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.FunnelConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.FunnelConstants.MM_ACCELERATION))
 
     def __init__(self) -> None:
         super().__init__("Funnel")
 
         self._funnel_motor = TalonFX(Constants.CanIDs.FUNNEL_PIVOT_TALON)
 
-        self._funnel_motor.configurator.apply(self._pivot_config)
+        self._funnel_motor.configurator.apply(self._funnel_config)
 
         self._add_talon_sim_model(self._funnel_motor, DCMotor.krakenX60FOC(), Constants.PivotConstants.GEAR_RATIO)
 
