@@ -90,8 +90,11 @@ class Constants:
 
     class IntakeConstants:
 
-        INTAKE_SPEED = 1
-        OUTPUT_SPEED = 1
+        CORAL_INTAKE_SPEED = 1
+        CORAL_OUTPUT_SPEED = 1
+
+        ALGAE_INTAKE_SPEED = 1
+        ALGAE_OUTPUT_SPEED = 1
 
         GEAR_RATIO = 4
         GAINS = (Slot0Configs()

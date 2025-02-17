@@ -59,8 +59,11 @@ class RobotContainer:
         NamedCommands.registerCommand("L2 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE))
         NamedCommands.registerCommand("L3 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE))
 
-        NamedCommands.registerCommand("Intake Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.INTAKING))
-        NamedCommands.registerCommand("Output Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.OUTPUTTING))
+        NamedCommands.registerCommand("Intake Coral", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_INTAKING))
+        NamedCommands.registerCommand("Output Coral", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUTTING))
+        NamedCommands.registerCommand("Intake Algae", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKING))
+        NamedCommands.registerCommand("Output Algae", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUTTING))
+
         NamedCommands.registerCommand("Stop Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.DEFAULT))
 
 
@@ -238,37 +241,50 @@ class RobotContainer:
         )
 
         (self._function_controller.y() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUTTING)
+            )
         )
 
         (self._function_controller.x() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKING)
+            )
+
         )
 
         (self._function_controller.b() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKING)
+            )
         )
 
         (self._function_controller.a() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUTTING)
+            )
         )
 
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING)
             )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING)
             )
         )
 
         self._function_controller.rightBumper().whileTrue(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.OUTPUTTING)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUTTING)
         ).onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.DEFAULT))
 
         (self._function_controller.leftStick() & self._function_controller.rightStick()).whileTrue(
