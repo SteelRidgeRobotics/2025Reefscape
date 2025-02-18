@@ -2,8 +2,6 @@ from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
-from subsystems.vision.util import Limelight
-
 apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
 
 class Constants:
@@ -106,8 +104,8 @@ class Constants:
         )
 
     class VisionConstants:
-        BACK_LEFT = Limelight("limelight-bl", (0.7, 0.7, 9999999))
-        BACK_RIGHT = Limelight("limelight-br", (0.7, 0.7, 9999999))
-        FRONT_LEFT = Limelight("limelight-fl", (0.7, 0.7, 9999999))
-        FRONT_RIGHT = Limelight("limelight-fr", (0.7, 0.7, 9999999))
-        FRONT_CENTER = Limelight("limelight-front", (0.7, 0.7, 9999999))
+        BACK_LEFT = "limelight-bl"
+        BACK_RIGHT = "limelight-br"
+        FRONT_LEFT = "limelight-fl"
+        FRONT_RIGHT = "limelight-fr"
+        FRONT_CENTER = "limelight-front"
