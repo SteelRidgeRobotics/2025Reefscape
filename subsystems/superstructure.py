@@ -14,6 +14,7 @@ from robot_state import RobotState
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
+from subsystems.vision import VisionSubsystem
 
 
 class Superstructure(Subsystem):
@@ -34,7 +35,7 @@ class Superstructure(Subsystem):
         FUNNEL_INTAKE = auto()
         GROUND_INTAKE = auto()
         
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, state: RobotState) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, vision: VisionSubsystem, state: RobotState) -> None:
         """
         Constructs the superstructure using instance of each subsystem.
 
@@ -49,6 +50,7 @@ class Superstructure(Subsystem):
         self.drivetrain = drivetrain
         self.pivot = pivot
         self.elevator = elevator
+        self.vision = vision
         self.state = state
 
         self._goal = self._last_goal = self.Goal.DEFAULT
@@ -77,6 +79,10 @@ class Superstructure(Subsystem):
             self.elevator.unfreeze()
         if self.elevator.is_at_setpoint() and self.pivot.get_current_state() is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self.pivot.unfreeze()
+
+        # Use MegaTag 1 before the match starts
+        if DriverStation.isEnabled():
+            self.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
 
         match self._goal:
             

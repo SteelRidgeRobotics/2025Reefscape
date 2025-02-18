@@ -51,10 +51,9 @@ class RobotContainer:
             Constants.VisionConstants.FRONT_CENTER,
             Constants.VisionConstants.FRONT_LEFT,
         )
-        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.vision, self.robot_state)
 
         # PathPlanner Commands
-
         NamedCommands.registerCommand("Ground Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE))
         NamedCommands.registerCommand("Funnel Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE))
 

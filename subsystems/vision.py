@@ -18,6 +18,8 @@ class VisionSubsystem(StateSubsystem):
     - 2 Limelight 3As mounted on the back swerve covers, facing outward from the center of the robot at a 30 degree incline
     - 1 Limelight 3 (with a Google Coral) mounted upside down on the front left swerve cover, facing outward from the center of the robot at a 15 degree incline
     - 1 Limelight 2 mounted upside down on the front right swerve cover, facing outward from the center of the robot at a 15 degree incline
+
+    We use MegaTag 1 before the match starts to ensure our robot's heading is correct. We switch to MegaTag 2 for the remainder of the match.
     """
 
     class SubsystemState(Enum):
@@ -35,7 +37,7 @@ class VisionSubsystem(StateSubsystem):
         """
 
     def __init__(self, swerve: SwerveSubsystem, *args):
-        super().__init__("Vision")
+        super().__init__("Vision", self.SubsystemState.MEGA_TAG_1)
 
         self._swerve = swerve
 
