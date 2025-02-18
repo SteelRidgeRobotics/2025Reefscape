@@ -27,12 +27,6 @@ class OilSpill(TimedCommandRobot):
         for i in range(7): # Forward limelight ports for use when tethered at events.
             PortForwarder.getInstance().add(5800 + i, "limelight.local", 5800 + i)
 
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_LEFT), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_RIGHT), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.BACK_LEFT), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.BACK_RIGHT), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements(Constants.VisionConstants.FRONT_CENTER), 0.02)
-
         DataLogManager.log("Robot initialized")
 
     @staticmethod

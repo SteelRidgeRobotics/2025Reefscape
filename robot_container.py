@@ -9,6 +9,7 @@ from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
+from constants import Constants
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.climber import ClimberSubsystem
@@ -16,6 +17,7 @@ from subsystems.elevator import ElevatorSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.vision import VisionSubsystem
 
 
 class RobotContainer:
@@ -41,6 +43,14 @@ class RobotContainer:
         self.elevator = ElevatorSubsystem()
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
+        self.vision = VisionSubsystem(
+            self.robot_state,
+            Constants.VisionConstants.BACK_LEFT,
+            Constants.VisionConstants.BACK_RIGHT,
+            Constants.VisionConstants.FRONT_RIGHT,
+            Constants.VisionConstants.FRONT_CENTER,
+            Constants.VisionConstants.FRONT_LEFT,
+        )
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
 
         # PathPlanner Commands

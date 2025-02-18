@@ -8,10 +8,11 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
 from constants import Constants
-from lib.limelight import LimelightHelpers
+from lib.limelight import LimelightHelpers, PoseEstimate
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
+from subsystems.vision import Limelight
 
 
 class RobotState:
@@ -91,25 +92,26 @@ class RobotState:
     def get_current_pose(self) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin)."""
         return self._swerve.get_state().pose
+
+    def should_use_vision_measurements(self) -> bool:
+        return abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720
     
-    def add_vision_measurements(self, limelight_name: str, standard_deviation: tuple[float, float, float] = (0.7, 0.7, 9999999)) -> None:
+    def add_vision_measurements(self, limelight: Limelight, estimate: PoseEstimate, standard_deviation: tuple[float, float, float] = (0.7, 0.7, 9999999)) -> None:
         """
         Adds MegaTag2 Pose Estimates from the given limelight.
 
         Modified from Limelight's MegaTag 2 documentation, which can be found at
         https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
 
-        :param limelight_name: The name of the Limelight
-        :type limelight_name: str
         :param standard_deviation: The standard deviations of the pose estimate. Lower values tell the pose estimator to trust the pose estimate more
         :type standard_deviation: tuple[float, float, float]
         :rtype: None
         """
-        if limelight_name == Constants.VisionConstants.FRONT_CENTER:
-            LimelightHelpers.set_imu_mode(Constants.VisionConstants.FRONT_CENTER, 1)
+        if limelight == Constants.VisionConstants.FRONT_CENTER:
+            LimelightHelpers.set_imu_mode(limelight.name(), 1)
 
         LimelightHelpers.set_robot_orientation(
-            limelight_name,
+            limelight.name(),
             self._swerve.pigeon2.get_yaw().value,
             self._swerve.pigeon2.get_angular_velocity_z_world().value,
             self._swerve.pigeon2.get_pitch().value,
@@ -118,10 +120,9 @@ class RobotState:
             self._swerve.pigeon2.get_angular_velocity_x_world().value
         )
 
-        mega_tag2 = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(limelight_name)
-        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720 and mega_tag2.tag_count > 0:
+        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720 and estimate.tag_count > 0:
             self._swerve.set_vision_measurement_std_devs(standard_deviation)
-            self._swerve.add_vision_measurement(mega_tag2.pose, utils.fpga_to_current_time(mega_tag2.timestamp_seconds))
+            self._swerve.add_vision_measurement(estimate.pose, utils.fpga_to_current_time(estimate.timestamp_seconds))
 
     def should_pivot_move(self) -> bool:
         return self._elevator.is_at_setpoint()
