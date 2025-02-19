@@ -45,11 +45,10 @@ class RobotContainer:
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
         self.vision = VisionSubsystem(
             self.drivetrain,
-            Constants.VisionConstants.BACK_LEFT,
-            Constants.VisionConstants.BACK_RIGHT,
             Constants.VisionConstants.FRONT_RIGHT,
             Constants.VisionConstants.FRONT_CENTER,
             Constants.VisionConstants.FRONT_LEFT,
+            Constants.VisionConstants.BACK_CENTER
         )
         self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.vision, self.robot_state)
 

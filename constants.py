@@ -104,8 +104,7 @@ class Constants:
         )
 
     class VisionConstants:
-        BACK_LEFT = "limelight-bl"
-        BACK_RIGHT = "limelight-br"
         FRONT_LEFT = "limelight-fl"
         FRONT_RIGHT = "limelight-fr"
         FRONT_CENTER = "limelight-front"
+        BACK_CENTER = "limelight-back"
