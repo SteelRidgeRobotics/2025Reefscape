@@ -9,6 +9,7 @@ from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
+from constants import Constants
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.climber import ClimberSubsystem
@@ -16,6 +17,7 @@ from subsystems.elevator import ElevatorSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.vision import VisionSubsystem
 
 
 class RobotContainer:
@@ -41,10 +43,16 @@ class RobotContainer:
         self.elevator = ElevatorSubsystem()
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
-        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
+        self.vision = VisionSubsystem(
+            self.drivetrain,
+            Constants.VisionConstants.FRONT_RIGHT,
+            Constants.VisionConstants.FRONT_CENTER,
+            Constants.VisionConstants.FRONT_LEFT,
+            Constants.VisionConstants.BACK_CENTER
+        )
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.vision, self.robot_state)
 
         # PathPlanner Commands
-
         NamedCommands.registerCommand("Ground Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE))
         NamedCommands.registerCommand("Funnel Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE))
 
