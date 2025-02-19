@@ -14,6 +14,7 @@ from robot_state import RobotState
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
+from subsystems.funnel import FunnelSubsystem
 
 
 class Superstructure(Subsystem):
@@ -34,7 +35,7 @@ class Superstructure(Subsystem):
         FUNNEL_INTAKE = auto()
         GROUND_INTAKE = auto()
         
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, state: RobotState) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, state: RobotState) -> None:
         """
         Constructs the superstructure using instance of each subsystem.
 
@@ -49,6 +50,7 @@ class Superstructure(Subsystem):
         self.drivetrain = drivetrain
         self.pivot = pivot
         self.elevator = elevator
+        self.funnel = funnel
         self.state = state
 
         self._goal = self._last_goal = self.Goal.DEFAULT
@@ -84,48 +86,59 @@ class Superstructure(Subsystem):
             case self.Goal.DEFAULT:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.STOW)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.DEFAULT)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
             
             # goals for each scoring level on the reef (L1-L4)
             case self.Goal.L4_SCORING:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.HIGH_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L4)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
             case self.Goal.L3_SCORING:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.MID_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L3)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
             case self.Goal.L2_SCORING:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.MID_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L2)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
             case self.Goal.L1_SCORING:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.LOW_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L1)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
 
             # goal for intaking through our funnel: the pivot is oriented for funnel intaking, the elevator is lowered
             case self.Goal.FUNNEL_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.FUNNEL_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.DEFAULT)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.UO)
 
             # goal for ground intaking: the pivot is oriented for ground intake, the elevator is lowered
             case self.Goal.GROUND_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.GROUND_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.DEFAULT)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
 
             # goal for scoring in the net: the pivot is oriented for scoring in the net, the elevator is raised to net level
             case self.Goal.ALGAE_SCORING_NET:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.NET_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.NET)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
 
             # goal for scoring algae in the processor: pivot oriented for processor, elevator is lowered
             case self.Goal.ALGAE_SCORING_PROCESSOR:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.PROCESSOR_SCORING)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.DEFAULT)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
 
             # goals for intaking algae from L2 and L3
             case self.Goal.L2_ALGAE_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.ALGAE_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L2_ALGAE)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
             case self.Goal.L3_ALGAE_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.ALGAE_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L3_ALGAE)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
 
     def _set_goal(self, goal: Goal) -> None:
         # if the goal is already set to this goal, return, otherwise set our goal
