@@ -20,7 +20,6 @@ class FunnelSubsystem(StateSubsystem):
     _funnel_config = TalonFXConfiguration()
     (_funnel_config.feedback
      .with_rotor_to_sensor_ratio(Constants.FunnelConstants.GEAR_RATIO)
-     .with_feedback_sensor_source(FeedbackSensorSourceValue.FUSED_CANCODER)
     )
     _funnel_config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
     _funnel_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -29,6 +28,8 @@ class FunnelSubsystem(StateSubsystem):
 
     def __init__(self) -> None:
         super().__init__("Funnel")
+
+        self._subsystem_state = self.SubsystemState.DOWN
 
         self._funnel_motor = TalonFX(Constants.CanIDs.FUNNEL_TALON)
 
