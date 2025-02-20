@@ -36,7 +36,6 @@ class FunnelSubsystem(StateSubsystem):
 
         self._add_talon_sim_model(self._funnel_motor, DCMotor.falcon500FOC(), Constants.FunnelConstants.GEAR_RATIO)
 
-
         self._position_request = MotionMagicDutyCycle(0)
         self._brake_request = DutyCycleOut(0)
 

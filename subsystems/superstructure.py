@@ -135,6 +135,7 @@ class Superstructure(Subsystem):
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.ALGAE_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L2_ALGAE)
                 self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.DOWN)
+    
             case self.Goal.L3_ALGAE_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.ALGAE_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.L3_ALGAE)

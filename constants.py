@@ -13,11 +13,10 @@ class Constants:
         LEFT_PIVOT_TALON = 13
         RIGHT_PIVOT_TALON = 14
         CLIMB_TALON = 15
+        FUNNEL_TALON = 22
 
         ELEVATOR_CANDI = 20
         PIVOT_CANCODER = 21
-
-        FUNNEL_TALON = 22
 
     class ClimberConstants:
         GEAR_RATIO = 15376/45
