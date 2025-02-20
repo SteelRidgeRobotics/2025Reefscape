@@ -13,6 +13,7 @@ from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
+from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
@@ -39,9 +40,10 @@ class RobotContainer:
         self.pivot = PivotSubsystem()
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
+        self.funnel = FunnelSubsystem()
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
-        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.robot_state)
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.funnel, self.robot_state)
 
 
         # These are the paths that the robot can follow, which are preloaded so we reference them later and reduce lag.

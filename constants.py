@@ -2,7 +2,7 @@ from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
-apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025Reefscape)
+apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
 
 class Constants:
 
@@ -18,7 +18,6 @@ class Constants:
         PIVOT_CANCODER = 21
 
         FUNNEL_TALON = 22
-
 
     class ClimberConstants:
         GEAR_RATIO = 15376/45
@@ -118,4 +117,11 @@ class Constants:
 
         MM_ACCELERATION = 10
 
-        GAINS = 10
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )

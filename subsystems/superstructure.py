@@ -110,7 +110,7 @@ class Superstructure(Subsystem):
             case self.Goal.FUNNEL_INTAKE:
                 self.pivot.set_desired_state(PivotSubsystem.SubsystemState.FUNNEL_INTAKE)
                 self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.DEFAULT)
-                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.UO)
+                self.funnel.set_desired_state(FunnelSubsystem.SubsystemState.UP)
 
             # goal for ground intaking: the pivot is oriented for ground intake, the elevator is lowered
             case self.Goal.GROUND_INTAKE:
