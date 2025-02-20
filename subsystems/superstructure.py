@@ -1,26 +1,18 @@
-"""
-File: swerve.py
-Description: The swerve subsystem, plus method to add MegaTag2 pose estimate.
-Main Author: Caden Dalley
-Co-Authors: Micah Nguyen, James Haddix
-"""
-
 from enum import auto, Enum
 
 from commands2 import Command, Subsystem, cmd
 from wpilib import DriverStation, SmartDashboard
 
-from robot_state import RobotState
 from subsystems.elevator import ElevatorSubsystem
+from subsystems.funnel import FunnelSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
-from subsystems.funnel import FunnelSubsystem
 from subsystems.vision import VisionSubsystem
 
 
 class Superstructure(Subsystem):
     """
-    The Superstructure is in charge of controlling the elevator and the end effector.
+    The Superstructure is in charge of handling all subsystems to ensure no conflicts between them.
     """
 
     class Goal(Enum):
@@ -36,16 +28,20 @@ class Superstructure(Subsystem):
         FUNNEL_INTAKE = auto()
         GROUND_INTAKE = auto()
         
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, , vision: VisionSubsystem, state: RobotState) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem) -> None:
         """
         Constructs the superstructure using instance of each subsystem.
 
         :param drivetrain: Swerve drive base
-        :type drivetrain:  SwerveSubsystem
-        :param pivot:      Pivot that rotates our intake
-        :type pivot:       PivotSubsystem
-        :param elevator:   Elevator that moves the intake up and down
-        :type elevator:    ElevatorSubsystem
+        :type drivetrain: SwerveSubsystem
+        :param pivot: Pivot that rotates our intake
+        :type pivot: PivotSubsystem
+        :param elevator: Elevator that moves the intake up and down
+        :type elevator: ElevatorSubsystem
+        :param funnel: Pivot for funnel structure
+        :type funnel: FunnelSubsystem
+        :param vision: Handles all vision estimates
+        :type vision: VisionSubsystem
         """
         super().__init__()
         self.drivetrain = drivetrain
@@ -53,7 +49,6 @@ class Superstructure(Subsystem):
         self.elevator = elevator
         self.funnel = funnel
         self.vision = vision
-        self.state = state
 
         self._goal = self._last_goal = self.Goal.DEFAULT
     

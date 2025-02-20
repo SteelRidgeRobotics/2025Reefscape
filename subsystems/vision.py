@@ -14,10 +14,9 @@ class VisionSubsystem(StateSubsystem):
     This is primarily used for combining MegaTag pose estimates and ensuring no conflicts between Limelights.
 
     Our vision system is composed of the following:
-    - 2 Limelight 4s mounted on the back of the funnel and under the pivot
-    - 2 Limelight 3As mounted on the back swerve covers, facing outward from the center of the robot at a 30 degree incline
-    - 1 Limelight 3 (with a Google Coral) mounted upside down on the front left swerve cover, facing outward from the center of the robot at a 15 degree incline
-    - 1 Limelight 2 mounted upside down on the front right swerve cover, facing outward from the center of the robot at a 15 degree incline
+    - 1 Limelight 4 mounted on the back of the funnel facing horizontal
+    - 1 Limelight 4 mounted under the pivot at a 20 degree inclination
+    - 2 Limelight 3As mounted on the front swerve covers, facing outward from the center of the robot at a 15 degree incline
 
     We use MegaTag 1 before the match starts to ensure our robot's heading is correct. We switch to MegaTag 2 for the remainder of the match.
     """

@@ -52,7 +52,7 @@ class RobotContainer:
         )
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
-        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.robot_state)
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision)
 
         # PathPlanner Commands
         NamedCommands.registerCommand("Ground Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE))
