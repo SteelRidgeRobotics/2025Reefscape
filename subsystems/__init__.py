@@ -1,5 +1,6 @@
 from abc import ABC, ABCMeta
 from enum import Enum
+from typing import Any, Type
 
 from commands2 import Command, InstantCommand
 from commands2.subsystem import Subsystem
@@ -37,13 +38,18 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self.setName(name.title())
 
         self._subsystem_state = starting_state
-        self._freeze = False
+        self._frozen = False
 
         # Create NT folder for organization
         self._network_table = NetworkTableInstance.getDefault().getTable(name.title())
         self._nt_publishers = []
-        self._current_state_pub = self._network_table.getStringTopic("Current State").publish()
-        self._frozen_pub = self._network_table.getBooleanTopic("Frozen").publish()
+        current_state_nt = self._network_table.getStringTopic("Current State")
+        self._current_state_pub = current_state_nt.publish()
+        self._current_state_sub = current_state_nt.subscribe(self.get_state_name())
+
+        frozen_nt = self._network_table.getBooleanTopic("Frozen")
+        self._frozen_pub = frozen_nt.publish()
+        self._frozen_sub = frozen_nt.subscribe(self.is_frozen())
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
@@ -56,7 +62,14 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._subsystem_state = desired_state
 
     def periodic(self):
-        self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
+
+        # Dashboard overrides
+        if self._frozen_sub.get() is not self.is_frozen():
+            self._frozen = self._frozen_sub.get()
+        if self._current_state_sub.get() is not self.get_state_name():
+            self._subsystem_state = self.get_state_from_name(self._current_state_sub.get())
+
+        self._current_state_pub.set(self.get_state_name())
         self._frozen_pub.set(self.is_frozen())
 
         # Update sim models
@@ -77,17 +90,25 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
     def freeze(self) -> None:
         """Prevents new state changes."""
-        self._freeze = True
+        self._frozen = True
 
     def unfreeze(self) -> None:
         """Allows state changes."""
-        self._freeze = False
+        self._frozen = False
 
     def is_frozen(self) -> bool:
-        return self._freeze
+        return self._frozen
             
     def get_current_state(self) -> SubsystemState:
         return self._subsystem_state
+
+    def get_state_name(self) -> str:
+        """Returns the name of the current state."""
+        return self._subsystem_state.name.title().replace("_", " ")
+
+    def get_state_from_name(self, name: str) -> SubsystemState:
+        """Returns the SubsystemState from the given name."""
+        return self.SubsystemState[name.upper().replace(" ", "_")]
 
     def get_network_table(self) -> NetworkTable:
         return self._network_table
