@@ -6,7 +6,7 @@ from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, HardwareLimitSwitchConfigs
 from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
-from phoenix6.controls import Follower, VoltageOut, DutyCycleOut, MotionMagicDutyCycle
+from phoenix6.controls import Follower, VoltageOut, MotionMagicExpoVoltage
 from phoenix6.hardware import CANdi, TalonFX
 from phoenix6.signals import ForwardLimitSourceValue
 from wpilib import DriverStation
@@ -43,7 +43,12 @@ class ElevatorSubsystem(StateSubsystem):
                      .with_slot0(Constants.ElevatorConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
-                     .with_motion_magic(MotionMagicConfigs().with_motion_magic_acceleration(6).with_motion_magic_cruise_velocity(6))
+                     .with_motion_magic(MotionMagicConfigs()
+                                        .with_motion_magic_acceleration(Constants.ElevatorConstants.MM_ACCELERATION)
+                                        .with_motion_magic_cruise_velocity(Constants.ElevatorConstants.CRUISE_VELOCITY)
+                                        .with_motion_magic_expo_k_v(Constants.ElevatorConstants.EXPO_K_V)
+                                        .with_motion_magic_expo_k_a(Constants.ElevatorConstants.EXPO_K_A)
+                                        )
                      )
 
     # Limit switch config (separate since it's only applied to the master motor)
@@ -60,7 +65,7 @@ class ElevatorSubsystem(StateSubsystem):
     _limit_switch_config.reverse_limit_autoset_position_enable = True
 
     def __init__(self) -> None:
-        super().__init__("Elevator")
+        super().__init__("Elevator", self.SubsystemState.DEFAULT)
 
         self._master_motor = TalonFX(Constants.CanIDs.LEFT_ELEVATOR_TALON)
         _master_config = self._motor_config
@@ -73,8 +78,9 @@ class ElevatorSubsystem(StateSubsystem):
         self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
         self._candi.configurator.apply(self._candi_config)
 
-        self._position_request = MotionMagicDutyCycle(0)
-        self._brake_request = DutyCycleOut(0)
+        self._position_request = MotionMagicExpoVoltage(0)
+
+        self._brake_request = VoltageOut(0)
         self._sys_id_request = VoltageOut(0)
 
         self._master_motor.set_control(self._brake_request)

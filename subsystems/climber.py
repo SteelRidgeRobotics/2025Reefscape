@@ -2,7 +2,7 @@ from enum import Enum
 
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
-from phoenix6.controls import DutyCycleOut
+from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
 
 from wpilib import Servo
@@ -29,13 +29,13 @@ class ClimberSubsystem(StateSubsystem):
                      )
 
     def __init__(self) -> None:
-        super().__init__("Climber")
+        super().__init__("Climber", self.SubsystemState.STOP)
 
         self.climbServo = Servo(0)
         self._climb_motor = TalonFX(Constants.CanIDs.CLIMB_TALON)
         self._climb_motor.configurator.apply(self._motor_config)
         
-        self._climb_request = DutyCycleOut(0)
+        self._climb_request = VoltageOut(0)
 
     def periodic(self):
         super().periodic()
@@ -47,10 +47,10 @@ class ClimberSubsystem(StateSubsystem):
                 self._climb_request.output = 0
                 self.climbServo.setAngle(180)
             case self.SubsystemState.CLIMB_POSITIVE:
-                self._climb_request.output = 0.5
+                self._climb_request.output = 4
                 self.climbServo.setAngle(0)
             case self.SubsystemState.CLIMB_NEGATIVE:
-                self._climb_request.output = -0.5
+                self._climb_request.output = -4
                 self.climbServo.setAngle(0)
 
         self._climb_motor.set_control(self._climb_request)

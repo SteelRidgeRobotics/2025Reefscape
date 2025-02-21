@@ -24,11 +24,19 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     class SubsystemState(Enum):
         OFF = 0
 
-    def __init__(self, name: str, current_state: SubsystemState=SubsystemState(0)):
+    def __init__(self, name: str, starting_state: SubsystemState):
+        """
+        Initializes all subsystem logging and sets the default state.
+        
+        :param name: Name of the subsystem
+        :type name: str
+        :param starting_state: Starting state of the subsystem
+        :type starting_state:
+        """
         super().__init__()
         self.setName(name.title())
 
-        self._subsystem_state = current_state
+        self._subsystem_state = starting_state
         self._freeze = False
 
         # Create NT folder for organization

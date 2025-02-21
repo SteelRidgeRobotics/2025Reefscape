@@ -41,6 +41,11 @@ class Constants:
 
         DEFAULT_POSITION = 0
 
+        CRUISE_VELOCITY = 6
+        MM_ACCELERATION = 6
+        EXPO_K_V = 10
+        EXPO_K_A = 4
+
         GEAR_RATIO = 31/4 # Placeholder
         GAINS = (Slot0Configs()
             .with_k_g(0.03)
@@ -90,8 +95,11 @@ class Constants:
 
     class IntakeConstants:
 
-        INTAKE_SPEED = 1
-        OUTPUT_SPEED = 1
+        CORAL_INTAKE_SPEED = 1
+        CORAL_OUTPUT_SPEED = 1
+
+        ALGAE_INTAKE_SPEED = 1
+        ALGAE_OUTPUT_SPEED = -1
 
         GEAR_RATIO = 4
         GAINS = (Slot0Configs()
@@ -102,6 +110,12 @@ class Constants:
             .with_k_v(0.0)
             .with_k_a(0.0)
         )
+
+    class VisionConstants:
+        FRONT_LEFT = "limelight-fl"
+        FRONT_RIGHT = "limelight-fr"
+        FRONT_CENTER = "limelight-front"
+        BACK_CENTER = "limelight-back"
 
     class FunnelConstants:
 

@@ -9,6 +9,7 @@ from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
+from constants import Constants
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
 from subsystems.climber import ClimberSubsystem
@@ -17,6 +18,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.vision import VisionSubsystem
 
 
 class RobotContainer:
@@ -41,12 +43,18 @@ class RobotContainer:
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
         self.funnel = FunnelSubsystem()
+        self.vision = VisionSubsystem(
+            self.drivetrain,
+            Constants.VisionConstants.FRONT_RIGHT,
+            Constants.VisionConstants.FRONT_CENTER,
+            Constants.VisionConstants.FRONT_LEFT,
+            Constants.VisionConstants.BACK_CENTER
+        )
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
-        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.funnel, self.robot_state)
+        self.superstructure = Superstructure(self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision)
 
         # PathPlanner Commands
-
         NamedCommands.registerCommand("Ground Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE))
         NamedCommands.registerCommand("Funnel Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE))
 
@@ -61,8 +69,11 @@ class RobotContainer:
         NamedCommands.registerCommand("L2 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE))
         NamedCommands.registerCommand("L3 Algae Intaking", self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE))
 
-        NamedCommands.registerCommand("Intake Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.INTAKING))
-        NamedCommands.registerCommand("Output Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.OUTPUTTING))
+        NamedCommands.registerCommand("Intake Coral", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_INTAKING))
+        NamedCommands.registerCommand("Output Coral", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUTTING))
+        NamedCommands.registerCommand("Intake Algae", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKING))
+        NamedCommands.registerCommand("Output Algae", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUTTING))
+
         NamedCommands.registerCommand("Stop Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.DEFAULT))
 
 
@@ -240,37 +251,50 @@ class RobotContainer:
         )
 
         (self._function_controller.y() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_NET),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUTTING)
+            )
         )
 
         (self._function_controller.x() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.L3_ALGAE_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKING)
+            )
+
         )
 
         (self._function_controller.b() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.L2_ALGAE_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKING)
+            )
         )
 
         (self._function_controller.a() & self._function_controller.start()).onTrue(
-            self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR)
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.ALGAE_SCORING_PROCESSOR),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUTTING)
+            )
         )
 
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING)
             )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.INTAKING)
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING)
             )
         )
 
         self._function_controller.rightBumper().whileTrue(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.OUTPUTTING)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUTTING)
         ).onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.DEFAULT))
 
         (self._function_controller.leftStick() & self._function_controller.rightStick()).whileTrue(

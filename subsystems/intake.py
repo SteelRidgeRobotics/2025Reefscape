@@ -19,8 +19,10 @@ class IntakeSubsystem(StateSubsystem):
 
     class SubsystemState(Enum):
         DEFAULT = auto()
-        INTAKING = auto()
-        OUTPUTTING = auto()
+        CORAL_INTAKING = auto()
+        CORAL_OUTPUTTING = auto()
+        ALGAE_INTAKING = auto()
+        ALGAE_OUTPUTTING = auto()
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.IntakeConstants.GAINS)
@@ -29,7 +31,7 @@ class IntakeSubsystem(StateSubsystem):
                      )
 
     def __init__(self) -> None:
-        super().__init__("Intake")
+        super().__init__("Intake", self.SubsystemState.DEFAULT)
 
         self._intake_motor = TalonFX(Constants.CanIDs.INTAKE_TALON)
         self._intake_motor.configurator.apply(self._motor_config)
@@ -44,12 +46,18 @@ class IntakeSubsystem(StateSubsystem):
             case self.SubsystemState.DEFAULT:
                 self._velocity_request.ignore_hardware_limits = False
                 self._velocity_request.velocity = 0
-            case self.SubsystemState.INTAKING:
+            case self.SubsystemState.CORAL_INTAKING:
                 self._velocity_request.ignore_hardware_limits = False
-                self._velocity_request.velocity = Constants.IntakeConstants.INTAKE_SPEED
-            case self.SubsystemState.OUTPUTTING:
+                self._velocity_request.velocity = Constants.IntakeConstants.CORAL_INTAKE_SPEED
+            case self.SubsystemState.CORAL_OUTPUTTING:
                 self._velocity_request.ignore_hardware_limits = True # Ignore the beam break stop while scoring coral
-                self._velocity_request.velocity = Constants.IntakeConstants.OUTPUT_SPEED
+                self._velocity_request.velocity = Constants.IntakeConstants.CORAL_OUTPUT_SPEED
+            case self.SubsystemState.ALGAE_INTAKING:
+                self._velocity_request.ignore_hardware_limits = False
+                self._velocity_request.velocity = Constants.IntakeConstants.ALGAE_INTAKE_SPEED
+            case self.SubsystemState.ALGAE_OUTPUTTING:
+                self._velocity_request.ignore_hardware_limits = True
+                self._velocity_request.velocity = Constants.IntakeConstants.ALGAE_OUTPUT_SPEED
 
         self._subsystem_state = desired_state
         self._intake_motor.set_control(self._velocity_request)

@@ -3,8 +3,9 @@ import os.path
 from commands2 import CommandScheduler, TimedCommandRobot
 from phoenix6 import utils, SignalLogger
 from wpilib import DataLogManager, DriverStation, RobotBase, Timer, SmartDashboard, RobotController
-from wpinet import WebServer
+from wpinet import WebServer, PortForwarder
 
+from constants import Constants
 from robot_container import RobotContainer
 
 
@@ -23,11 +24,10 @@ class OilSpill(TimedCommandRobot):
         DriverStation.startDataLog(DataLogManager.getLog())
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
-
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("front_left"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("front_right"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("back_left"), 0.02)
-        self.addPeriodic(lambda: self.container.robot_state.add_vision_measurements("back_right"), 0.02)
+        port_forwarder = PortForwarder.getInstance()
+        for i in range(10): # Forward limelight ports for use when tethered at events.
+            port_forwarder.add(5800 + i, f"{Constants.VisionConstants.FRONT_CENTER}.local", 5800 + i)
+            port_forwarder.add(5800 + i + 10, f"{Constants.VisionConstants.BACK_CENTER}.local", 5800 + i)
 
         DataLogManager.log("Robot initialized")
 
