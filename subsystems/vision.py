@@ -30,7 +30,7 @@ class VisionSubsystem(StateSubsystem):
         """
         Uses MegaTag 2 pose estimates to determine the robot position.
         """
-        HELEN_KELLER = auto()
+        DISABLE_ESTIMATES = auto()
         """
         Ignores all Limelight pose estimates.
         """
@@ -66,16 +66,16 @@ class VisionSubsystem(StateSubsystem):
                         self._swerve.pigeon2.get_angular_velocity_x_world().value
                     )
                     estimate = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
-                    if estimate.is_megatag_2 and estimate.tag_count > 0:
+                    if estimate.tag_count > 0:
                         valid_pose_estimates.append(estimate)
 
             case self.SubsystemState.MEGA_TAG_1:
                 for camera in self._cameras:
                     estimate = LimelightHelpers.get_botpose_estimate_wpiblue(camera)
-                    if not estimate.is_megatag_2 and estimate.tag_count > 0:
+                    if estimate.tag_count > 0:
                         valid_pose_estimates.append(estimate)
 
-            case self.SubsystemState.HELEN_KELLER:
+            case self.SubsystemState.DISABLE_ESTIMATES:
                 return
 
         if len(valid_pose_estimates) == 0:
