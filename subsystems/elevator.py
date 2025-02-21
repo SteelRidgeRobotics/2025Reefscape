@@ -2,14 +2,13 @@ import math
 from enum import Enum, auto
 
 from commands2 import Command
-from commands2 import cmd
-from commands2.button import Trigger
 from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger, BaseStatusSignal
-from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration
+from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, HardwareLimitSwitchConfigs
 from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
-from phoenix6.controls import Follower, VoltageOut, PositionDutyCycle, DutyCycleOut, MotionMagicDutyCycle
+from phoenix6.controls import Follower, VoltageOut, DutyCycleOut, MotionMagicDutyCycle
 from phoenix6.hardware import CANdi, TalonFX
+from phoenix6.signals import ForwardLimitSourceValue
 from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.filter import Debouncer
@@ -22,7 +21,9 @@ from subsystems import StateSubsystem
 class ElevatorSubsystem(StateSubsystem):
     """
     The ElevatorSubsystem is responsible for controlling the elevator mechanism.
-    It manages motor positions and uses MotionMagic to smoothly transition between set points.
+    It manages motor positions and uses Motion Magic to smoothly transition between set states.
+
+    It also reads values passed from the CANdi S1 and S2 inputs to ensure the elevator stays within safe bounds.
     """
 
     class SubsystemState(Enum):
@@ -45,10 +46,25 @@ class ElevatorSubsystem(StateSubsystem):
                      .with_motion_magic(MotionMagicConfigs().with_motion_magic_acceleration(6).with_motion_magic_cruise_velocity(6))
                      )
 
+    # Limit switch config (separate since it's only applied to the master motor)
+    ### NOTE: Flip positions when inverting motor output
+    _limit_switch_config = HardwareLimitSwitchConfigs()
+    _limit_switch_config.forward_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
+    _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2 # Bottom Limit Switch
+    _limit_switch_config.forward_limit_autoset_position_value = Constants.ElevatorConstants.DEFAULT_POSITION
+    _limit_switch_config.forward_limit_autoset_position_enable = True
+
+    _limit_switch_config.reverse_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
+    _limit_switch_config.reverse_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS1 # Top Limit Switch
+    _limit_switch_config.reverse_limit_autoset_position_value = Constants.ElevatorConstants.ELEVATOR_MAX
+    _limit_switch_config.reverse_limit_autoset_position_enable = True
+
     def __init__(self) -> None:
         super().__init__("Elevator")
 
         self._master_motor = TalonFX(Constants.CanIDs.LEFT_ELEVATOR_TALON)
+        _master_config = self._motor_config
+        _master_config.hardware_limit_switch = self._limit_switch_config
         self._master_motor.configurator.apply(self._motor_config)
 
         self._follower_motor = TalonFX(Constants.CanIDs.RIGHT_ELEVATOR_TALON)
@@ -83,9 +99,6 @@ class ElevatorSubsystem(StateSubsystem):
                 self,
             )
         )
-
-        Trigger(lambda: self._candi.get_s1_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.ELEVATOR_MAX))) # Top Limit Switch
-        Trigger(lambda: self._candi.get_s2_closed().value).onTrue(self.runOnce(lambda: self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION))) # Bottom Limit Switch
 
     def periodic(self) -> None:
         super().periodic()

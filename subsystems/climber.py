@@ -40,7 +40,8 @@ class ClimberSubsystem(StateSubsystem):
     def periodic(self):
         super().periodic()
 
-    def _handle_desired_state(self) -> None:
+    def set_desired_state(self, desired_state: SubsystemState) -> None:
+        self._subsystem_state = desired_state
         match self._subsystem_state:
             case self.SubsystemState.STOP:
                 self._climb_request.output = 0
