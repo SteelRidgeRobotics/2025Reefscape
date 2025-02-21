@@ -19,7 +19,7 @@ class Constants:
         PIVOT_CANCODER = 21
 
     class ClimberConstants:
-        GEAR_RATIO = 15376/45
+        GEAR_RATIO = 61504/189
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
@@ -108,7 +108,7 @@ class Constants:
         CORAL_STATION_POSITION = 10 # All Placeholders
         STOWED_POSITION = 20
 
-        GEAR_RATIO = 1/10
+        GEAR_RATIO = 192/7
 
         CRUISE_VELOCITY = 10 
 
