@@ -1,13 +1,12 @@
 from abc import ABC, ABCMeta
 from enum import Enum
-from typing import Any, Type
 
 from commands2 import Command, InstantCommand
 from commands2.subsystem import Subsystem
 from ntcore import *
 from phoenix6 import utils
 from phoenix6.hardware import TalonFX
-from wpilib import RobotController
+from wpilib import RobotController, DataLogManager
 from wpilib.simulation import DCMotorSim
 from wpimath import units
 from wpimath.system.plant import DCMotor, LinearSystemId
@@ -54,8 +53,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
     def set_desired_state(self, desired_state: SubsystemState) -> None: # type: ignore
-        """Override this method to handle desired state handling for
-        your subsystem!
+        """
+        Sets the desired state of the subsystem.
+        It's recommended to override this function in order to update objects such as control requests.
         """
         if self._subsystem_state is desired_state:
             return
@@ -108,7 +108,10 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
     def get_state_from_name(self, name: str) -> SubsystemState:
         """Returns the SubsystemState from the given name."""
-        return self.SubsystemState[name.upper().replace(" ", "_")]
+        try:
+            return self.SubsystemState[name.upper().replace(" ", "_")]
+        except KeyError:
+            DataLogManager.log(f"Invalid state name: {name}")
 
     def get_network_table(self) -> NetworkTable:
         return self._network_table
