@@ -5,13 +5,23 @@ Team 6343's 2025 FRC robot code for Reefscape, currently known as Oil Spill. Oil
 The code is divided into several packages and files, each responsible for a different aspect of the robot function. This README explains the function of each package, and some of the variable naming conventions used. Additional information about each specific class can be found in that class' Python file.
 
 ## Code Highlights
-WIP
+### State Subsystems
+Most subsystems are children classes of [`StateSubsystem`](subsystems/__init__.py). This gives us enhanced logging capabilities and allows us to easily add additional features throughout the season via adding in additional states.
+
+### Highly Scalable Code Structure
+Our code is divided into 3 groups:
+- [`Superstructure`](subsystems/superstructure.py) (comprised of all subsystems)
+- [`Intake`](subsystems/intake.py) (Compliant wheel mechanism on the game piece manipulator)
+- [`Drivetrain`](subsystems/swerve.py) (The swerve drivebase)
+
+Using this system, we can use the Superstructure to handle all major subsystem states, which prevents conflicts between subsystems (such as the pivot moving inside the elevator and the elevator attempting to extend).
 
 ## File Functions
 
 [`subsystems`](subsystems)
 
 Contains the code for all subsystems. Each subsystem includes simulation support and data logging for match replay and analysis.
+More information about the inner workings of each subsystem can be found in their respective file.
 
 [`deploy`](deploy)
 
@@ -28,6 +38,10 @@ Contains the LimelightHelpers [translated from Java](https://github.com/Limeligh
 [`tests/pyfrc_test.py`](tests/pyfrc_test.py)
 
 Contains test code executed before code is deployed to the robot. This ensures that no uncaught errors get deployed to the robot, which could result in a devastating match loss.
+
+[`vision`](vision)
+
+Contains all Limelight pipelines used by our Vision subsystem. These are manually tuned at each event in order to provide the best AprilTag visibility.
 
 [`robot_state.py`](robot_state.py)
 
