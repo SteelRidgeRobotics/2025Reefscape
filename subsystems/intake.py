@@ -3,7 +3,7 @@ from enum import auto, Enum
 import commands2.cmd
 from commands2 import Command
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
-from phoenix6.controls import VelocityDutyCycle
+from phoenix6.controls import VelocityDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import NeutralModeValue
 
@@ -44,15 +44,15 @@ class IntakeSubsystem(StateSubsystem):
         self._intake_motor = TalonFX(Constants.CanIDs.INTAKE_TALON)
         self._intake_motor.configurator.apply(self._motor_config)
 
-        self._velocity_request = VelocityDutyCycle(0)
+        self._velocity_request = DutyCycleOut(0)
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
 
-        velocity, ignore_limits = self._state_configs.get(desired_state, (0, False))
+        output, ignore_limits = self._state_configs.get(desired_state, (0, False))
 
-        self._velocity_request.velocity = velocity
+        self._velocity_request.output = output
         self._velocity_request.ignore_hardware_limits = ignore_limits
 
         self._intake_motor.set_control(self._velocity_request)
