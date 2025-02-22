@@ -76,25 +76,6 @@ class RobotContainer:
 
         NamedCommands.registerCommand("Stop Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.DEFAULT))
 
-
-        # These are the paths that the robot can follow, which are preloaded so we reference them later and reduce lag.
-        self.preloaded_paths = {
-            "Coral A" : PathPlannerPath.fromPathFile("Coral A"),
-            "Coral B" : PathPlannerPath.fromPathFile("Coral B"),
-            "Coral C" : PathPlannerPath.fromPathFile("Coral C"),
-            "Coral D" : PathPlannerPath.fromPathFile("Coral D"),
-            "Coral E" : PathPlannerPath.fromPathFile("Coral E"),
-            "Coral F" : PathPlannerPath.fromPathFile("Coral F"),
-            "Coral G" : PathPlannerPath.fromPathFile("Coral G"),
-            "Coral H" : PathPlannerPath.fromPathFile("Coral H"),
-            "Coral I" : PathPlannerPath.fromPathFile("Coral I"),
-            "Coral J" : PathPlannerPath.fromPathFile("Coral J"),
-            "Coral K" : PathPlannerPath.fromPathFile("Coral K"),
-            "Coral L" : PathPlannerPath.fromPathFile("Coral L"),
-            "Coral Station 1" : PathPlannerPath.fromPathFile("Coral Station 1"),
-            "Coral Station 2" : PathPlannerPath.fromPathFile("Coral Station 2"),
-        } # Ends the dictionary
-
         # Setting up bindings for necessary control of the swerve drive platform
         self._field_centric = (
             swerve.requests.FieldCentric()
@@ -168,71 +149,6 @@ class RobotContainer:
         (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < self.trigger_margin) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < self.trigger_margin) & self._driver_controller.leftBumper()).whileTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
-
-        # #Left reef sides
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.y()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral A"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.x()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral C"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.a()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral E"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.b()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral G"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.rightBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral I"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.leftBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral K"], self.path_constraints)
-        #         )  
-
-        # #right reef sides
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.y()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral B"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.x()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral D"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.a()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral F"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.b()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral H"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.rightBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral J"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & self._driver_controller.leftBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral L"], self.path_constraints)
-        #         )
-        
-        # #coral stations
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.leftBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 1"], self.path_constraints)
-        #         )
-        # (commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() >= self.trigger_margin) & commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() >= self.trigger_margin) & self._driver_controller.rightBumper()).whileTrue(
-        #             AutoBuilder.pathfindThenFollowPath(self.preloaded_paths["Coral Station 2"], self.path_constraints)
-        #         )
-
-        # (commands2.button.Trigger(lambda: self._driver_controller.getLeftTriggerAxis() < self.trigger_margin) & commands2.button.Trigger(lambda: self._driver_controller.getRightTriggerAxis() < self.trigger_margin) & self._driver_controller.rightBumper()).whileTrue( #Only does this function if the triggers aren't pressed
-
-        #     self.drivetrain.apply_request(
-        #         lambda: (
-        #             self._robot_centric.with_velocity_x(
-        #                 -self._driver_controller.getLeftY() * self._max_speed
-        #             )
-        #             .with_velocity_y(
-        #                 -self._driver_controller.getLeftX() * self._max_speed
-        #             )
-        #             .with_rotational_rate(
-        #                 -self._driver_controller.getRightX() * self._max_angular_rate
-        #             )
-        #         )
-        #     )
-        # )
 
         self._function_controller.y().onTrue(
             self.superstructure.set_goal_command(self.superstructure.Goal.L4_SCORING)

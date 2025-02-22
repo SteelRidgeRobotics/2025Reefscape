@@ -47,6 +47,7 @@ class VisionSubsystem(StateSubsystem):
                 raise TypeError(f"Camera must be a string!\nGiven cameras: {args}")
 
     def periodic(self):
+        return
         super().periodic()
 
         if not abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) <= 720:
@@ -67,13 +68,13 @@ class VisionSubsystem(StateSubsystem):
                     )
                     estimate = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
                     if estimate.tag_count > 0:
-                        valid_pose_estimates.append(estimate)
+                        self._swerve.add_vision_measurement(estimate.pose, utils.fpga_to_current_time(estimate.timestamp_seconds), self.get_dynamic_std_devs(estimate))
 
             case self.SubsystemState.MEGA_TAG_1:
                 for camera in self._cameras:
                     estimate = LimelightHelpers.get_botpose_estimate_wpiblue(camera)
                     if estimate.tag_count > 0:
-                        valid_pose_estimates.append(estimate)
+                        self._swerve.add_vision_measurement(estimate.pose, utils.fpga_to_current_time(estimate.timestamp_seconds), self.get_dynamic_std_devs(estimate))
 
             case self.SubsystemState.DISABLE_ESTIMATES:
                 return
@@ -81,8 +82,6 @@ class VisionSubsystem(StateSubsystem):
         if len(valid_pose_estimates) == 0:
             return
 
-        for estimate in valid_pose_estimates:
-            self._swerve.add_vision_measurement(estimate.pose, utils.fpga_to_current_time(estimate.timestamp_seconds), self.get_dynamic_std_devs(estimate))
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if self.is_frozen():
