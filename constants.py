@@ -30,29 +30,29 @@ class Constants:
         )
 
     class ElevatorConstants:
-        L1_SCORE_POSITION = -2.512207 # Placeholders
-        L2_SCORE_POSITION = -3.250244
-        L3_SCORE_POSITION = -5.451172
-        L4_SCORE_POSITION = -6.087158
-        L2_ALGAE_POSITION = -3.549561
-        L3_ALGAE_POSITION = -4.732666
-        NET_SCORE_POSITION = -6.052246
-        ELEVATOR_MAX = -6.096924
+        L1_SCORE_POSITION = 2.512207 # Placeholders
+        L2_SCORE_POSITION = 3.250244
+        L3_SCORE_POSITION = 5.451172
+        L4_SCORE_POSITION = 6.087158
+        L2_ALGAE_POSITION = 3.549561
+        L3_ALGAE_POSITION = 4.732666
+        NET_SCORE_POSITION = 6.052246
+        ELEVATOR_MAX = 6.096924
 
         DEFAULT_POSITION = 0
 
         CRUISE_VELOCITY = 6
-        MM_ACCELERATION = 6
+        MM_ACCELERATION = 12
         EXPO_K_V = 10
         EXPO_K_A = 4
 
-        GEAR_RATIO = 31/4 # Placeholder
+        GEAR_RATIO = 31/4
         GAINS = (Slot0Configs()
-            .with_k_g(0.03)
-            .with_k_p(2.5)
+            .with_k_g(0.36)
+            .with_k_p(40)
             .with_k_i(0.0)
             .with_k_d(0.0)
-            .with_k_s(0.0)
+            .with_k_s(0.11)
             .with_k_v(0.0)
             .with_k_a(0.0)
             .with_gravity_type(GravityTypeValue.ELEVATOR_STATIC)
@@ -61,19 +61,19 @@ class Constants:
         SETPOINT_TOLERANCE = 0.1
 
     class PivotConstants:
-        INSIDE_ELEVATOR_ANGLE = 0.267334 # Used for subsystem collision checking
+        INSIDE_ELEVATOR_ANGLE = 0.262207 # Used for subsystem collision checking
         ELEVATOR_PRIORITY_ANGLE = 0.241943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
-        GROUND_INTAKE_ANGLE = -0.072754
+        GROUND_INTAKE_ANGLE = -0.081543
         FUNNEL_INTAKE_ANGLE = 0.336914
         ALGAE_INTAKE_ANGLE = -0.05542
         HIGH_SCORING_ANGLE =  0.285645
-        MID_SCORING_ANGLE = 0.322754
+        MID_SCORING_ANGLE = 0.2854
         LOW_SCORING_ANGLE = 0.338379
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
 
-        MINIMUM_ANGLE = -0.091064
+        MINIMUM_ANGLE = -0.091
         MAXIMUM_ANGLE = 0.392822
 
         CRUISE_VELOCITY = 3
@@ -82,7 +82,7 @@ class Constants:
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(1.1)
-                 .with_k_p(15.0)
+                 .with_k_p(7.5)
                  .with_k_i(0.0)
                  .with_k_d(0.0)
                  .with_k_s(0.47)
@@ -98,7 +98,7 @@ class Constants:
 
     class IntakeConstants:
 
-        CORAL_INTAKE_SPEED = 1
+        CORAL_INTAKE_SPEED = 0.7
         CORAL_OUTPUT_SPEED = 1
 
         ALGAE_INTAKE_SPEED = 1

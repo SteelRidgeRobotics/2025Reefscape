@@ -57,6 +57,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
 
     def periodic(self):
+        self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
+        self._frozen_pub.set(self.is_frozen())
+        
         # Update sim models
         if utils.is_simulation() and not RobotBase.isReal():
             for model in self._sim_models:
