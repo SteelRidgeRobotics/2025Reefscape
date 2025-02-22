@@ -6,7 +6,7 @@ from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
 
 from wpilib import Servo
-
+from wpimath import units
 
 from constants import Constants
 from subsystems import StateSubsystem
@@ -28,7 +28,7 @@ class ClimberSubsystem(StateSubsystem):
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ClimberConstants.GEAR_RATIO))
                      )
 
-    _state_configs = {
+    _state_configs: dict[SubsystemState, tuple[int, units.degrees]] = {
         SubsystemState.STOP: (0, 180),
         SubsystemState.CLIMB_POSITIVE: (4, 0),
         SubsystemState.CLIMB_NEGATIVE: (-4, 0),

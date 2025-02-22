@@ -17,7 +17,7 @@ class FunnelSubsystem(StateSubsystem):
         UP = auto()
         DOWN = auto()
 
-    _state_configs = {
+    _state_configs: dict[SubsystemState, float] = {
         SubsystemState.UP: Constants.FunnelConstants.CORAL_STATION_POSITION,
         SubsystemState.DOWN: Constants.FunnelConstants.STOWED_POSITION,
     }

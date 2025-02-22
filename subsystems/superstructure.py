@@ -28,8 +28,8 @@ class Superstructure(Subsystem):
         FUNNEL_INTAKE = auto()
         GROUND_INTAKE = auto()
 
-    # Map each goal to each subsystem state to reduce code complexion
-    _goal_to_states = {
+    # Map each goal to each subsystem state to reduce code complexity
+    _goal_to_states: dict[Goal, tuple[PivotSubsystem.SubsystemState, ElevatorSubsystem.SubsystemState, FunnelSubsystem.SubsystemState]] = {
         Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L4_SCORING: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L3_SCORING: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
@@ -64,16 +64,15 @@ class Superstructure(Subsystem):
         self.elevator = elevator
         self.funnel = funnel
         self.vision = vision
-        
+
+        self._goal_commands = {}
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
-        self._goal_commands = {}
     
     def periodic(self):
         if DriverStation.isTest():
             return
 
-        self._last_goal = self._goal
         if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)

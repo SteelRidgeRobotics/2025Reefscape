@@ -40,8 +40,8 @@ class OilSpill(TimedCommandRobot):
 
     def robotPeriodic(self) -> None:
         # Log important info
-        SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
-        SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
+        #SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
+        #SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
 
         if utils.is_simulation():
             self.container.robot_state.update_mechanisms()

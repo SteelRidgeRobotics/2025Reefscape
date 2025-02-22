@@ -30,7 +30,7 @@ class IntakeSubsystem(StateSubsystem):
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
                      )
 
-    _state_configs = {
+    _state_configs: dict[SubsystemState, tuple[int, bool]] = {
         SubsystemState.DEFAULT: (0, False),
         SubsystemState.CORAL_INTAKING: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
         SubsystemState.CORAL_OUTPUTTING: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),

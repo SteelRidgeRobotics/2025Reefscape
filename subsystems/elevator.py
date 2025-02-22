@@ -37,7 +37,7 @@ class ElevatorSubsystem(StateSubsystem):
         L3_ALGAE = auto()
         NET = auto()
 
-    _state_configs = {
+    _state_configs: dict[SubsystemState, float | None] = {
         SubsystemState.DEFAULT: Constants.ElevatorConstants.DEFAULT_POSITION,
         SubsystemState.L1: Constants.ElevatorConstants.L1_SCORE_POSITION,
         SubsystemState.L2: Constants.ElevatorConstants.L2_SCORE_POSITION,

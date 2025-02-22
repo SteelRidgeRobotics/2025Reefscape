@@ -36,7 +36,7 @@ class PivotSubsystem(StateSubsystem):
         NET_SCORING = auto()
         PROCESSOR_SCORING = auto()
 
-    _state_configs = {
+    _state_configs: dict[SubsystemState, float | None] = {
         SubsystemState.IDLE: None,
         SubsystemState.AVOID_ELEVATOR: Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE,
         SubsystemState.STOW: Constants.PivotConstants.STOW_ANGLE,

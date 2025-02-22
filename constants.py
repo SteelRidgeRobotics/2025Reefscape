@@ -122,7 +122,7 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 0.070312
+        CORAL_STATION_POSITION = 0.095459
         STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
@@ -134,13 +134,15 @@ class Constants:
         MM_ACCELERATION = 1
 
         GAINS = (Slot0Configs()
-            .with_k_p(1.0)
+            .with_k_p(35)
             .with_k_i(0.0)
             .with_k_d(0.0)
             .with_k_s(0.0)
             .with_k_v(0.0)
             .with_k_a(0.0)
+            .with_k_g(0.2811) # Shoutout StormBots
+            .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
-        SUPPLY_LIMIT = 5
+        SUPPLY_LIMIT = 20
         STATOR_LIMIT = 50
