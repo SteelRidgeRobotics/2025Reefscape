@@ -6,7 +6,7 @@ from commands2.subsystem import Subsystem
 from ntcore import *
 from phoenix6 import utils
 from phoenix6.hardware import TalonFX
-from wpilib import RobotController, DataLogManager
+from wpilib import RobotController, DataLogManager, DriverStation
 from wpilib.simulation import DCMotorSim
 from wpimath import units
 from wpimath.system.plant import DCMotor, LinearSystemId
@@ -52,14 +52,16 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
-    def set_desired_state(self, desired_state: SubsystemState) -> None: # type: ignore
+    def set_desired_state(self, desired_state: SubsystemState) -> bool: # type: ignore
         """
         Sets the desired state of the subsystem.
         It's recommended to override this function in order to update objects such as control requests.
         """
-        if self._subsystem_state is desired_state:
-            return
+        if self._subsystem_state is desired_state or DriverStation.isTest() or self.is_frozen():
+            return False
         self._subsystem_state = desired_state
+        self._current_state_pub.set(self.get_state_name())
+        return True
 
     def periodic(self):
 
@@ -69,7 +71,6 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         if self._current_state_sub.get() is not self.get_state_name():
             self._subsystem_state = self.get_state_from_name(self._current_state_sub.get())
 
-        self._current_state_pub.set(self.get_state_name())
         self._frozen_pub.set(self.is_frozen())
 
         # Update sim models

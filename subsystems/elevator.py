@@ -37,6 +37,18 @@ class ElevatorSubsystem(StateSubsystem):
         L3_ALGAE = auto()
         NET = auto()
 
+    _state_configs = {
+        SubsystemState.DEFAULT: Constants.ElevatorConstants.DEFAULT_POSITION,
+        SubsystemState.L1: Constants.ElevatorConstants.L1_SCORE_POSITION,
+        SubsystemState.L2: Constants.ElevatorConstants.L2_SCORE_POSITION,
+        SubsystemState.L3: Constants.ElevatorConstants.L3_SCORE_POSITION,
+        SubsystemState.L4: Constants.ElevatorConstants.L4_SCORE_POSITION,
+        SubsystemState.L2_ALGAE: Constants.ElevatorConstants.L2_ALGAE_POSITION,
+        SubsystemState.L3_ALGAE: Constants.ElevatorConstants.L3_ALGAE_POSITION,
+        SubsystemState.NET: Constants.ElevatorConstants.NET_SCORE_POSITION,
+        SubsystemState.IDLE: None,
+    }
+
     _candi_config = CANdiConfiguration()
 
     _motor_config = (TalonFXConfiguration()
@@ -116,35 +128,15 @@ class ElevatorSubsystem(StateSubsystem):
         self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
-        if DriverStation.isTest() or self.is_frozen():
+        if not super().set_desired_state(desired_state):
             return
 
-        match self._subsystem_state:
-            case self.SubsystemState.IDLE:
-                pass
-            case self.SubsystemState.DEFAULT:
-                self._position_request.position = Constants.ElevatorConstants.DEFAULT_POSITION
-            case self.SubsystemState.L1:
-                self._position_request.position = Constants.ElevatorConstants.L1_SCORE_POSITION
-            case self.SubsystemState.L2:
-                self._position_request.position = Constants.ElevatorConstants.L2_SCORE_POSITION
-            case self.SubsystemState.L3:
-                self._position_request.position = Constants.ElevatorConstants.L3_SCORE_POSITION
-            case self.SubsystemState.L4:
-                self._position_request.position = Constants.ElevatorConstants.L4_SCORE_POSITION
-            case self.SubsystemState.L2_ALGAE:
-                self._position_request.position = Constants.ElevatorConstants.L2_ALGAE_POSITION
-            case self.SubsystemState.L3_ALGAE:
-                self._position_request.position = Constants.ElevatorConstants.L3_ALGAE_POSITION
-            case self.SubsystemState.NET:
-                self._position_request.position = Constants.ElevatorConstants.NET_SCORE_POSITION
-
-        self._subsystem_state = desired_state
-
-        if desired_state is not self.SubsystemState.IDLE:
-            self._master_motor.set_control(self._position_request)
-        else:
+        position = self._state_configs.get(desired_state, None)
+        if position is None:
             self._master_motor.set_control(self._brake_request)
+        else:
+            self._position_request.position = position
+            self._master_motor.set_control(self._position_request)
 
     def is_at_setpoint(self) -> bool:
         return self._at_setpoint

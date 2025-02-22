@@ -84,11 +84,6 @@ class VisionSubsystem(StateSubsystem):
         for estimate in valid_pose_estimates:
             self._swerve.add_vision_measurement(estimate.pose, utils.fpga_to_current_time(estimate.timestamp_seconds), self.get_dynamic_std_devs(estimate))
 
-    def set_desired_state(self, desired_state: SubsystemState) -> None:
-        if self.is_frozen():
-            return
-        self._subsystem_state = desired_state
-
     @staticmethod
     def get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:
         default = (0.7, 0.7, 0.7)
