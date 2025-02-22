@@ -44,11 +44,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._nt_publishers = []
         current_state_nt = self._network_table.getStringTopic("Current State")
         self._current_state_pub = current_state_nt.publish()
-        self._current_state_sub = current_state_nt.subscribe(self.get_state_name())
 
         frozen_nt = self._network_table.getBooleanTopic("Frozen")
         self._frozen_pub = frozen_nt.publish()
-        self._frozen_sub = frozen_nt.subscribe(self.is_frozen())
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
@@ -57,23 +55,14 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         Sets the desired state of the subsystem.
         It's recommended to override this function in order to update objects such as control requests.
         """
-        if self._subsystem_state is desired_state or DriverStation.isTest() or self.is_frozen():
+        current_state = self._subsystem_state
+        if current_state is desired_state or DriverStation.isTest() or self.is_frozen():
             return False
         self._subsystem_state = desired_state
         self._current_state_pub.set(self.get_state_name())
         return True
 
     def periodic(self):
-
-        # Dashboard overrides
-        if self._frozen_sub.get() is not self.is_frozen():
-            self._frozen = self._frozen_sub.get()
-        if self._current_state_sub.get() is not self.get_state_name():
-            self._subsystem_state = self.get_state_from_name(self._current_state_sub.get())
-
-        self._frozen_pub.set(self.is_frozen())
-
-        # Update sim models
         if not utils.is_simulation():
             return
         for model in self._sim_models:
@@ -92,27 +81,23 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     def freeze(self) -> None:
         """Prevents new state changes."""
         self._frozen = True
+        self._frozen_pub.set(True)
 
     def unfreeze(self) -> None:
         """Allows state changes."""
         self._frozen = False
+        self._frozen_pub.set(False)
 
     def is_frozen(self) -> bool:
         return self._frozen
             
     def get_current_state(self) -> SubsystemState:
-        return self._subsystem_state
+        state = self._subsystem_state
+        return state
 
     def get_state_name(self) -> str:
         """Returns the name of the current state."""
         return self._subsystem_state.name.title().replace("_", " ")
-
-    def get_state_from_name(self, name: str) -> SubsystemState:
-        """Returns the SubsystemState from the given name."""
-        try:
-            return self.SubsystemState[name.upper().replace(" ", "_")]
-        except KeyError:
-            DataLogManager.log(f"Invalid state name: {name}")
 
     def get_network_table(self) -> NetworkTable:
         return self._network_table
