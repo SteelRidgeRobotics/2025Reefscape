@@ -19,8 +19,6 @@ class RobotState:
         self._pivot = pivot
         self._elevator = elevator
 
-        DriverStation.startDataLog(DataLogManager.getLog())
-
         self._field = Field2d()
         SmartDashboard.putData("Field", self._field)
         self._field.setRobotPose(Pose2d())
