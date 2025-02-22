@@ -6,7 +6,7 @@ from commands2.subsystem import Subsystem
 from ntcore import *
 from phoenix6 import utils
 from phoenix6.hardware import TalonFX
-from wpilib import DataLogManager, RobotBase, RobotController
+from wpilib import RobotController, DataLogManager, DriverStation, RobotBase
 from wpilib.simulation import DCMotorSim
 from wpimath import units
 from wpimath.system.plant import DCMotor, LinearSystemId
@@ -37,59 +37,67 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self.setName(name.title())
 
         self._subsystem_state = starting_state
-        self._freeze = False
+        self._frozen = False
 
         # Create NT folder for organization
         self._network_table = NetworkTableInstance.getDefault().getTable(name.title())
         self._nt_publishers = []
-        self._current_state_pub = self._network_table.getStringTopic("Current State").publish()
-        self._frozen_pub = self._network_table.getBooleanTopic("Frozen").publish()
+        current_state_nt = self._network_table.getStringTopic("Current State")
+        self._current_state_pub = current_state_nt.publish()
+
+        frozen_nt = self._network_table.getBooleanTopic("Frozen")
+        self._frozen_pub = frozen_nt.publish()
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
-    def set_desired_state(self, desired_state: SubsystemState) -> None: # type: ignore
-        """Override this method to handle desired state handling for
-        your subsystem!
+    def set_desired_state(self, desired_state: SubsystemState) -> bool: # type: ignore
         """
-        if self._subsystem_state is desired_state:
-            return
+        Sets the desired state of the subsystem.
+        It's recommended to override this function in order to update objects such as control requests.
+        """
+        current_state = self._subsystem_state
+        if current_state is desired_state or DriverStation.isTest() or self.is_frozen():
+            return False
         self._subsystem_state = desired_state
-        self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
+        self._current_state_pub.set(self.get_state_name())
+        return True
 
     def periodic(self):
-        self._current_state_pub.set(self._subsystem_state.name.title().replace("_", " "))
-        self._frozen_pub.set(self.is_frozen())
-        
-        # Update sim models
-        if utils.is_simulation() and not RobotBase.isReal():
-            for model in self._sim_models:
-                sim = model[1].sim_state
-                sim.set_supply_voltage(RobotController.getBatteryVoltage())
-                model[0].setInputVoltage(sim.motor_voltage)
-                model[0].update(0.02)
+        if not utils.is_simulation():
+            return
+        for model in self._sim_models:
+            sim = model[1].sim_state
+            sim.set_supply_voltage(RobotController.getBatteryVoltage())
+            model[0].setInputVoltage(sim.motor_voltage)
+            model[0].update(0.02)
 
-                sim.set_raw_rotor_position(units.radiansToRotations(model[0].getAngularPosition())
-                                        * model[0].getGearing())
-                sim.set_rotor_velocity(units.radiansToRotations(model[0].getAngularVelocity())
-                                        * model[0].getGearing())
-                sim.set_rotor_acceleration(units.radiansToRotations(model[0].getAngularAcceleration())
-                                        * model[0].getGearing())
+            sim.set_raw_rotor_position(units.radiansToRotations(model[0].getAngularPosition())
+                                       * model[0].getGearing())
+            sim.set_rotor_velocity(units.radiansToRotations(model[0].getAngularVelocity())
+                                       * model[0].getGearing())
+            sim.set_rotor_acceleration(units.radiansToRotations(model[0].getAngularAcceleration())
+                                       * model[0].getGearing())
 
     def freeze(self) -> None:
         """Prevents new state changes."""
-        self._freeze = True
+        self._frozen = True
         self._frozen_pub.set(True)
 
     def unfreeze(self) -> None:
         """Allows state changes."""
-        self._freeze = False
+        self._frozen = False
         self._frozen_pub.set(False)
 
     def is_frozen(self) -> bool:
-        return self._freeze
+        return self._frozen
             
     def get_current_state(self) -> SubsystemState:
-        return self._subsystem_state
+        state = self._subsystem_state
+        return state
+
+    def get_state_name(self) -> str:
+        """Returns the name of the current state."""
+        return self._subsystem_state.name.title().replace("_", " ")
 
     def get_network_table(self) -> NetworkTable:
         return self._network_table

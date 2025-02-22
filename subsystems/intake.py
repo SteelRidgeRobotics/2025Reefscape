@@ -30,6 +30,14 @@ class IntakeSubsystem(StateSubsystem):
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
                      )
 
+    _state_configs = {
+        SubsystemState.DEFAULT: (0, False),
+        SubsystemState.CORAL_INTAKING: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
+        SubsystemState.CORAL_OUTPUTTING: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
+        SubsystemState.ALGAE_INTAKING: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
+        SubsystemState.ALGAE_OUTPUTTING: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
+    }
+
     def __init__(self) -> None:
         super().__init__("Intake", self.SubsystemState.DEFAULT)
 
@@ -38,28 +46,15 @@ class IntakeSubsystem(StateSubsystem):
 
         self._velocity_request = VelocityDutyCycle(0)
 
-    def periodic(self):
-        super().periodic()
-
     def set_desired_state(self, desired_state: SubsystemState) -> None:
-        match desired_state:
-            case self.SubsystemState.DEFAULT:
-                self._velocity_request.ignore_hardware_limits = False
-                self._velocity_request.velocity = 0
-            case self.SubsystemState.CORAL_INTAKING:
-                self._velocity_request.ignore_hardware_limits = False
-                self._velocity_request.velocity = Constants.IntakeConstants.CORAL_INTAKE_SPEED
-            case self.SubsystemState.CORAL_OUTPUTTING:
-                self._velocity_request.ignore_hardware_limits = True # Ignore the beam break stop while scoring coral
-                self._velocity_request.velocity = Constants.IntakeConstants.CORAL_OUTPUT_SPEED
-            case self.SubsystemState.ALGAE_INTAKING:
-                self._velocity_request.ignore_hardware_limits = False
-                self._velocity_request.velocity = Constants.IntakeConstants.ALGAE_INTAKE_SPEED
-            case self.SubsystemState.ALGAE_OUTPUTTING:
-                self._velocity_request.ignore_hardware_limits = True
-                self._velocity_request.velocity = Constants.IntakeConstants.ALGAE_OUTPUT_SPEED
+        if not super().set_desired_state(desired_state):
+            return
 
-        self._subsystem_state = desired_state
+        velocity, ignore_limits = self._state_configs.get(desired_state, (0, False))
+
+        self._velocity_request.velocity = velocity
+        self._velocity_request.ignore_hardware_limits = ignore_limits
+
         self._intake_motor.set_control(self._velocity_request)
 
     def set_desired_state_command(self, state: SubsystemState) -> Command:

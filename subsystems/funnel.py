@@ -17,6 +17,11 @@ class FunnelSubsystem(StateSubsystem):
         UP = auto()
         DOWN = auto()
 
+    _state_configs = {
+        SubsystemState.UP: Constants.FunnelConstants.CORAL_STATION_POSITION,
+        SubsystemState.DOWN: Constants.FunnelConstants.STOWED_POSITION,
+    }
+
     _funnel_config = TalonFXConfiguration()
     (_funnel_config.feedback
      .with_sensor_to_mechanism_ratio(Constants.FunnelConstants.GEAR_RATIO)
@@ -47,20 +52,10 @@ class FunnelSubsystem(StateSubsystem):
         self._position_request = MotionMagicVoltage(0)
         self._brake_request = VoltageOut(0)
 
-    def periodic(self):
-        super().periodic()
-
     def set_desired_state(self, desired_state: SubsystemState) -> None:
-        if DriverStation.isTest() or self.is_frozen():
+        if not super().set_desired_state(desired_state):
             return
 
-        match desired_state:
-            case self.SubsystemState.UP:
-                self._position_request.position = Constants.FunnelConstants.CORAL_STATION_POSITION
-
-            case self.SubsystemState.DOWN:
-                self._position_request.position = Constants.FunnelConstants.STOWED_POSITION
-        
+        position = self._state_configs.get(desired_state, Constants.FunnelConstants.STOWED_POSITION)
+        self._position_request.position = position
         self._funnel_motor.set_control(self._position_request)
-
-        self._subsystem_state = desired_state
