@@ -62,7 +62,7 @@ class Constants:
 
     class PivotConstants:
         INSIDE_ELEVATOR_ANGLE = 0.262207 # Used for subsystem collision checking
-        ELEVATOR_PRIORITY_ANGLE = 0.241943 # We move the pivot to this position until the elevator has reached its setpoint.
+        ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
         FUNNEL_INTAKE_ANGLE = 0.336914
@@ -81,7 +81,7 @@ class Constants:
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(1.1)
+                 .with_k_g(0.34)
                  .with_k_p(7.5)
                  .with_k_i(0.0)
                  .with_k_d(0.0)

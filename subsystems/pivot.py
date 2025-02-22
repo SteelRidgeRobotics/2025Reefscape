@@ -123,8 +123,8 @@ class PivotSubsystem(StateSubsystem):
             self._master_motor.get_position(False), self._master_motor.get_velocity(False)
         )
         self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.PivotConstants.SETPOINT_TOLERANCE)
-        #self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
-        #self.get_network_table().getEntry("In Elevator").setBoolean(self.is_in_elevator())
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+        self.get_network_table().getEntry("In Elevator").setBoolean(self.is_in_elevator())
 
         # Update CANcoder sim state
         if utils.is_simulation() and not RobotBase.isReal():
@@ -151,7 +151,7 @@ class PivotSubsystem(StateSubsystem):
         return self._at_setpoint
 
     def is_in_elevator(self) -> bool:
-        return self._master_motor.get_position().value >= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
+        return self._master_motor.get_position(True).value >= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
 
     def stop(self) -> Command:
         return self.runOnce(lambda: self._master_motor.set_control(self._sys_id_request.with_output(0)))

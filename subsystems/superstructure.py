@@ -68,10 +68,23 @@ class Superstructure(Subsystem):
         self._goal_commands = {}
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
+
+        self._elevator_old_state = self.elevator.get_current_state()
+        self._pivot_old_state = self.pivot.get_current_state()
     
     def periodic(self):
         if DriverStation.isTest():
             return
+        
+        SmartDashboard.putString("Old Pivot State", self._pivot_old_state.name)
+        SmartDashboard.putString("Old Elevator State", self._elevator_old_state.name)
+
+        pivot_state = self.pivot.get_current_state()
+        if not pivot_state is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
+                self._pivot_old_state = pivot_state
+        elevator_state = self.elevator.get_current_state()
+        if not elevator_state is ElevatorSubsystem.SubsystemState.IDLE:
+            self._elevator_old_state = elevator_state
 
         if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
@@ -83,8 +96,12 @@ class Superstructure(Subsystem):
         # Unfreeze subsystems if safe
         if not self.pivot.is_in_elevator() and self.pivot.get_current_state() is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self.elevator.unfreeze()
+            self.elevator.set_desired_state(self._elevator_old_state)
         if self.elevator.is_at_setpoint() and self.pivot.get_current_state() is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self.pivot.unfreeze()
+            self.pivot.set_desired_state(self._pivot_old_state)
+
+            
 
         # Use MegaTag 1 before the match starts
         if DriverStation.isEnabled():
@@ -93,8 +110,8 @@ class Superstructure(Subsystem):
     def _set_goal(self, goal: Goal) -> None:
         # if the goal is already set to this goal, return, otherwise set our goal
         current_goal = self._goal
-        if goal is current_goal and not self.elevator.is_frozen() and not self.pivot.is_frozen():
-            return
+        #if goal is current_goal and (not self.elevator.is_frozen() or not self.pivot.is_frozen()):
+            #return
         current_goal = self._goal = goal
 
         pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))

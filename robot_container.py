@@ -28,9 +28,6 @@ class RobotContainer:
         self._driver_controller = commands2.button.CommandXboxController(0)
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
-        self.drivetrain.register_telemetry(
-            lambda state: self.robot_state.log_swerve_state(state)
-        )
 
         self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
@@ -46,6 +43,9 @@ class RobotContainer:
         )
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
+        self.drivetrain.register_telemetry(
+            lambda state: self.robot_state.log_swerve_state(state)
+        )
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
         )
@@ -115,6 +115,13 @@ class RobotContainer:
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING),
+            )
+        )
+
+        (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING),
             )
         )
