@@ -51,18 +51,15 @@ class Superstructure(Subsystem):
         self.vision = vision
 
         self._goal = self._last_goal = self.Goal.DEFAULT
+        self.set_goal_command(self.Goal.DEFAULT)
     
     def periodic(self):
         if DriverStation.isTest():
             return
 
-        if DriverStation.isDisabled():
-            default_command = self.set_goal_command(self.Goal.DEFAULT)
-            self.setDefaultCommand(default_command)
-
         self._last_goal = self._goal
 
-        SmartDashboard.putString("Superstructure Goal", self._goal.name)
+        #SmartDashboard.putString("Superstructure Goal", self._goal.name)
 
         if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
