@@ -51,6 +51,7 @@ class PivotSubsystem(StateSubsystem):
     )
     _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     _master_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
+    
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
     _master_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.PivotConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.PivotConstants.MM_ACCELERATION))
 

@@ -1,6 +1,6 @@
 from enum import auto, Enum
 
-from phoenix6.configs import TalonFXConfiguration, MotionMagicConfigs
+from phoenix6.configs import CurrentLimitsConfigs, TalonFXConfiguration, MotionMagicConfigs
 from phoenix6.controls import VoltageOut, MotionMagicVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
@@ -19,12 +19,19 @@ class FunnelSubsystem(StateSubsystem):
 
     _funnel_config = TalonFXConfiguration()
     (_funnel_config.feedback
-     .with_rotor_to_sensor_ratio(Constants.FunnelConstants.GEAR_RATIO)
+     .with_sensor_to_mechanism_ratio(Constants.FunnelConstants.GEAR_RATIO)
     )
-    _funnel_config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+    _funnel_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     _funnel_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
     _funnel_config.with_slot0(Constants.FunnelConstants.GAINS)
     _funnel_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.FunnelConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.FunnelConstants.MM_ACCELERATION))
+    _funnel_config.with_current_limits(CurrentLimitsConfigs()
+                                       .with_supply_current_limit_enable(True)
+                                       .with_supply_current_limit(Constants.FunnelConstants.SUPPLY_LIMIT)
+                                       .with_supply_current_lower_time(0)
+                                       .with_stator_current_limit_enable(True)
+                                       .with_stator_current_limit(Constants.FunnelConstants.STATOR_LIMIT)
+                                       )
 
     def __init__(self) -> None:
         super().__init__("Funnel", self.SubsystemState.DOWN)
@@ -32,6 +39,8 @@ class FunnelSubsystem(StateSubsystem):
         self._funnel_motor = TalonFX(Constants.CanIDs.FUNNEL_TALON)
 
         self._funnel_motor.configurator.apply(self._funnel_config)
+
+        self._funnel_motor.set_position(0)
 
         self._add_talon_sim_model(self._funnel_motor, DCMotor.falcon500FOC(), Constants.FunnelConstants.GEAR_RATIO)
 

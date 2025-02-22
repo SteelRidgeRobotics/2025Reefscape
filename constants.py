@@ -61,35 +61,38 @@ class Constants:
         SETPOINT_TOLERANCE = 0.1
 
     class PivotConstants:
-        INSIDE_ELEVATOR_ANGLE = 0.223633 # Used for subsystem collision checking
-        ELEVATOR_PRIORITY_ANGLE = 0.174805 # We move the pivot to this position until the elevator has reached its setpoint.
-        STOW_ANGLE = 0.231934
+        INSIDE_ELEVATOR_ANGLE = 0.267334 # Used for subsystem collision checking
+        ELEVATOR_PRIORITY_ANGLE = 0.241943 # We move the pivot to this position until the elevator has reached its setpoint.
+        STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.072754
-        FUNNEL_INTAKE_ANGLE = 0.231934
-        ALGAE_INTAKE_ANGLE = -0.052246
-        HIGH_SCORING_ANGLE =  0.234863
-        MID_SCORING_ANGLE = 0.266602
-        LOW_SCORING_ANGLE = 0.231934
-        NET_SCORING_ANGLE = 0.114258
-        PROCESSOR_SCORING_ANGLE = -0.041016
+        FUNNEL_INTAKE_ANGLE = 0.336914
+        ALGAE_INTAKE_ANGLE = -0.05542
+        HIGH_SCORING_ANGLE =  0.285645
+        MID_SCORING_ANGLE = 0.322754
+        LOW_SCORING_ANGLE = 0.338379
+        NET_SCORING_ANGLE = 0.123535
+        PROCESSOR_SCORING_ANGLE = 0.004639
 
-        CRUISE_VELOCITY = 1
-        MM_ACCELERATION = 1
+        MINIMUM_ANGLE = -0.091064
+        MAXIMUM_ANGLE = 0.392822
+
+        CRUISE_VELOCITY = 3
+        MM_ACCELERATION = 3
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(0.03)
-                 .with_k_p(1.0)
+                 .with_k_g(1.1)
+                 .with_k_p(15.0)
                  .with_k_i(0.0)
                  .with_k_d(0.0)
-                 .with_k_s(0.0)
+                 .with_k_s(0.47)
                  .with_k_v(0.0)
                  .with_k_a(0.0)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
         CANCODER_DISCONTINUITY = 0.8
-        CANCODER_OFFSET = 0.44775390625
+        CANCODER_OFFSET = 0.6541
 
         SETPOINT_TOLERANCE = 0.03125
 
@@ -119,16 +122,16 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 10 # All Placeholders
-        STOWED_POSITION = 20
+        CORAL_STATION_POSITION = 0.070312
+        STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
 
-        CRUISE_VELOCITY = 10 
+        CRUISE_VELOCITY = 1 
 
         SETPOINT_TOLERANCE = 0.01
 
-        MM_ACCELERATION = 10
+        MM_ACCELERATION = 1
 
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
@@ -138,3 +141,6 @@ class Constants:
             .with_k_v(0.0)
             .with_k_a(0.0)
         )
+
+        SUPPLY_LIMIT = 5
+        STATOR_LIMIT = 50
