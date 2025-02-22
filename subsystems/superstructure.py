@@ -64,7 +64,7 @@ class Superstructure(Subsystem):
         self.elevator = elevator
         self.funnel = funnel
         self.vision = vision
-
+        
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
         self._goal_commands = {}
@@ -73,6 +73,7 @@ class Superstructure(Subsystem):
         if DriverStation.isTest():
             return
 
+        self._last_goal = self._goal
         if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
