@@ -44,6 +44,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self._nt_publishers = []
         current_state_nt = self._network_table.getStringTopic("Current State")
         self._current_state_pub = current_state_nt.publish()
+        self._current_state_pub.set(self.get_state_name())
 
         frozen_nt = self._network_table.getBooleanTopic("Frozen")
         self._frozen_pub = frozen_nt.publish()

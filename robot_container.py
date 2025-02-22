@@ -28,6 +28,9 @@ class RobotContainer:
         self._driver_controller = commands2.button.CommandXboxController(0)
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
+        self.drivetrain.register_telemetry(
+            lambda state: self.robot_state.log_swerve_state(state)
+        )
 
         self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
