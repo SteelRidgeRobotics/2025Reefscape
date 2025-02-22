@@ -67,12 +67,11 @@ class Superstructure(Subsystem):
 
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
+        self._goal_commands = {}
     
     def periodic(self):
         if DriverStation.isTest():
             return
-
-        SmartDashboard.putString("Superstructure Goal", self._goal.name)
 
         if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
@@ -93,17 +92,20 @@ class Superstructure(Subsystem):
 
     def _set_goal(self, goal: Goal) -> None:
         # if the goal is already set to this goal, return, otherwise set our goal
-        if goal is self._goal and not self.elevator.is_frozen() and not self.pivot.is_frozen():
+        current_goal = self._goal
+        if goal is current_goal and not self.elevator.is_frozen() and not self.pivot.is_frozen():
             return
-        self._goal = goal
+        current_goal = self._goal = goal
 
-        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(self._goal, (None, None, None))
+        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
         if pivot_state:
             self.pivot.set_desired_state(pivot_state)
         if elevator_state:
             self.elevator.set_desired_state(elevator_state)
         if funnel_state:
             self.funnel.set_desired_state(funnel_state)
+
+        SmartDashboard.putString("Superstructure Goal", current_goal.name)
 
     def set_goal_command(self, goal: Goal) -> Command:
         """
@@ -114,8 +116,13 @@ class Superstructure(Subsystem):
         :return:     A command that will set the desired goal
         :rtype:      Command
         """
-        return cmd.startEnd(
+        if goal in self._goal_commands:
+            return self._goal_commands[goal]
+
+        command = cmd.startEnd(
             lambda: self._set_goal(goal),
             lambda: self._set_goal(self.Goal.DEFAULT),
             self
         )
+        self._goal_commands[goal] = command
+        return command
