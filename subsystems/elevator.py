@@ -5,8 +5,8 @@ from commands2 import Command
 from commands2.sysid import SysIdRoutine
 from phoenix6 import SignalLogger, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, HardwareLimitSwitchConfigs
-from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs
-from phoenix6.controls import Follower, VoltageOut, MotionMagicExpoVoltage
+from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs, InvertedValue
+from phoenix6.controls import Follower, VoltageOut, MotionMagicVoltage
 from phoenix6.hardware import CANdi, TalonFX
 from phoenix6.signals import ForwardLimitSourceValue
 from wpilib import DriverStation
@@ -53,13 +53,13 @@ class ElevatorSubsystem(StateSubsystem):
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ElevatorConstants.GAINS)
-                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
+                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE).with_inverted(InvertedValue.CLOCKWISE_POSITIVE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
                      .with_motion_magic(MotionMagicConfigs()
                                         .with_motion_magic_acceleration(Constants.ElevatorConstants.MM_ACCELERATION)
                                         .with_motion_magic_cruise_velocity(Constants.ElevatorConstants.CRUISE_VELOCITY)
-                                        .with_motion_magic_expo_k_v(Constants.ElevatorConstants.EXPO_K_V)
-                                        .with_motion_magic_expo_k_a(Constants.ElevatorConstants.EXPO_K_A)
+                                        # .with_motion_magic_expo_k_v(Constants.ElevatorConstants.EXPO_K_V)
+                                        # .with_motion_magic_expo_k_a(Constants.ElevatorConstants.EXPO_K_A)
                                         )
                      )
 
@@ -67,13 +67,13 @@ class ElevatorSubsystem(StateSubsystem):
     ### NOTE: Flip positions when inverting motor output
     _limit_switch_config = HardwareLimitSwitchConfigs()
     _limit_switch_config.forward_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
-    _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2 # Bottom Limit Switch
-    _limit_switch_config.forward_limit_autoset_position_value = Constants.ElevatorConstants.DEFAULT_POSITION
+    _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS1 # Top Limit Switch
+    _limit_switch_config.forward_limit_autoset_position_value = Constants.ElevatorConstants.ELEVATOR_MAX
     _limit_switch_config.forward_limit_autoset_position_enable = True
 
     _limit_switch_config.reverse_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
-    _limit_switch_config.reverse_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS1 # Top Limit Switch
-    _limit_switch_config.reverse_limit_autoset_position_value = Constants.ElevatorConstants.ELEVATOR_MAX
+    _limit_switch_config.reverse_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2 # Bottom Limit Switch
+    _limit_switch_config.reverse_limit_autoset_position_value = Constants.ElevatorConstants.DEFAULT_POSITION
     _limit_switch_config.reverse_limit_autoset_position_enable = True
 
     def __init__(self) -> None:
@@ -90,7 +90,7 @@ class ElevatorSubsystem(StateSubsystem):
         self._candi = CANdi(Constants.CanIDs.ELEVATOR_CANDI)
         self._candi.configurator.apply(self._candi_config)
 
-        self._position_request = MotionMagicExpoVoltage(0)
+        self._position_request = MotionMagicVoltage(0)
 
         self._brake_request = VoltageOut(0)
         self._sys_id_request = VoltageOut(0)

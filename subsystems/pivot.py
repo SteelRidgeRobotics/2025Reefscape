@@ -7,7 +7,7 @@ from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration, Motion
 from phoenix6.controls import VoltageOut, Follower, MotionMagicVoltage
 from phoenix6.hardware import CANcoder, TalonFX
 from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue
-from wpilib import DriverStation, RobotController
+from wpilib import DriverStation, RobotBase, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
@@ -65,6 +65,7 @@ class PivotSubsystem(StateSubsystem):
     )
     _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     _master_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
+
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
     _master_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.PivotConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.PivotConstants.MM_ACCELERATION))
 
@@ -119,14 +120,14 @@ class PivotSubsystem(StateSubsystem):
         super().periodic()
 
         latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
-            self._master_motor.get_position(), self._master_motor.get_velocity()
+            self._master_motor.get_position(False), self._master_motor.get_velocity(False)
         )
         self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.PivotConstants.SETPOINT_TOLERANCE)
-        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
-        self.get_network_table().getEntry("In Elevator").setBoolean(self.is_in_elevator())
+        #self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+        #self.get_network_table().getEntry("In Elevator").setBoolean(self.is_in_elevator())
 
         # Update CANcoder sim state
-        if utils.is_simulation():
+        if utils.is_simulation() and not RobotBase.isReal():
             talon_sim = self._sim_models[0][0]
             cancoder_sim = self._encoder.sim_state
 

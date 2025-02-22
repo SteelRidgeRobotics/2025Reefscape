@@ -6,7 +6,7 @@ from commands2.subsystem import Subsystem
 from ntcore import *
 from phoenix6 import utils
 from phoenix6.hardware import TalonFX
-from wpilib import RobotController, DataLogManager, DriverStation
+from wpilib import RobotController, DataLogManager, DriverStation, RobotBase
 from wpilib.simulation import DCMotorSim
 from wpimath import units
 from wpimath.system.plant import DCMotor, LinearSystemId
