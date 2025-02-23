@@ -30,9 +30,9 @@ class Constants:
         )
 
     class ElevatorConstants:
-        L1_SCORE_POSITION = 0.5 # Placeholder
-        L2_SCORE_POSITION = 1.338
-        L3_SCORE_POSITION = 2.982
+        L1_SCORE_POSITION = 2.512207 # Placeholders
+        L2_SCORE_POSITION = 3.250244
+        L3_SCORE_POSITION = 5.451172
         L4_SCORE_POSITION = 6.087158
         L2_ALGAE_POSITION = 3.549561
         L3_ALGAE_POSITION = 4.732666
@@ -67,8 +67,8 @@ class Constants:
         GROUND_INTAKE_ANGLE = -0.081543
         FUNNEL_INTAKE_ANGLE = 0.336914
         ALGAE_INTAKE_ANGLE = -0.05542
-        HIGH_SCORING_ANGLE =  0.179
-        MID_SCORING_ANGLE = 0.252
+        HIGH_SCORING_ANGLE =  0.285645
+        MID_SCORING_ANGLE = 0.2854
         LOW_SCORING_ANGLE = 0.338379
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
