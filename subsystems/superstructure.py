@@ -101,19 +101,20 @@ class Superstructure(Subsystem):
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._pivot_old_state)
 
+            
+
+        # Use MegaTag 1 before the match starts
+        if DriverStation.isEnabled():
+            self.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
+
     def _set_goal(self, goal: Goal) -> None:
         # if the goal is already set to this goal, return, otherwise set our goal
         current_goal = self._goal
-        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
-        if goal is current_goal:
-            # Set goal periodically for the elevator and pivot to update priority checks
-            if self.elevator.get_current_state() is self.elevator.SubsystemState.IDLE:
-                self.elevator.set_desired_state(elevator_state)
-            if self.pivot.get_current_state() is self.pivot.SubsystemState.AVOID_ELEVATOR:
-                self.pivot.set_desired_state(pivot_state)
-            return
+        #if goal is current_goal and (not self.elevator.is_frozen() or not self.pivot.is_frozen()):
+            #return
         current_goal = self._goal = goal
 
+        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
         if pivot_state:
             self.pivot.set_desired_state(pivot_state)
         if elevator_state:
