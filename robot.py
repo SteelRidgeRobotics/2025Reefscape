@@ -7,6 +7,7 @@ from wpinet import WebServer, PortForwarder
 
 from constants import Constants
 from robot_container import RobotContainer
+from subsystems.vision import VisionSubsystem
 
 
 class OilSpill(TimedCommandRobot):
@@ -50,6 +51,7 @@ class OilSpill(TimedCommandRobot):
         pass
 
     def autonomousInit(self) -> None:
+        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
         DataLogManager.log("Autonomous period started")
 
         selected_auto = self.container.get_autonomous_command()
@@ -63,6 +65,7 @@ class OilSpill(TimedCommandRobot):
         DataLogManager.log("Autonomous period ended")
             
     def teleopInit(self) -> None:
+        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
         DataLogManager.log("Teleoperated period started")
 
     def teleopExit(self) -> None:
@@ -73,6 +76,7 @@ class OilSpill(TimedCommandRobot):
         CommandScheduler.getInstance().cancelAll()
 
     def disabledInit(self):
+        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_1)
         SignalLogger.stop()
 
     def testExit(self):
