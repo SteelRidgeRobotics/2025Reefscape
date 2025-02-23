@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
-from phoenix6 import SignalLogger, BaseStatusSignal
+from phoenix6 import SignalLogger, BaseStatusSignal, utils
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, CANdiConfiguration, HardwareLimitSwitchConfigs
 from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs, InvertedValue
 from phoenix6.controls import Follower, VoltageOut, MotionMagicVoltage
@@ -81,7 +81,8 @@ class ElevatorSubsystem(StateSubsystem):
 
         self._master_motor = TalonFX(Constants.CanIDs.LEFT_ELEVATOR_TALON)
         _master_config = self._motor_config
-        _master_config.hardware_limit_switch = self._limit_switch_config
+        if not utils.is_simulation():
+            _master_config.hardware_limit_switch = self._limit_switch_config
         self._master_motor.configurator.apply(self._motor_config)
 
         self._follower_motor = TalonFX(Constants.CanIDs.RIGHT_ELEVATOR_TALON)
