@@ -66,6 +66,13 @@ class VisionSubsystem(StateSubsystem):
                         self._get_dynamic_std_devs(estimate),
                     )
 
+    def set_desired_state(self, desired_state: SubsystemState) -> None:
+        if not super().set_desired_state(desired_state):
+            return
+
+        if desired_state is self.SubsystemState.MEGA_TAG_2:
+            self._swerve.reset_rotation(self._swerve.get_state().pose.rotation()) # Tells the robot what it's new angle is
+
     def _process_camera(self, camera: str, state: SubsystemState) -> PoseEstimate | None:
         """ Retrieves pose estimate for a single camera. """
         if state == self.SubsystemState.MEGA_TAG_2:
