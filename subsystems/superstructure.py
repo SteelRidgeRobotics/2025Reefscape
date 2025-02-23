@@ -130,8 +130,8 @@ class Superstructure(Subsystem):
 
         command = cmd.startEnd(
             lambda: self._set_goal(goal),
-            lambda: self._set_goal(self.Goal.DEFAULT),
-            self
+            lambda: self._set_goal(self.Goal.DEFAULT) if not DriverStation.isDisabled() else lambda: None,
+            self, self.pivot, self.elevator, self.funnel
         )
         self._goal_commands[goal] = command
         return command
