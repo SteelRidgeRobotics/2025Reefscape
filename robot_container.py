@@ -50,12 +50,11 @@ class RobotContainer:
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
         )
 
-        self._register_named_commands()
         self._setup_swerve_requests()
-        self._setup_auto_chooser()
+        self._pathplanner_setup()
         self._setup_controller_bindings()
 
-    def _register_named_commands(self):
+    def _pathplanner_setup(self):
         for goal in Superstructure.Goal:
             NamedCommands.registerCommand(
                 goal.name.replace("_", " "),
@@ -68,6 +67,9 @@ class RobotContainer:
                 self.intake.set_desired_state_command(state),
             )
 
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
+
     def _setup_swerve_requests(self):
         common_settings = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
@@ -76,10 +78,6 @@ class RobotContainer:
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
-
-    def _setup_auto_chooser(self):
-        self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
-        SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
     def _setup_controller_bindings(self) -> None:
         hid = self._driver_controller.getHID()
