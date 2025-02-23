@@ -1,31 +1,18 @@
-"""
-File: swerve.py
-Description: The swerve subsystem, plus method to add MegaTag2 pose estimate.
-Main Author: Caden Dalley
-Co-Authors: James Haddix
-"""
-
 import math
-from importlib import metadata
 from typing import Callable, overload
 
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
-from pathplannerlib.util import DriveFeedforwards
-from pathplannerlib.util.swerve import SwerveSetpointGenerator, SwerveSetpoint
 from phoenix6 import swerve, units, utils, SignalLogger
-from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from wpilib import DriverStation, Notifier, RobotController, DataLogManager
+from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d
-from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import rotationsToRadians
 
-import robot
-from lib.limelight import LimelightHelpers
+from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
@@ -175,10 +162,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
-        
-
-        # Swerve request to apply during path following
-        self._apply_robot_speeds = ApplyRobotSpeeds()
 
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
@@ -270,13 +253,15 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         #Create config from GUI settings
         config = RobotConfig.fromGUISettings()
+        self._apply_robot_speeds = ApplyRobotSetpointSpeeds(config, self._MAX_STEERING_VELOCITY)
         AutoBuilder.configure(
             lambda: self.get_state().pose,  # Supplier of current robot pose
             self.reset_pose,  # Consumer for seeding pose against auto
             lambda: self.get_state().speeds,  # Supplier of current robot speeds
             # Consumer of ChassisSpeeds and feedforwards to drive the robot
             lambda speeds, feedforwards: self.set_control(
-                self._apply_robot_speeds_from_setpoint(speeds, feedforwards)
+                self._apply_robot_speeds
+                .with_desired_speeds(speeds)
             ),
             PPHolonomicDriveController(
                 PIDConstants(10.0, 0.0, 0.0),
@@ -285,28 +270,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             config,
             lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise
             self
-        )
-
-        # create set point generator
-        self._setpoint_generator = SwerveSetpointGenerator(config, self._MAX_STEERING_VELOCITY)
-
-        # set up the first setpoint using the robot's current state
-        state = self.get_state()
-        self._prev_setpoint = SwerveSetpoint(state.speeds, state.module_states, DriveFeedforwards.zeros(config.numModules))
-
-    def _apply_robot_speeds_from_setpoint(self, speeds: ChassisSpeeds, feedforwards: DriveFeedforwards) -> ApplyRobotSpeeds:
-        # get new previous setpoint using the current setpoint and given speeds
-        self._prev_setpoint = self._setpoint_generator.generateSetpoint(
-            self._prev_setpoint,
-            speeds,
-            0.02
-        )
-
-        # apply the speeds and feedforwards we get from this setpoint
-        return (self._apply_robot_speeds
-            .with_speeds(self._prev_setpoint.robot_relative_speeds)
-            .with_wheel_force_feedforwards_x(self._prev_setpoint.feedforwards.robotRelativeForcesXNewtons)
-            .with_wheel_force_feedforwards_y(self._prev_setpoint.feedforwards.robotRelativeForcesYNewtons)
         )
 
     def apply_request(
