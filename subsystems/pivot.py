@@ -88,7 +88,7 @@ class PivotSubsystem(StateSubsystem):
         self._master_motor.configurator.apply(self._master_config)
         self._follower_motor.configurator.apply(self._follower_config)
 
-        self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO)
+        self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.PivotConstants.GEAR_RATIO, 275.895)
 
         self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
         self._at_setpoint = True
@@ -101,8 +101,6 @@ class PivotSubsystem(StateSubsystem):
 
         self._sys_id_routine = SysIdRoutine(
             SysIdRoutine.Config(
-                rampRate=0.15,
-                stepVoltage=0.75,
                 timeout=7.5,
                 recordState=lambda state: SignalLogger.write_string(
                     "SysIdPivot_State", SysIdRoutineLog.stateEnumToString(state)
