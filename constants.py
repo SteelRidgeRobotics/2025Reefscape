@@ -82,12 +82,12 @@ class Constants:
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(0.34)
-                 .with_k_p(7.5)
+                 .with_k_p(39.189)
                  .with_k_i(0.0)
-                 .with_k_d(0.0)
-                 .with_k_s(0.47)
-                 .with_k_v(0.0)
-                 .with_k_a(0.0)
+                 .with_k_d(6.9113)
+                 .with_k_s(0.064569)
+                 .with_k_v(13.45)
+                 .with_k_a(0.3307)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
