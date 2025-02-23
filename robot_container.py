@@ -99,6 +99,8 @@ class RobotContainer:
             )
         )
 
+        self._driver_controller.leftBumper().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric()))
+
         self._setup_signal_logging_bindings(self._driver_controller, self.drivetrain)
         self._setup_signal_logging_bindings(self._function_controller, self.elevator, self.pivot)
 
