@@ -121,6 +121,7 @@ class RobotContainer:
             self._function_controller.x(): self.superstructure.Goal.L3_SCORING,
             self._function_controller.b(): self.superstructure.Goal.L2_SCORING,
             self._function_controller.a(): self.superstructure.Goal.L1_SCORING,
+            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT,
         }
 
         for button, goal in goal_bindings.items():
