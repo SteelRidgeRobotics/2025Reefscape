@@ -36,15 +36,16 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         super().__init__()
         self.setName(name.title())
 
-        self._subsystem_state = starting_state
         self._frozen = False
+        self._subsystem_state = None # This allows set_desired_state to succeed
+        self.__starting_state = starting_state
 
         # Create NT folder for organization
         self._network_table = NetworkTableInstance.getDefault().getTable(name.title())
         self._nt_publishers = []
         current_state_nt = self._network_table.getStringTopic("Current State")
         self._current_state_pub = current_state_nt.publish()
-        self._current_state_pub.set(self.get_state_name())
+        self._current_state_pub.set("INITIALIZING")
 
         frozen_nt = self._network_table.getBooleanTopic("Frozen")
         self._frozen_pub = frozen_nt.publish()
@@ -64,6 +65,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         return True
 
     def periodic(self):
+        # We call set_desired_state once in periodic to ensure the state is correctly set on startup
+        if self._subsystem_state is None:
+            self.set_desired_state(self.__starting_state)
         if not utils.is_simulation():
             return
         for model in self._sim_models:
@@ -92,7 +96,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     def is_frozen(self) -> bool:
         return self._frozen
             
-    def get_current_state(self) -> SubsystemState:
+    def get_current_state(self) -> SubsystemState | None:
         state = self._subsystem_state
         return state
 

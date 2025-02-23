@@ -75,9 +75,11 @@ class Superstructure(Subsystem):
     def periodic(self):
         if DriverStation.isTest():
             return
-        
-        SmartDashboard.putString("Old Pivot State", self._pivot_old_state.name)
-        SmartDashboard.putString("Old Elevator State", self._elevator_old_state.name)
+
+        if self._pivot_old_state is not None:
+            SmartDashboard.putString("Old Pivot State", self._pivot_old_state.name)
+        if self._elevator_old_state is not None:
+            SmartDashboard.putString("Old Elevator State", self._elevator_old_state.name)
 
         pivot_state = self.pivot.get_current_state()
         if not pivot_state is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
