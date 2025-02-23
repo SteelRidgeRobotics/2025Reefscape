@@ -3,7 +3,7 @@ import math
 from ntcore import NetworkTableInstance
 from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, utils
-from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mechanism2d, Color8Bit
+from wpilib import DataLogManager, DriverStation, Field2d, SmartDashboard, Mechanism2d, Color8Bit, Color
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
@@ -42,11 +42,11 @@ class RobotState:
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
 
         if utils.is_simulation():
-            self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit("#000058"))
+            self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
             self._root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
 
-            self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit("#FFFFFF"))
-            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit("#FEFEFE"))
+            self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
+            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19,122,127))
 
             SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
