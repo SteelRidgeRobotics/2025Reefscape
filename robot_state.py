@@ -42,8 +42,8 @@ class RobotState:
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
 
         if utils.is_simulation():
-            self._superstructure_mechanism = Mechanism2d(0.5334, 2.286, Color8Bit("#000058"))
-            self._root = self._superstructure_mechanism.getRoot("Root", 0.5334 / 2, 0.125)
+            self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit("#000058"))
+            self._root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
 
             self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit("#FFFFFF"))
             self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit("#FEFEFE"))
