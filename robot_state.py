@@ -46,7 +46,7 @@ class RobotState:
             self._root = self._superstructure_mechanism.getRoot("Root", 0.5334 / 2, 0.125)
 
             self._elevator_mech = self._root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit("#FFFFFF"))
-            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 0, 4, Color8Bit("#FEFEFE"))
+            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit("#FEFEFE"))
 
             SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
@@ -82,7 +82,7 @@ class RobotState:
 
     def update_mechanisms(self) -> None:
         self._elevator_mech.setLength(self._elevator.get_height())
-        self._pivot_mech.setAngle(self._pivot.get_angle())
+        self._pivot_mech.setAngle(self._pivot.get_angle() - 90)
 
     def get_current_pose(self) -> Pose2d:
         """Returns the current pose of the robot on the field (blue-side origin)."""
