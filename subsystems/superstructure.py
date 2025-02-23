@@ -104,10 +104,6 @@ class Superstructure(Subsystem):
             self.pivot.set_desired_state(self._pivot_old_state)
 
     def _set_goal(self, goal: Goal) -> None:
-        # if the goal is already set to this goal, return, otherwise set our goal
-        current_goal = self._goal
-        #if goal is current_goal and (not self.elevator.is_frozen() or not self.pivot.is_frozen()):
-            #return
         current_goal = self._goal = goal
 
         pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
