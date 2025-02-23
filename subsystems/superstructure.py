@@ -101,12 +101,6 @@ class Superstructure(Subsystem):
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._pivot_old_state)
 
-            
-
-        # Use MegaTag 1 before the match starts
-        if DriverStation.isEnabled():
-            self.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
-
     def _set_goal(self, goal: Goal) -> None:
         # if the goal is already set to this goal, return, otherwise set our goal
         current_goal = self._goal
