@@ -101,8 +101,20 @@ class RobotContainer:
 
         self._driver_controller.leftBumper().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric()))
 
-        self._setup_signal_logging_bindings(self._driver_controller, self.drivetrain)
-        self._setup_signal_logging_bindings(self._function_controller, self.elevator, self.pivot)
+        self._setup_sysid_bindings(
+            self._driver_controller, self.drivetrain,
+            self._driver_controller.y(), self._driver_controller.a()
+        )
+
+        self._setup_sysid_bindings(
+            self._function_controller, self.elevator,
+            self._function_controller.y(), self._function_controller.a()
+        )
+
+        self._setup_sysid_bindings(
+            self._function_controller, self.pivot,
+            self._function_controller.b(), self._function_controller.x()
+        )
 
         goal_bindings = {
             self._function_controller.y(): self.superstructure.Goal.L4_SCORING,
@@ -134,10 +146,19 @@ class RobotContainer:
             self.intake.set_desired_state_command(self.intake.SubsystemState.DEFAULT)
         )
 
-    def _setup_signal_logging_bindings(self, controller, *subsystems):
-        for direction, method in [(SysIdRoutine.Direction.kForward, "sys_id_dynamic"), (SysIdRoutine.Direction.kReverse, "sys_id_quasistatic")]:
-            for btn, sub in zip([controller.y(), controller.a()], subsystems):
-                (controller.povUp() & btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(getattr(sub, method)(direction).onlyIf(lambda: not DriverStation.isFMSAttached()))
+    def _setup_sysid_bindings(self, controller, subsystem, forward_btn, reverse_btn):
+        forward_dynamic = subsystem.sys_id_dynamic(SysIdRoutine.Direction.kForward)
+        reverse_dynamic = subsystem.sys_id_dynamic(SysIdRoutine.Direction.kReverse)
+        forward_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
+        reverse_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
+
+        # Dynamic Tests
+        forward_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached()))
+        reverse_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached()))
+
+        # Quasistatic Tests (POV Up for forward, POV Down for reverse)
+        controller.back().and_(forward_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached()))
+        controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached()))
 
     def get_autonomous_command(self) -> commands2.Command:
         return self._auto_chooser.getSelected()
