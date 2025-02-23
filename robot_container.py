@@ -153,12 +153,12 @@ class RobotContainer:
         reverse_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
 
         # Dynamic Tests
-        forward_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached()))
-        reverse_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached()))
+        forward_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        reverse_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
         # Quasistatic Tests (POV Up for forward, POV Down for reverse)
-        controller.back().and_(forward_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached()))
-        controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached()))
+        controller.back().and_(forward_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
     def get_autonomous_command(self) -> commands2.Command:
         return self._auto_chooser.getSelected()
