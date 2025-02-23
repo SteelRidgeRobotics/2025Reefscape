@@ -76,11 +76,6 @@ class Superstructure(Subsystem):
         if DriverStation.isTest():
             return
 
-        if self._pivot_old_state is not None:
-            SmartDashboard.putString("Old Pivot State", self._pivot_old_state.name)
-        if self._elevator_old_state is not None:
-            SmartDashboard.putString("Old Elevator State", self._elevator_old_state.name)
-
         pivot_state = self.pivot.get_current_state()
         if not pivot_state is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
                 self._pivot_old_state = pivot_state
@@ -131,7 +126,7 @@ class Superstructure(Subsystem):
         command = cmd.startEnd(
             lambda: self._set_goal(goal),
             lambda: self._set_goal(self.Goal.DEFAULT) if not DriverStation.isDisabled() else lambda: None,
-            self, self.pivot, self.elevator, self.funnel
+            self
         )
         self._goal_commands[goal] = command
         return command
