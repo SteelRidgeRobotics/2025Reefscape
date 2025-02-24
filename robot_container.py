@@ -82,7 +82,7 @@ class RobotContainer:
 
         self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
         self._auto_chooser.onChange(
-            lambda auto: self.drivetrain.reset_pose(flip_pose_if_on_red_alliance(auto._startingPose)) if utils.is_simulation() and isinstance(auto, PathPlannerAuto) else None
+            lambda auto: self.drivetrain.reset_pose(flip_pose_if_on_red_alliance(auto._startingPose)) if utils.is_simulation() and isinstance(auto, PathPlannerAuto) and not DriverStation.isDisabled() else None
         )
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
