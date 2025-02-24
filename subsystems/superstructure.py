@@ -1,4 +1,5 @@
 from enum import auto, Enum
+from typing import Optional
 
 from commands2 import Command, Subsystem, cmd
 from wpilib import DriverStation, SmartDashboard
@@ -29,7 +30,12 @@ class Superstructure(Subsystem):
         FLOOR = auto()
 
     # Map each goal to each subsystem state to reduce code complexity
-    _goal_to_states: dict[Goal, tuple[PivotSubsystem.SubsystemState, ElevatorSubsystem.SubsystemState, FunnelSubsystem.SubsystemState]] = {
+    _goal_to_states: dict[Goal,
+            tuple[
+                Optional[PivotSubsystem.SubsystemState],
+                Optional[ElevatorSubsystem.SubsystemState],
+                Optional[FunnelSubsystem.SubsystemState]
+            ]] = {
         Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L3_CORAL: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
