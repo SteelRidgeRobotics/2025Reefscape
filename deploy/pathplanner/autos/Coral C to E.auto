@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToReef"
+            "pathName": "Right to Coral C"
           }
         },
         {
@@ -25,6 +25,12 @@
                 "data": {
                   "waitTime": 0.25
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
+                }
               }
             ]
           }
@@ -32,13 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ReefToGroundCoralV3"
+            "pathName": "Close Right Reef to Right Coral Station"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "GroundCoralToReefV2"
+            "pathName": "Right Coral Station to Coral D"
           }
         },
         {
@@ -56,6 +68,12 @@
                 "data": {
                   "waitTime": 0.25
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
+                }
               }
             ]
           }
@@ -63,13 +81,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ReefToCoral"
+            "pathName": "Close Right Reef to Right Coral Station"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "GroundCoral2ToReef"
+            "pathName": "Coral Station to Coral E"
           }
         },
         {
@@ -87,76 +111,14 @@
                 "data": {
                   "waitTime": 0.25
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ReefToGroundCoral3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GroundCoral3ToReef"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
+              },
               {
                 "type": "named",
                 "data": {
-                  "name": "Coral Output"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.25
+                  "name": "Hold"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ReefToCoralStation"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CoralStationToReef"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Coral Output"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.25
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ReefToCoralStation2"
           }
         }
       ]

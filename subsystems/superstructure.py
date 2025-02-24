@@ -71,7 +71,6 @@ class Superstructure(Subsystem):
         self.funnel = funnel
         self.vision = vision
 
-        self._goal_commands = {}
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
 
@@ -105,9 +104,9 @@ class Superstructure(Subsystem):
             self.pivot.set_desired_state(self._pivot_old_state)
 
     def _set_goal(self, goal: Goal) -> None:
-        current_goal = self._goal = goal
+        self._goal = goal
 
-        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
+        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(goal, (None, None, None))
         if pivot_state:
             self.pivot.set_desired_state(pivot_state)
         if elevator_state:
@@ -115,7 +114,7 @@ class Superstructure(Subsystem):
         if funnel_state:
             self.funnel.set_desired_state(funnel_state)
 
-        SmartDashboard.putString("Superstructure Goal", current_goal.name)
+        SmartDashboard.putString("Superstructure Goal", goal.name)
 
     def set_goal_command(self, goal: Goal) -> Command:
         """
@@ -126,13 +125,4 @@ class Superstructure(Subsystem):
         :return:     A command that will set the desired goal
         :rtype:      Command
         """
-        if goal in self._goal_commands:
-            return self._goal_commands[goal]
-
-        command = cmd.startEnd(
-            lambda: self._set_goal(goal),
-            lambda: self._set_goal(self.Goal.DEFAULT) if not DriverStation.isDisabled() else lambda: None,
-            self
-        )
-        self._goal_commands[goal] = command
-        return command
+        return cmd.runOnce(lambda: self._set_goal(goal), self)

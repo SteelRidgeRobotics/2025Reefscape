@@ -3,52 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.648072116657839,
-        "y": 4.025532557600636
+        "x": 5.816462758589871,
+        "y": 4.026
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2322371428377763,
-        "y": 4.264205398076906
+        "x": 6.816462758589855,
+        "y": 4.026
       },
       "isLocked": false,
-      "linkedName": "GroundCoral2"
+      "linkedName": "Far Reef"
     },
     {
       "anchor": {
-        "x": 3.1899231991525427,
-        "y": 4.184186308262712
+        "x": 7.5641639610400055,
+        "y": 4.026
       },
       "prevControl": {
-        "x": 1.1698103356403728,
-        "y": 4.227546127931827
+        "x": 6.5641639610400055,
+        "y": 4.026
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3CoralAutoEnd"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Default",
+      "waypointRelativePos": 0.06741573033707872,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 10.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 2600.0,
+    "maxAngularAcceleration": 1000.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "(GC) Level 3 Auto",
+  "folder": "End",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
