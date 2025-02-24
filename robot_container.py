@@ -131,10 +131,10 @@ class RobotContainer:
         )
 
         goal_bindings = {
-            self._function_controller.y(): self.superstructure.Goal.L4_SCORING,
-            self._function_controller.x(): self.superstructure.Goal.L3_SCORING,
-            self._function_controller.b(): self.superstructure.Goal.L2_SCORING,
-            self._function_controller.a(): self.superstructure.Goal.L1_SCORING,
+            self._function_controller.y(): self.superstructure.Goal.L4_CORAL,
+            self._function_controller.x(): self.superstructure.Goal.L3_CORAL,
+            self._function_controller.b(): self.superstructure.Goal.L2_CORAL,
+            self._function_controller.a(): self.superstructure.Goal.L1_CORAL,
             self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT,
         }
 
@@ -143,14 +143,14 @@ class RobotContainer:
 
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
-                self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
+                self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
             )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
             cmd.parallel(
-                self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
+                self.superstructure.set_goal_command(self.superstructure.Goal.FLOOR),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
             )
         )
