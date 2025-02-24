@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.865061475409836,
-        "y": 6.560399590163934
+        "x": 5.816462758589871,
+        "y": 4.026
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0003024962284375,
-        "y": 6.299761568983749
+        "x": 6.816462758589855,
+        "y": 4.026
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Far Reef"
     },
     {
       "anchor": {
-        "x": 3.668237704918033,
-        "y": 5.1098872950819665
+        "x": 7.5641639610400055,
+        "y": 4.026
       },
       "prevControl": {
-        "x": 3.4501184441354833,
-        "y": 5.515095764279465
+        "x": 6.5641639610400055,
+        "y": 4.026
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,26 +31,31 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Default",
+      "waypointRelativePos": 0.06741573033707872,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 4.73,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 450.0,
+    "maxAngularAcceleration": 1000.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
-
-  "folder": null,
-
+  "folder": "End",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

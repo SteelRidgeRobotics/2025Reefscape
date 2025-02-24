@@ -1,7 +1,7 @@
 from enum import auto, Enum
 
 import commands2.cmd
-from commands2 import Command
+from commands2 import Command, cmd
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VelocityDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
@@ -18,11 +18,11 @@ class IntakeSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        DEFAULT = auto()
-        CORAL_INTAKING = auto()
-        CORAL_OUTPUTTING = auto()
-        ALGAE_INTAKING = auto()
-        ALGAE_OUTPUTTING = auto()
+        HOLD = auto()
+        CORAL_INTAKE = auto()
+        CORAL_OUTPUT = auto()
+        ALGAE_INTAKE = auto()
+        ALGAE_OUTPUT = auto()
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.IntakeConstants.GAINS)
@@ -31,15 +31,15 @@ class IntakeSubsystem(StateSubsystem):
                      )
 
     _state_configs: dict[SubsystemState, tuple[int, bool]] = {
-        SubsystemState.DEFAULT: (0, False),
-        SubsystemState.CORAL_INTAKING: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
-        SubsystemState.CORAL_OUTPUTTING: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
-        SubsystemState.ALGAE_INTAKING: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
-        SubsystemState.ALGAE_OUTPUTTING: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
+        SubsystemState.HOLD: (0, False),
+        SubsystemState.CORAL_INTAKE: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
+        SubsystemState.CORAL_OUTPUT: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
+        SubsystemState.ALGAE_INTAKE: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
+        SubsystemState.ALGAE_OUTPUT: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
     }
 
     def __init__(self) -> None:
-        super().__init__("Intake", self.SubsystemState.DEFAULT)
+        super().__init__("Intake", self.SubsystemState.HOLD)
 
         self._intake_motor = TalonFX(Constants.CanIDs.INTAKE_TALON)
         self._intake_motor.configurator.apply(self._motor_config)
@@ -58,8 +58,4 @@ class IntakeSubsystem(StateSubsystem):
         self._intake_motor.set_control(self._velocity_request)
 
     def set_desired_state_command(self, state: SubsystemState) -> Command:
-        return commands2.cmd.startEnd(
-            lambda: self.set_desired_state(state),
-            lambda: self.set_desired_state(self.SubsystemState.DEFAULT),
-            self
-        )
+        return cmd.runOnce(lambda: self.set_desired_state(state), self)

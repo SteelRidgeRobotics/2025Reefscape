@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.1487246422334785,
+        "y": 5.174257325147834
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.865573945874419,
+        "y": 5.645832892069579
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.116842532470927,
+        "y": 6.802800324675974
+      },
+      "prevControl": {
+        "x": 4.40829848972197,
+        "y": 6.616276136142803
+      },
+      "nextControl": {
+        "x": 3.58888448165539,
+        "y": 7.140679666504285
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6809253246753246,
+        "y": 7.351237824675325
+      },
+      "prevControl": {
+        "x": 2.088305091124621,
+        "y": 7.234262008646885
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Coral Station (Hugging Left)"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Funnel",
+      "waypointRelativePos": 0.25,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Funnel"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -53.8418145601917
+  },
+  "reversed": false,
+  "folder": "Coral Stations",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": false
+}
