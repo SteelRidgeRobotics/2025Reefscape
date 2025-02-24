@@ -9,11 +9,12 @@
     "(GC) Level 1 Auto",
     "(GC) Level 2 Auto",
     "(GC) Level 3 Auto",
-    "MAXAUTO",
     "Leave Paths",
-    "driving autos"
+    "MAXAUTO"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Leave"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 10.0,
   "defaultMaxAngVel": 720.0,
