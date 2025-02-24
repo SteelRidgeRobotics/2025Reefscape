@@ -2,10 +2,10 @@ import commands2
 import commands2.button
 from commands2 import cmd
 from commands2.sysid import SysIdRoutine
-from pathplannerlib.auto import AutoBuilder, NamedCommands
-from phoenix6 import SignalLogger, swerve
+from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
+from phoenix6 import SignalLogger, swerve, utils
 from wpilib import DriverStation, SmartDashboard
-from wpimath.geometry import Rotation2d
+from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
 from constants import Constants
@@ -18,6 +18,15 @@ from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
 from subsystems.vision import VisionSubsystem
+
+
+def flip_pose_if_on_red_alliance(pose: Pose2d) -> Pose2d:
+    if (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed:
+        flipped_x = Constants.apriltag_layout.getFieldLength() - pose.X()
+        flipped_y = Constants.apriltag_layout.getFieldWidth() - pose.Y()
+        flipped_rotation = Rotation2d(pose.rotation().radians()) + Rotation2d.fromDegrees(180)
+        return Pose2d(flipped_x, flipped_y, flipped_rotation)
+    return pose
 
 
 class RobotContainer:
@@ -68,6 +77,9 @@ class RobotContainer:
             )
 
         self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
+        self._auto_chooser.onChange(
+            lambda auto: self.drivetrain.reset_pose(flip_pose_if_on_red_alliance(auto._startingPose)) if utils.is_simulation() and isinstance(auto, PathPlannerAuto) else None
+        )
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
     def _setup_swerve_requests(self):
