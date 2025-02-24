@@ -4,7 +4,7 @@ from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
 from phoenix6 import SignalLogger, swerve, utils
-from wpilib import DriverStation, SmartDashboard
+from wpilib import DriverStation, SmartDashboard, DataLogManager
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
@@ -65,16 +65,20 @@ class RobotContainer:
 
     def _pathplanner_setup(self):
         for goal in Superstructure.Goal:
+            name = goal.name.title().replace("_", " ")
             NamedCommands.registerCommand(
-                goal.name.replace("_", " "),
+                name,
                 self.superstructure.set_goal_command(goal),
             )
+            DataLogManager.log(f"Added PathPlanner NamedCommand: '{name}'")
 
         for state in IntakeSubsystem.SubsystemState:
+            name = state.name.title().replace("_", " ")
             NamedCommands.registerCommand(
-                state.name.replace("_", " "),
+                name,
                 self.intake.set_desired_state_command(state),
             )
+            DataLogManager.log(f"Added PathPlanner NamedCommand: '{name}'")
 
         self._auto_chooser = AutoBuilder.buildAutoChooser("Auto Chooser")
         self._auto_chooser.onChange(
@@ -140,19 +144,19 @@ class RobotContainer:
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
             )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.GROUND_INTAKE),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKING),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
             )
         )
 
         self._function_controller.rightBumper().whileTrue(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUTTING)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
         ).onFalse(
             self.intake.set_desired_state_command(self.intake.SubsystemState.DEFAULT)
         )

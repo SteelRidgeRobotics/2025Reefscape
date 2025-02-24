@@ -19,10 +19,10 @@ class IntakeSubsystem(StateSubsystem):
 
     class SubsystemState(Enum):
         DEFAULT = auto()
-        CORAL_INTAKING = auto()
-        CORAL_OUTPUTTING = auto()
-        ALGAE_INTAKING = auto()
-        ALGAE_OUTPUTTING = auto()
+        CORAL_INTAKE = auto()
+        CORAL_OUTPUT = auto()
+        ALGAE_INTAKE = auto()
+        ALGAE_OUTPUT = auto()
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.IntakeConstants.GAINS)
@@ -32,10 +32,10 @@ class IntakeSubsystem(StateSubsystem):
 
     _state_configs: dict[SubsystemState, tuple[int, bool]] = {
         SubsystemState.DEFAULT: (0, False),
-        SubsystemState.CORAL_INTAKING: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
-        SubsystemState.CORAL_OUTPUTTING: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
-        SubsystemState.ALGAE_INTAKING: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
-        SubsystemState.ALGAE_OUTPUTTING: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
+        SubsystemState.CORAL_INTAKE: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
+        SubsystemState.CORAL_OUTPUT: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
+        SubsystemState.ALGAE_INTAKE: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
+        SubsystemState.ALGAE_OUTPUT: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
     }
 
     def __init__(self) -> None:
