@@ -82,7 +82,14 @@ class RobotContainer:
         self._auto_chooser.onChange(
             lambda _: self._set_auto_to_selection()
         )
+
+        # Add Reset Odometry option
+        self._reset_odom = SendableChooser()
+        self._reset_odom.setDefaultOption("No", False)
+        self._reset_odom.addOption("Yes", True)
+
         SmartDashboard.putData("Selected Auto", self._auto_chooser)
+        SmartDashboard.putData("Reset Odometry?", self._reset_odom)
 
     def _set_auto_to_selection(self) -> None:
         chooser_selected = self._auto_chooser.getSelected()
@@ -159,12 +166,22 @@ class RobotContainer:
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
             )
+        ).onFalse(
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+            )
         )
 
         (self._function_controller.leftBumper() & self._function_controller.back()).whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FLOOR),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
+            )
+        ).onFalse(
+            cmd.parallel(
+                self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
             )
         )
 
@@ -189,4 +206,7 @@ class RobotContainer:
         controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
     def get_autonomous_command(self) -> commands2.Command:
+        # Ignores pose estimates when reset odometry is selected
+        if self._reset_odom.getSelected():
+            self.vision.set_desired_state_command(VisionSubsystem.SubsystemState.DISABLE_ESTIMATES)
         return self._auto_chooser.getSelected()

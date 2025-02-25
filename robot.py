@@ -51,8 +51,9 @@ class OilSpill(TimedCommandRobot):
         pass
 
     def autonomousInit(self) -> None:
-        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
         DataLogManager.log("Autonomous period started")
+        self.container.drivetrain.pigeon2.set_yaw(self.container.drivetrain.get_state().pose.rotation().degrees())
+        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
 
         selected_auto = self.container.get_autonomous_command()
         if selected_auto is not None:
@@ -65,8 +66,9 @@ class OilSpill(TimedCommandRobot):
         DataLogManager.log("Autonomous period ended")
             
     def teleopInit(self) -> None:
-        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
         DataLogManager.log("Teleoperated period started")
+        self.container.drivetrain.pigeon2.set_yaw(self.container.drivetrain.get_state().pose.rotation().degrees())
+        self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_2)
 
     def teleopExit(self) -> None:
         DataLogManager.log("Teleoperated period ended")

@@ -78,8 +78,6 @@ class RobotState:
         self._swerve_data.getEntry("Back Right Velocity").setDouble(state.module_states[3].speed)
         self._swerve_data.getEntry("Robot Angle").setDouble((self._swerve.get_operator_forward_direction() + state.pose.rotation()).radians())
 
-        NetworkTableInstance.getDefault().flush()
-
     def update_mechanisms(self) -> None:
         self._elevator_mech.setLength(self._elevator.get_height())
         self._pivot_mech.setAngle(self._pivot.get_angle() - 90)
