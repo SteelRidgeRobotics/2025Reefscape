@@ -222,42 +222,31 @@ class LimelightHelpers:
 	@staticmethod
 	def _get_botpose_estimate(limelight_name: str, entry_name: str, is_megatag_2: bool) -> PoseEstimate:
 		pose_entry = LimelightHelpers.get_limelight_double_array_entry(limelight_name, entry_name)
-
 		ts_value = pose_entry.getAtomic()
-		pose_array = ts_value.value
-		timestamp = ts_value.time
 
-		if len(pose_array) == 0:
-			# Handle the case where no data is available
+		pose_array = ts_value.value
+		if not pose_array:
 			return PoseEstimate()
 
+		timestamp = ts_value.time
+		latency = pose_array[6]
+		tag_count = int(pose_array[7])
+
 		pose = LimelightHelpers.to_Pose2D(pose_array)
-		latency = LimelightHelpers._extract_array_entry(pose_array, 6)
-		tag_count = int(LimelightHelpers._extract_array_entry(pose_array, 7))
-		tag_span = LimelightHelpers._extract_array_entry(pose_array, 8)
-		tag_dist = LimelightHelpers._extract_array_entry(pose_array, 9)
-		tag_area = LimelightHelpers._extract_array_entry(pose_array, 10)
 
-		# Convert server timestamp from microseconds to seconds and adjust for latency
-		adjusted_timestamp = (timestamp / 1000000.0) - (latency / 1000.0)
+		adjusted_timestamp = (timestamp - latency * 1000) / 1000000
 
-		raw_fiducials = []
-		vals_per_fiducial = 7
-		expected_total_vals = 11 + vals_per_fiducial * tag_count
+		raw_fiducials = (
+			RawFiducial(int(pose_array[base_index]), *pose_array[base_index + 1: base_index + 7])
+			for base_index in range(11, 11 + tag_count * 7, 7)
+		)
 
-		if len(pose_array) == expected_total_vals:
-			for i in range(tag_count):
-				base_index = 11 + (i * vals_per_fiducial)
-				tag_id = int(pose_array[base_index])
-				txnc = pose_array[base_index + 1]
-				tync = pose_array[base_index + 2]
-				ta = pose_array[base_index + 3]
-				dist_to_camera = pose_array[base_index + 4]
-				dist_to_robot = pose_array[base_index + 5]
-				ambiguity = pose_array[base_index + 6]
-				raw_fiducials.append(RawFiducial(tag_id, txnc, tync, ta, dist_to_camera, dist_to_robot, ambiguity))
+		if tag_count > 0:
+			raw_fiducials = list(raw_fiducials)
 
-		return PoseEstimate(pose, adjusted_timestamp, latency, tag_count, tag_span, tag_dist, tag_area, raw_fiducials, is_megatag_2)
+		return PoseEstimate(
+			pose, adjusted_timestamp, latency, tag_count, pose_array[8], pose_array[9], pose_array[10], raw_fiducials, is_megatag_2
+		)
 
 	@staticmethod
 	def get_raw_fiducials(limelight_name: str) -> list[RawFiducial]:

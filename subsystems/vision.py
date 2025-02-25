@@ -72,6 +72,9 @@ class VisionSubsystem(StateSubsystem):
 
     def _process_camera(self, camera: str, state: SubsystemState) -> PoseEstimate | None:
         """ Retrieves pose estimate for a single camera. """
+        if not LimelightHelpers.get_tv(camera):
+            return None
+
         if state == self.SubsystemState.MEGA_TAG_2:
             self._update_camera_orientation(camera)
             return LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)

@@ -34,9 +34,14 @@
   "eventMarkers": [
     {
       "name": "Default",
-      "waypointRelativePos": 0.06741573033707872,
+      "waypointRelativePos": 0.1452249408050471,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Default"
+        }
+      }
     }
   ],
   "globalConstraints": {
