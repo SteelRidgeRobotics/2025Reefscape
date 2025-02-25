@@ -40,6 +40,8 @@ class VisionSubsystem(StateSubsystem):
         if not all(isinstance(cam, str) for cam in self._cameras):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
+        self._executor = concurrent.futures.ThreadPoolExecutor()  # Executor for threads
+
     def periodic(self):
         super().periodic()
 
@@ -51,20 +53,19 @@ class VisionSubsystem(StateSubsystem):
             return
 
         # Process vision estimates concurrently
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = {
-                executor.submit(self._process_camera, cam, state): cam
-                for cam in self._cameras
-            }
+        futures = [
+            self._executor.submit(self._process_camera, cam, state)
+            for cam in self._cameras
+        ]
 
-            for future in concurrent.futures.as_completed(futures):
-                estimate = future.result()
-                if estimate and estimate.tag_count > 0:
-                    self._swerve.add_vision_measurement(
-                        estimate.pose,
-                        utils.fpga_to_current_time(estimate.timestamp_seconds),
-                        self._get_dynamic_std_devs(estimate),
-                    )
+        for future in concurrent.futures.as_completed(futures):
+            estimate = future.result()
+            if estimate and estimate.tag_count > 0:
+                self._swerve.add_vision_measurement(
+                    estimate.pose,
+                    utils.fpga_to_current_time(estimate.timestamp_seconds),
+                    self._get_dynamic_std_devs(estimate),
+                )
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
@@ -87,7 +88,7 @@ class VisionSubsystem(StateSubsystem):
     def _update_camera_orientation(self, camera: str):
         """ Updates the camera with the latest robot orientation from the IMU. """
         pigeon = self._swerve.pigeon2
-        LimelightHelpers.set_robot_orientation(
+        LimelightHelpers.set_robot_orientation_no_flush(
             camera,
             pigeon.get_yaw().value,
             pigeon.get_angular_velocity_z_world().value,
