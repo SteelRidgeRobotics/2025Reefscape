@@ -18,10 +18,7 @@ class OilSpill(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        if RobotBase.isReal():
-            DataLogManager.start("/home/lvuser/logs")
-        else:
-            DataLogManager.start()
+        DataLogManager.start()
         DriverStation.startDataLog(DataLogManager.getLog())
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
