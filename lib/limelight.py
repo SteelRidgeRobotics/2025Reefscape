@@ -21,32 +21,8 @@ from wpimath.geometry import (
 
 
 class ConcurrentDict(dict):
-	"""
-	Thread-safe dictionary that ensures atomic operations for concurrent access.
-
-	Similar to Java's ConcurrentHashMap.
-	"""
-
-	def __init__(self):
-		super().__init__()
-		self._lock = threading.Lock()
-
-	def __getitem__(self, key):
-		with self._lock:
-			return super().__getitem__(key)
-
-	def __setitem__(self, key, value):
-		with self._lock:
-			super().__setitem__(key, value)
-
-	def compute_if_absent(self, key, mapping_function):
-		"""Computes and stores the value if the key is absent, ensuring thread safety."""
-		if key in self:
-			return super().__getitem__(key)
-
-		with self._lock:
-			super().__setitem__(key, mapping_function())
-			return super().__getitem__(key)
+    def compute_if_absent(self, key, mapping_function):
+        return self.setdefault(key, mapping_function())
 
 @dataclass
 class RawFiducial:
@@ -380,11 +356,15 @@ class LimelightHelpers:
 		return LimelightHelpers.get_limelight_NTTable(table_name).getEntry(entry_name)
 
 	@staticmethod
-	def get_limelight_double_array_entry(table_name: str, entry_name: str) -> DoubleArrayEntry:
-		return LimelightHelpers._double_array_entries.compute_if_absent(
-			f"{table_name}/{entry_name}",
-			lambda: LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
-		)
+ def get_limelight_double_array_entry(table_name: str, entry_name: str) -> DoubleArrayEntry:
+    key = f"{table_name}/{entry_name}"
+    if key in LimelightHelpers._double_array_entries:
+        return LimelightHelpers._double_array_entries[key]
+
+    return LimelightHelpers._double_array_entries.setdefault(
+        key,
+        LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
+    )
 
 	@staticmethod
 	def get_limelight_NTDouble(table_name: str, entry_name: str) -> float:
