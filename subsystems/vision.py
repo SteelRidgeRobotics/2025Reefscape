@@ -43,17 +43,16 @@ class VisionSubsystem(StateSubsystem):
     def periodic(self):
         super().periodic()
 
-        # Store state locally to reduce repeated Enum.__get__ calls
         state = self._subsystem_state
 
-        # Skip processing if robot is spinning too fast or estimates are disabled
         if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720 or state == self.SubsystemState.DISABLE_ESTIMATES:
             return
 
-        # Process vision estimates concurrently
+        pigeon_values = self._get_pigeon_values()
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = {
-                executor.submit(self._process_camera, cam, state): cam
+                executor.submit(self._process_camera, cam, state, pigeon_values): cam
                 for cam in self._cameras
             }
 
@@ -70,32 +69,36 @@ class VisionSubsystem(StateSubsystem):
         if not super().set_desired_state(desired_state):
             return
 
-    def _process_camera(self, camera: str, state: SubsystemState) -> PoseEstimate | None:
+    def _process_camera(self, camera: str, state: SubsystemState, pigeon_values: dict) -> PoseEstimate | None:
         """ Retrieves pose estimate for a single camera. """
-        if not LimelightHelpers.get_tv(camera):
-            return None
+        pose = None
 
         if state == self.SubsystemState.MEGA_TAG_2:
-            self._update_camera_orientation(camera)
-            return LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
+            self._update_camera_orientation(camera, pigeon_values)
+            pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
+        elif state == self.SubsystemState.MEGA_TAG_1:
+            pose = LimelightHelpers.get_botpose_estimate_wpiblue(camera)
 
-        if state == self.SubsystemState.MEGA_TAG_1:
-            return LimelightHelpers.get_botpose_estimate_wpiblue(camera)
+        return pose if pose and pose.tag_count > 0 else None
 
-        return None
-
-    def _update_camera_orientation(self, camera: str):
+    @staticmethod
+    def _update_camera_orientation(camera: str, pigeon_values: dict):
         """ Updates the camera with the latest robot orientation from the IMU. """
-        pigeon = self._swerve.pigeon2
         LimelightHelpers.set_robot_orientation(
             camera,
-            pigeon.get_yaw().value,
-            pigeon.get_angular_velocity_z_world().value,
-            pigeon.get_pitch().value,
-            pigeon.get_angular_velocity_y_world().value,
-            pigeon.get_roll().value,
-            pigeon.get_angular_velocity_x_world().value,
+            pigeon_values["yaw"],
+            pigeon_values["ang_vel_z"],
+            0, 0,  # Pitch and pitch velocity set to 0
+            0, 0   # Roll and roll velocity set to 0
         )
+
+    def _get_pigeon_values(self) -> dict:
+        """ Fetches and stores all Pigeon IMU values at once to reduce redundant calls. """
+        pigeon = self._swerve.pigeon2
+        return {
+            "yaw": pigeon.get_yaw().value,
+            "ang_vel_z": pigeon.get_angular_velocity_z_world().value,
+        }
 
     @staticmethod
     def _get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:
