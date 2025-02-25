@@ -44,7 +44,7 @@ class RobotContainer:
 
         self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
         self.drivetrain.register_telemetry(
-            lambda state: self.robot_state.log_swerve_state(state)
+            lambda state: self.robot_state.update_swerve_state(state)
         )
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
