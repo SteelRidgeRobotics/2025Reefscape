@@ -54,7 +54,7 @@ class VisionSubsystem(StateSubsystem):
 
         # Process vision estimates concurrently
         futures = [
-            self._executor.submit(self._process_camera, cam, state)
+            self._executor.submit(self._process_camera, cam, state, self._get_pigeon_values())
             for cam in self._cameras
         ]
 
@@ -83,10 +83,10 @@ class VisionSubsystem(StateSubsystem):
 
         return pose if pose and pose.tag_count > 0 else None
 
+
     @staticmethod
     def _update_camera_orientation(camera: str, pigeon_values: dict):
         """ Updates the camera with the latest robot orientation from the IMU. """
-        pigeon = self._swerve.pigeon2
         LimelightHelpers.set_robot_orientation_no_flush(
             camera,
             pigeon_values["yaw"],
