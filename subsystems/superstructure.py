@@ -1,4 +1,5 @@
 from enum import auto, Enum
+from typing import Optional
 
 from commands2 import Command, Subsystem, cmd
 from wpilib import DriverStation, SmartDashboard
@@ -17,30 +18,35 @@ class Superstructure(Subsystem):
 
     class Goal(Enum):
         DEFAULT = auto()
-        L4_SCORING = auto()
-        L3_SCORING = auto()
-        L2_SCORING = auto()
-        L1_SCORING = auto()
-        L2_ALGAE_INTAKE = auto()
-        L3_ALGAE_INTAKE = auto()
-        ALGAE_SCORING_PROCESSOR = auto()
-        ALGAE_SCORING_NET = auto()
-        FUNNEL_INTAKE = auto()
-        GROUND_INTAKE = auto()
+        L4_CORAL = auto()
+        L3_CORAL = auto()
+        L2_CORAL = auto()
+        L1_CORAL = auto()
+        L2_ALGAE = auto()
+        L3_ALGAE = auto()
+        PROCESSOR = auto()
+        NET = auto()
+        FUNNEL = auto()
+        FLOOR = auto()
 
     # Map each goal to each subsystem state to reduce code complexity
-    _goal_to_states: dict[Goal, tuple[PivotSubsystem.SubsystemState, ElevatorSubsystem.SubsystemState, FunnelSubsystem.SubsystemState]] = {
+    _goal_to_states: dict[Goal,
+            tuple[
+                Optional[PivotSubsystem.SubsystemState],
+                Optional[ElevatorSubsystem.SubsystemState],
+                Optional[FunnelSubsystem.SubsystemState]
+            ]] = {
         Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L4_SCORING: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L3_SCORING: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L2_SCORING: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L1_SCORING: (PivotSubsystem.SubsystemState.LOW_SCORING, ElevatorSubsystem.SubsystemState.L1, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.FUNNEL_INTAKE: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP),
-        Goal.GROUND_INTAKE: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.ALGAE_SCORING_NET: (PivotSubsystem.SubsystemState.NET_SCORING, ElevatorSubsystem.SubsystemState.NET, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.ALGAE_SCORING_PROCESSOR: (PivotSubsystem.SubsystemState.PROCESSOR_SCORING, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L2_ALGAE_INTAKE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L2_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L3_ALGAE_INTAKE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L3_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L3_CORAL: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L2_CORAL: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L1_CORAL: (PivotSubsystem.SubsystemState.LOW_SCORING, ElevatorSubsystem.SubsystemState.L1, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L2_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L2_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L3_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L3_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.PROCESSOR: (PivotSubsystem.SubsystemState.PROCESSOR_SCORING, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.NET: (PivotSubsystem.SubsystemState.NET_SCORING, ElevatorSubsystem.SubsystemState.NET, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.FUNNEL: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP),
+        Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
     }
         
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem) -> None:
@@ -65,7 +71,6 @@ class Superstructure(Subsystem):
         self.funnel = funnel
         self.vision = vision
 
-        self._goal_commands = {}
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
 
@@ -103,9 +108,9 @@ class Superstructure(Subsystem):
             self.pivot.set_desired_state(self._pivot_old_state)
 
     def _set_goal(self, goal: Goal) -> None:
-        current_goal = self._goal = goal
+        self._goal = goal
 
-        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(current_goal, (None, None, None))
+        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(goal, (None, None, None))
         if pivot_state:
             self.pivot.set_desired_state(pivot_state)
         if elevator_state:
@@ -113,7 +118,7 @@ class Superstructure(Subsystem):
         if funnel_state:
             self.funnel.set_desired_state(funnel_state)
 
-        SmartDashboard.putString("Superstructure Goal", current_goal.name)
+        SmartDashboard.putString("Superstructure Goal", goal.name)
 
     def set_goal_command(self, goal: Goal) -> Command:
         """
@@ -124,13 +129,4 @@ class Superstructure(Subsystem):
         :return:     A command that will set the desired goal
         :rtype:      Command
         """
-        if goal in self._goal_commands:
-            return self._goal_commands[goal]
-
-        command = cmd.startEnd(
-            lambda: self._set_goal(goal),
-            lambda: self._set_goal(self.Goal.DEFAULT) if not DriverStation.isDisabled() else lambda: None,
-            self
-        )
-        self._goal_commands[goal] = command
-        return command
+        return cmd.runOnce(lambda: self._set_goal(goal), self)

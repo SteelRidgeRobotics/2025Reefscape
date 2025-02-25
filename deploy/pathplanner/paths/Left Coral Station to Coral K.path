@@ -1,0 +1,80 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.6809253246753246,
+        "y": 7.351237824675325
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2161974049799293,
+        "y": 6.590819288799233
+      },
+      "isLocked": false,
+      "linkedName": "Left Coral Station (Hugging Left)"
+    },
+    {
+      "anchor": {
+        "x": 3.9766980025354526,
+        "y": 5.247811576804004
+      },
+      "prevControl": {
+        "x": 4.328530168686989,
+        "y": 5.537086896126514
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Low Accel",
+      "minWaypointRelativePos": 0.5252808988764036,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1000.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "L4 Coral",
+      "waypointRelativePos": 0.13951310861423133,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4 Coral"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "Close Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -53.8418145601917
+  },
+  "useDefaultConstraints": true
+}

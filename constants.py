@@ -2,9 +2,10 @@ from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
-apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
 
 class Constants:
+
+    apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
 
     class CanIDs:
         LEFT_ELEVATOR_TALON = 10
@@ -30,9 +31,9 @@ class Constants:
         )
 
     class ElevatorConstants:
-        L1_SCORE_POSITION = 2.512207 # Placeholders
-        L2_SCORE_POSITION = 3.250244
-        L3_SCORE_POSITION = 5.451172
+        L1_SCORE_POSITION = 0.690674
+        L2_SCORE_POSITION = 1.489746
+        L3_SCORE_POSITION = 3.09082
         L4_SCORE_POSITION = 6.087158
         L2_ALGAE_POSITION = 3.549561
         L3_ALGAE_POSITION = 4.732666
@@ -65,10 +66,10 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.336914
+        FUNNEL_INTAKE_ANGLE = 0.323975
         ALGAE_INTAKE_ANGLE = -0.05542
-        HIGH_SCORING_ANGLE =  0.285645
-        MID_SCORING_ANGLE = 0.2854
+        HIGH_SCORING_ANGLE =  0.202
+        MID_SCORING_ANGLE = 0.237793
         LOW_SCORING_ANGLE = 0.338379
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
@@ -77,17 +78,17 @@ class Constants:
         MAXIMUM_ANGLE = 0.392822
 
         CRUISE_VELOCITY = 3
-        MM_ACCELERATION = 3
+        MM_ACCELERATION = 2
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(0.34)
+                 .with_k_g(0.0)
                  .with_k_p(39.189)
                  .with_k_i(0.0)
-                 .with_k_d(6.9113)
-                 .with_k_s(0.064569)
-                 .with_k_v(13.45)
-                 .with_k_a(0.3307)
+                 .with_k_d(0.0)
+                 .with_k_s(0.0)
+                 .with_k_v(0.0)
+                 .with_k_a(0.0)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 

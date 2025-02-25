@@ -82,8 +82,6 @@ class RobotState(Subsystem):
         robot_angle = (self._swerve.get_operator_forward_direction() + state.pose.rotation()).radians()
         self._swerve_data.getEntry("Robot Angle").setDouble(robot_angle)
 
-        NetworkTableInstance.getDefault().flush()
-
     def update_swerve_state(self, state: swerve.SwerveDrivetrain.SwerveDriveState):
         self._swerve_state = state
 

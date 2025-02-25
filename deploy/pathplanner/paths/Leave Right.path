@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9256087239583324,
-        "y": 2.793333695023148
+        "x": 7.236525974025974,
+        "y": 0.679
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5677763696162903,
-        "y": 2.5002337922811804
+        "x": 6.7564273910525605,
+        "y": 0.6771958494028176
       },
       "isLocked": false,
-      "linkedName": "ReefEnd3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6066294524629237,
-        "y": 0.6670790850105937
+        "x": 6.766436688311688,
+        "y": 0.679
       },
       "prevControl": {
-        "x": 2.269508930856615,
-        "y": 1.2630464100836616
+        "x": 7.265947650899011,
+        "y": 0.6774717162884478
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.73,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 450.0,
+    "maxAngularAcceleration": 2600.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 54.676670162293256
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "MAXAUTO",
+  "folder": "Leave Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
