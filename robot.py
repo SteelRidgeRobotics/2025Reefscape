@@ -2,7 +2,7 @@ import os.path
 
 from commands2 import CommandScheduler, TimedCommandRobot
 from phoenix6 import utils, SignalLogger
-from wpilib import DataLogManager, DriverStation, RobotBase
+from wpilib import DataLogManager, DriverStation
 from wpinet import WebServer, PortForwarder
 
 from constants import Constants
