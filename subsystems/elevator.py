@@ -9,7 +9,6 @@ from phoenix6.configs.config_groups import NeutralModeValue, MotionMagicConfigs,
 from phoenix6.controls import Follower, VoltageOut, MotionMagicVoltage
 from phoenix6.hardware import CANdi, TalonFX
 from phoenix6.signals import ForwardLimitSourceValue
-from wpilib import DriverStation
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
