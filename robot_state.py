@@ -53,8 +53,8 @@ class RobotState(Subsystem):
             SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
     def periodic(self) -> None:
-            state = self._swerve_state
-            self._log_swerve_state(state)
+        state = self._swerve.get_state_copy()
+        self._log_swerve_state(state)
 
     def simulationPeriodic(self) -> None:
         self.update_mechanisms()
@@ -82,13 +82,7 @@ class RobotState(Subsystem):
         robot_angle = (self._swerve.get_operator_forward_direction() + state.pose.rotation()).radians()
         self._swerve_data.getEntry("Robot Angle").setDouble(robot_angle)
 
-    def update_swerve_state(self, state: swerve.SwerveDrivetrain.SwerveDriveState):
-        self._swerve_state = state
-
     def update_mechanisms(self) -> None:
         if self._superstructure_mechanism:
             self._elevator_mech.setLength(self._elevator.get_height())
             self._pivot_mech.setAngle(self._pivot.get_angle() - 90)
-
-    def should_pivot_move(self) -> bool:
-        return self._elevator.is_at_setpoint()
