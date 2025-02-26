@@ -356,15 +356,15 @@ class LimelightHelpers:
 		return LimelightHelpers.get_limelight_NTTable(table_name).getEntry(entry_name)
 
 	@staticmethod
- def get_limelight_double_array_entry(table_name: str, entry_name: str) -> DoubleArrayEntry:
-    key = f"{table_name}/{entry_name}"
-    if key in LimelightHelpers._double_array_entries:
-        return LimelightHelpers._double_array_entries[key]
+	def get_limelight_double_array_entry(table_name: str, entry_name: str) -> DoubleArrayEntry:
+		key = f"{table_name}/{entry_name}"
+		if key in LimelightHelpers._double_array_entries:
+			return LimelightHelpers._double_array_entries[key]
 
-    return LimelightHelpers._double_array_entries.setdefault(
-        key,
-        LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
-    )
+		return LimelightHelpers._double_array_entries.setdefault(
+			key,
+			LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
+		)
 
 	@staticmethod
 	def get_limelight_NTDouble(table_name: str, entry_name: str) -> float:
