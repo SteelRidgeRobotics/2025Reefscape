@@ -6,6 +6,8 @@ from wpilib import DataLogManager, DriverStation, SmartDashboard, Timer, RobotCo
 from wpinet import WebServer, PortForwarder
 
 from constants import Constants
+from lib import elasticlib
+from lib.elasticlib import Notification, NotificationLevel
 from robot_container import RobotContainer
 from subsystems.vision import VisionSubsystem
 
@@ -57,12 +59,15 @@ class Leviathan(TimedCommandRobot):
         if selected_auto is not None:
             DataLogManager.log(f"Selected Auto: {selected_auto.getName()}")
             selected_auto.schedule()
+
+        elasticlib.select_tab("Autonomous")
             
     def autonomousPeriodic(self) -> None:
         pass
     
     def autonomousExit(self) -> None:
         DataLogManager.log("Autonomous period ended")
+        elasticlib.select_tab("Teleop")
             
     def teleopInit(self) -> None:
         DataLogManager.log("Teleoperated period started")
@@ -71,10 +76,19 @@ class Leviathan(TimedCommandRobot):
 
     def teleopExit(self) -> None:
         DataLogManager.log("Teleoperated period ended")
+        if DriverStation.isFMSAttached():
+            elasticlib.send_notification(
+                Notification(
+                    level=NotificationLevel.INFO.value,
+                    title="Good match!",
+                    description="(again)" if DriverStation.getReplayNumber() > 0 else ""
+                )
+            )
 
     def testInit(self):
         DataLogManager.log("Test period started")
         CommandScheduler.getInstance().cancelAll()
+        elasticlib.select_tab("Debug")
 
     def disabledInit(self):
         self.container.vision.set_desired_state(VisionSubsystem.SubsystemState.MEGA_TAG_1)
