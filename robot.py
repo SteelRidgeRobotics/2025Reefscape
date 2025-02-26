@@ -10,7 +10,7 @@ from robot_container import RobotContainer
 from subsystems.vision import VisionSubsystem
 
 
-class OilSpill(TimedCommandRobot):
+class Leviathan(TimedCommandRobot):
 
     def __init__(self, period = 0.02) -> None:
         super().__init__(period)

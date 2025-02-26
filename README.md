@@ -1,6 +1,6 @@
 # 2025Reefscape
 
-Team 6343's 2025 FRC robot code for Reefscape, currently known as Oil Spill. Oil Spill's code is written in Python and is based off of Robotpy's Commands V2 control system.
+Team 6343's 2025 FRC robot code for Reefscape, officially known as Leviathan. Leviathan's code is written in Python and is based off of Robotpy's Commands V2 control system.
 
 The code is divided into several packages and files, each responsible for a different aspect of the robot function. This README explains the function of each package, and some of the variable naming conventions used. Additional information about each specific class can be found in that class' Python file.
 
