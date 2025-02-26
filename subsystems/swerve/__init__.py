@@ -246,14 +246,17 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         if utils.is_simulation():
             self._start_sim_thread()
         self._configure_auto_builder()
+
+    @classmethod
+    def get_auto_config(cls) -> RobotConfig:
+        return RobotConfig.fromGUISettings()
     
     def _configure_auto_builder(self) -> None:
         """
         Method to configure the auto builder
         """
 
-        #Create config from GUI settings
-        config = RobotConfig.fromGUISettings()
+        config = self.get_auto_config()
         self._apply_robot_speeds = ApplyRobotSetpointSpeeds(config, 10)
         AutoBuilder.configure(
             lambda: self.get_state().pose,  # Supplier of current robot pose

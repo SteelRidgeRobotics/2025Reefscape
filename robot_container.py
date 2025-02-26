@@ -20,6 +20,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve.requests import SetpointFieldCentric
 from subsystems.vision import VisionSubsystem
 
 
@@ -110,7 +111,7 @@ class RobotContainer:
         common_settings = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
         )
-        self._field_centric = common_settings(swerve.requests.FieldCentric())
+        self._field_centric = common_settings(SetpointFieldCentric(self.drivetrain.get_auto_config(), 12))
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
