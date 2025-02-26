@@ -4,9 +4,9 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
-
-from wpilib import Servo, SmartDashboard
+from wpilib import Servo
 from wpimath import units
+from wpimath.system.plant import DCMotor
 
 from constants import Constants
 from subsystems import StateSubsystem
@@ -15,6 +15,7 @@ from subsystems import StateSubsystem
 class ClimberSubsystem(StateSubsystem):
     """
     The ClimberSubsystem is responsible for controlling the robot's climber mechanism.
+    In order to stay in the air after being disabled, the climber mechanism utilizes a ratchet powered by a servo.
     """
 
     class SubsystemState(Enum):
@@ -40,6 +41,7 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_servo = Servo(0)
         self._climb_motor = TalonFX(Constants.CanIDs.CLIMB_TALON)
         self._climb_motor.configurator.apply(self._motor_config)
+        self._add_talon_sim_model(self._climb_motor, DCMotor.falcon500FOC(1), Constants.ClimberConstants.GEAR_RATIO)
         
         self._climb_request = VoltageOut(0)
 
@@ -52,3 +54,6 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_servo.setAngle(servo_angle)
 
         self._climb_motor.set_control(self._climb_request)
+
+    def get_position(self) -> float:
+        return self._climb_motor.get_position().value

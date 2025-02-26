@@ -6,6 +6,7 @@ from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 class Constants:
 
     apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
+    mechanism_simulations = True
 
     class CanIDs:
         LEFT_ELEVATOR_TALON = 10

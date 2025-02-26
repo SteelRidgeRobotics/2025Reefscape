@@ -45,7 +45,7 @@ class RobotContainer:
             Constants.VisionConstants.BACK_CENTER,
         )
 
-        self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator)
+        self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator, self.climber)
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
         )
