@@ -1,5 +1,4 @@
 from commands2 import Subsystem
-from commands2 import Subsystem
 from ntcore import NetworkTableInstance
 from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, utils
@@ -8,7 +7,6 @@ from wpimath import units
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
-from constants import Constants
 from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
@@ -51,7 +49,7 @@ class RobotState(Subsystem):
         self._setup_simulation_mechanisms()
 
     def _setup_simulation_mechanisms(self):
-        if Constants.mechanism_simulations:
+        if utils.is_simulation():
             self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
             self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
             self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
