@@ -14,6 +14,8 @@ from subsystems.swerve import SwerveSubsystem
 
 class RobotState(Subsystem):
 
+    starting_pose: Pose2d | None = None
+
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem):
         super().__init__()
         self._swerve = drivetrain
@@ -86,3 +88,9 @@ class RobotState(Subsystem):
         if self._superstructure_mechanism:
             self._elevator_mech.setLength(self._elevator.get_height())
             self._pivot_mech.setAngle(self._pivot.get_angle() - 90)
+
+    @classmethod
+    def getExpectedAngle(cls):
+        if cls.starting_pose:
+            return cls.starting_pose.rotation()
+        return None

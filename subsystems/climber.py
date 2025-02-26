@@ -5,7 +5,7 @@ from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs,
 from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
 
-from wpilib import Servo
+from wpilib import Servo, SmartDashboard
 from wpimath import units
 
 from constants import Constants
@@ -31,7 +31,7 @@ class ClimberSubsystem(StateSubsystem):
     _state_configs: dict[SubsystemState, tuple[int, units.degrees]] = {
         SubsystemState.STOP: (0, 180),
         SubsystemState.CLIMB_POSITIVE: (4, 0),
-        SubsystemState.CLIMB_NEGATIVE: (-4, 0),
+        SubsystemState.CLIMB_NEGATIVE: (-4, 180),
     }
 
     def __init__(self) -> None:
@@ -47,7 +47,7 @@ class ClimberSubsystem(StateSubsystem):
         if not super().set_desired_state(desired_state):
             return
 
-        output, servo_angle = self._state_configs.get(desired_state, (0, 180))
+        output, servo_angle = self._state_configs.get(desired_state, (0, 0))
         self._climb_request.output = output
         self._climb_servo.setAngle(servo_angle)
 

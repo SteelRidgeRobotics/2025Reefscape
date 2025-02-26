@@ -93,6 +93,10 @@ class RobotContainer:
         if chooser_selected is not None:
             if utils.is_simulation() and DriverStation.isDisabled():
                 self.drivetrain.reset_pose(self._flip_pose_if_needed(chooser_selected._startingPose))
+            try:
+                self.robot_state.starting_pose = chooser_selected._startingPose
+            except AttributeError:
+                pass
 
     @staticmethod
     def _flip_pose_if_needed(pose: Pose2d) -> Pose2d:
@@ -161,7 +165,7 @@ class RobotContainer:
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.FUNNEL_INTAKE),
             )
         ).onFalse(
             cmd.parallel(
@@ -181,6 +185,14 @@ class RobotContainer:
                 self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
             )
         )
+
+        self._function_controller.povLeft().onTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)
+        ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
+
+        self._function_controller.povRight().onTrue(
+            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)
+        ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
