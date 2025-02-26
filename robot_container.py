@@ -90,10 +90,9 @@ class RobotContainer:
 
     def _set_auto_to_selection(self) -> None:
         chooser_selected = self._auto_chooser.getSelected()
-        if chooser_selected is not None:
-            if utils.is_simulation() and DriverStation.isDisabled():
-                self.drivetrain.reset_pose(self._flip_pose_if_needed(chooser_selected._startingPose))
+        if utils.is_simulation() and DriverStation.isDisabled() and chooser_selected is not None:
             try:
+                self.drivetrain.reset_pose(self._flip_pose_if_needed(chooser_selected._startingPose))
                 self.robot_state.starting_pose = chooser_selected._startingPose
             except AttributeError:
                 pass

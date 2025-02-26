@@ -55,6 +55,7 @@ class Leviathan(TimedCommandRobot):
 
         selected_auto = self.container.get_autonomous_command()
         if selected_auto is not None:
+            DataLogManager.log(f"Selected Auto: {selected_auto.getName()}")
             selected_auto.schedule()
             
     def autonomousPeriodic(self) -> None:
