@@ -2,7 +2,7 @@ import os.path
 
 from commands2 import CommandScheduler, TimedCommandRobot
 from phoenix6 import utils, SignalLogger
-from wpilib import DataLogManager, DriverStation
+from wpilib import DataLogManager, DriverStation, SmartDashboard, Timer, RobotController
 from wpinet import WebServer, PortForwarder
 
 from constants import Constants
@@ -18,6 +18,7 @@ class OilSpill(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
+        SignalLogger.enable_auto_logging(True)
         DataLogManager.start()
         DriverStation.startDataLog(DataLogManager.getLog())
 
@@ -38,8 +39,8 @@ class OilSpill(TimedCommandRobot):
 
     def robotPeriodic(self) -> None:
         # Log important info
-        #SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
-        #SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
+        SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
+        SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
 
         if utils.is_simulation():
             self.container.robot_state.update_mechanisms()
