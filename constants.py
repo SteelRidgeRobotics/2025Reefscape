@@ -66,7 +66,7 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.323975
+        FUNNEL_INTAKE_ANGLE = 0.33
         ALGAE_INTAKE_ANGLE = -0.05542
         HIGH_SCORING_ANGLE =  0.202
         MID_SCORING_ANGLE = 0.237793
@@ -100,6 +100,7 @@ class Constants:
     class IntakeConstants:
 
         CORAL_INTAKE_SPEED = 0.7
+        FUNNEL_INTAKE_SPEED = 0.4
         CORAL_OUTPUT_SPEED = 1
 
         ALGAE_INTAKE_SPEED = 1
@@ -123,7 +124,7 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 0.095459
+        CORAL_STATION_POSITION = 0.103
         STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
