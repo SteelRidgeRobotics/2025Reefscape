@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 from phoenix6 import utils
 from lib.limelight import PoseEstimate, LimelightHelpers
+from robot_state import RobotState
 from subsystems import StateSubsystem
 from subsystems.swerve import SwerveSubsystem
 
@@ -40,19 +41,17 @@ class VisionSubsystem(StateSubsystem):
         if not all(isinstance(cam, str) for cam in self._cameras):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
-        self._executor = concurrent.futures.ThreadPoolExecutor()  # Executor for threads
+        self._executor = concurrent.futures.ThreadPoolExecutor()
+        self._last_camera_poses = {cam: None for cam in self._cameras}
 
     def periodic(self):
         super().periodic()
 
-        # Store state locally to reduce repeated Enum.__get__ calls
         state = self._subsystem_state
 
-        # Skip processing if robot is spinning too fast or estimates are disabled
         if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720 or state == self.SubsystemState.DISABLE_ESTIMATES:
             return
 
-        # Process vision estimates concurrently
         futures = [
             self._executor.submit(self._process_camera, cam, state, self._get_pigeon_values())
             for cam in self._cameras
@@ -72,16 +71,33 @@ class VisionSubsystem(StateSubsystem):
             return
 
     def _process_camera(self, camera: str, state: SubsystemState, pigeon_values: dict) -> PoseEstimate | None:
-        """ Retrieves pose estimate for a single camera. """
-        pose = None
-
-        if state == self.SubsystemState.MEGA_TAG_2:
+        """ Retrieves pose estimate for a single camera and ensures it's closer to expected than the last one. """
+        if state is self.SubsystemState.MEGA_TAG_2:
             self._update_camera_orientation(camera, pigeon_values)
             pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
-        elif state == self.SubsystemState.MEGA_TAG_1:
-            pose = LimelightHelpers.get_botpose_estimate_wpiblue(camera)
+        else:
+            pose = LimelightHelpers.get_botpose_estimate_wpiblue(camera) if state is self.SubsystemState.MEGA_TAG_1 else None
 
-        return pose if pose and pose.tag_count > 0 else None
+        if pose is None or pose.tag_count == 0:
+            return None  # Reject immediately if invalid
+
+        if state is self.SubsystemState.MEGA_TAG_1:
+            expected_angle = RobotState.getExpectedAngle()
+            if expected_angle is None:
+                return None
+            else:
+                expected_angle = expected_angle.degrees()
+            last_pose = self._last_camera_poses.get(camera)
+
+            new_angle = pose.pose.rotation().degrees()
+
+            # Reject pose if it isn't closer to the expected angle than the last valid pose
+            if last_pose and abs(new_angle - expected_angle) >= abs(last_pose.pose.rotation().degrees() - expected_angle):
+                return None
+
+            self._last_camera_poses[camera] = pose
+
+        return pose
 
 
     @staticmethod
@@ -91,8 +107,8 @@ class VisionSubsystem(StateSubsystem):
             camera,
             pigeon_values["yaw"],
             pigeon_values["ang_vel_z"],
-            0, 0,  # Pitch and pitch velocity set to 0
-            0, 0   # Roll and roll velocity set to 0
+            0, 0,
+            0, 0
         )
 
     def _get_pigeon_values(self) -> dict:
