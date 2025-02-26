@@ -1,12 +1,7 @@
-import http.server
 import json
-import os
-import socketserver
-import threading
 from enum import Enum
 
 from ntcore import NetworkTableInstance, PubSubOptions
-from wpilib import DataLogManager
 
 
 class NotificationLevel(Enum):
@@ -19,13 +14,13 @@ class Notification:
     """Represents a notification with various display properties."""
 
     def __init__(
-            self,
-            level=NotificationLevel.INFO,
-            title: str = "",
-            description: str = "",
-            display_time: int = 3000,
-            width: float = 350,
-            height: float = -1,
+        self,
+        level=NotificationLevel.INFO,
+        title: str = "",
+        description: str = "",
+        display_time: int = 3000,
+        width: float = 350,
+        height: float = -1,
     ):
         """
         Initializes an ElasticNotification object.
