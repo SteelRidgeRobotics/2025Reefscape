@@ -13,8 +13,6 @@ from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
-from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
-
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
     """
@@ -254,7 +252,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         #Create config from GUI settings
         config = RobotConfig.fromGUISettings()
-        self._apply_robot_speeds = ApplyRobotSetpointSpeeds(config, 10)
+        self._apply_robot_speeds = ApplyRobotSpeeds()
         AutoBuilder.configure(
             lambda: self.get_state().pose,  # Supplier of current robot pose
             self.reset_pose,  # Consumer for seeding pose against auto
@@ -263,6 +261,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             lambda speeds, feedforwards: self.set_control(
                 self._apply_robot_speeds
                 .with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ),
             PPHolonomicDriveController(
                 PIDConstants(5.0, 0.0, 0.0),
