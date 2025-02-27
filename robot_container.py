@@ -155,7 +155,11 @@ class RobotContainer:
             self._function_controller.x(): self.superstructure.Goal.L3_CORAL,
             self._function_controller.b(): self.superstructure.Goal.L2_CORAL,
             self._function_controller.a(): self.superstructure.Goal.L1_CORAL,
-            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT,
+            self._function_controller.y() & self._function_controller.start(): self.superstructure.Goal.NET,
+            self._function_controller.x() & self._function_controller.start(): self.superstructure.Goal.L3_ALGAE,
+            self._function_controller.b() & self._function_controller.start(): self.superstructure.Goal.L2_ALGAE,
+            self._function_controller.a() & self._function_controller.start(): self.superstructure.Goal.PROCESSOR,
+            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT
         }
 
         for button, goal in goal_bindings.items():
