@@ -165,7 +165,7 @@ class RobotContainer:
         }
 
         for button, goal in goal_bindings.items():
-            if goal is self.superstructure.Goal.L3_ALGAE or goal is self.superstructure.Goal.L2_ALGAE:
+            if goal is self.superstructure.Goal.L3_ALGAE or goal is self.superstructure.Goal.L2_ALGAE or goal is self.superstructure.Goal.PROCESSOR:
                 (button.whileTrue(
                     self.superstructure.set_goal_command(goal)
                     .alongWith(self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKE)))

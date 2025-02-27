@@ -1,7 +1,7 @@
 from enum import auto, Enum
 from typing import Optional
 
-from commands2 import Command, Subsystem, cmd
+from commands2 import Command, Subsystem, cmd, InstantCommand
 from wpilib import DriverStation, SmartDashboard
 
 from subsystems.elevator import ElevatorSubsystem
@@ -93,7 +93,7 @@ class Superstructure(Subsystem):
                 self.elevator.freeze()
 
         # Unfreeze subsystems if safe
-        if not self.pivot.is_in_elevator() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
+        if not self.pivot.is_in_elevator() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR and elevator_state is ElevatorSubsystem.SubsystemState.IDLE:
             self.elevator.unfreeze()
             self.elevator.set_desired_state(self._elevator_old_state)
 
@@ -130,4 +130,4 @@ class Superstructure(Subsystem):
         :return:     A command that will set the desired goal
         :rtype:      Command
         """
-        return cmd.runOnce(lambda: self._set_goal(goal), self)
+        return cmd.runOnce(lambda: self._set_goal(goal), self).alongWith(InstantCommand(lambda: print(f"Goal set: {goal.name}")))
