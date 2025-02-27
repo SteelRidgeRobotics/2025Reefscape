@@ -46,7 +46,9 @@ class RobotState(Subsystem):
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
 
         self._superstructure_mechanism = None
-        self._setup_simulation_mechanisms()
+        self._climber_mechanism = None
+        if utils.is_simulation():
+            self._setup_simulation_mechanisms()
 
     def _setup_simulation_mechanisms(self):
         self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
@@ -64,6 +66,8 @@ class RobotState(Subsystem):
     def periodic(self) -> None:
         state = self._swerve.get_state_copy()
         self._log_swerve_state(state)
+
+    def simulationPeriodic(self) -> None:
         self.update_mechanisms()
 
     def _log_swerve_state(self, state: swerve.SwerveDrivetrain.SwerveDriveState) -> None:
