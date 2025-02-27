@@ -1,7 +1,7 @@
 import os.path
 
 from commands2 import CommandScheduler, TimedCommandRobot
-from phoenix6 import utils, SignalLogger
+from phoenix6 import SignalLogger
 from wpilib import DataLogManager, DriverStation, SmartDashboard, Timer, RobotController
 from wpinet import WebServer, PortForwarder
 
@@ -43,15 +43,11 @@ class Leviathan(TimedCommandRobot):
         SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
         SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
 
-        if utils.is_simulation():
-            self.container.robot_state.update_mechanisms()
-
     def _simulationPeriodic(self) -> None:
         pass
 
     def autonomousInit(self) -> None:
         DataLogManager.log("Autonomous period started")
-        self.container.drivetrain.pigeon2.set_yaw(self.container.drivetrain.get_state().pose.rotation().degrees())
 
         selected_auto = self.container.get_autonomous_command()
         if selected_auto is not None:

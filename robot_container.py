@@ -3,7 +3,7 @@ import commands2.button
 from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
-from phoenix6 import SignalLogger, swerve, utils
+from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
