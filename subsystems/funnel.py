@@ -12,6 +12,10 @@ from subsystems import StateSubsystem
 
 
 class FunnelSubsystem(StateSubsystem):
+    """
+    The FunnelSubsystem is responsible for handling the funnel mechanism,
+    ensuring it stays out of the way during climbing and for accurate positioning for funnel intaking.
+    """
 
     class SubsystemState(Enum):
         UP = auto()

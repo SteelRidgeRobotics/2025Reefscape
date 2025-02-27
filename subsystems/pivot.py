@@ -19,9 +19,9 @@ from subsystems import StateSubsystem
 
 class PivotSubsystem(StateSubsystem):
     """
-    The PivotSubsystem is responsible for controlling the end effector's current rotation.
-    It uses a PositionDutyCycle to quickly transition between set points and is tuned through the use of SysId routines.
-    It also incorporates a fused CANcoder to mitigate backlash through the pivot gearbox, increasing accuracy.
+    The PivotSubsystem is responsible for controlling the end effector's angle.
+    It uses Motion Magic with Voltage gains to quickly transition between set points.
+    It also incorporates a remote CANcoder to mitigate backlash through the pivot gearbox, increasing accuracy.
     """
 
     class SubsystemState(Enum):

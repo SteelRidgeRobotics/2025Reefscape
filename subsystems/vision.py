@@ -19,7 +19,7 @@ class VisionSubsystem(StateSubsystem):
     - 1 Limelight 4 (under the pivot, 20-degree inclination)
     - 2 Limelight 3As (front swerve covers, 15-degree outward incline)
 
-    We use MegaTag 1 before the match starts to set the heading and switch to MegaTag 2 during gameplay.
+    We use the starting position in auto to determine our robot heading to calibrate our cameras.
     """
 
     class SubsystemState(Enum):
