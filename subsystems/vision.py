@@ -84,7 +84,8 @@ class VisionSubsystem(StateSubsystem):
         if state is self.SubsystemState.MEGA_TAG_1:
             expected_angle = RobotState.getExpectedAngle()
             if expected_angle is None:
-                return None
+                self._last_camera_poses[camera] = pose
+                return pose
             else:
                 expected_angle = expected_angle.degrees()
             last_pose = self._last_camera_poses.get(camera)
