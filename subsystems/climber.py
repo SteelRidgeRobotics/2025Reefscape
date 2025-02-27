@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import auto, Enum
 
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
@@ -19,9 +19,9 @@ class ClimberSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        STOP = 1
-        CLIMB_POSITIVE = 2
-        CLIMB_NEGATIVE = 3
+        STOP = auto()
+        CLIMB_POSITIVE = auto()
+        CLIMB_NEGATIVE = auto()
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ClimberConstants.GAINS)
@@ -31,8 +31,8 @@ class ClimberSubsystem(StateSubsystem):
 
     _state_configs: dict[SubsystemState, tuple[int, units.degrees]] = {
         SubsystemState.STOP: (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
-        SubsystemState.CLIMB_POSITIVE: (4, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
-        SubsystemState.CLIMB_NEGATIVE: (-4, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_POSITIVE: (Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
+        SubsystemState.CLIMB_NEGATIVE: (Constants.ClimberConstants.VOLTAGE_OUTWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
     }
 
     def __init__(self) -> None:
@@ -47,6 +47,7 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_request = VoltageOut(0)
 
     def periodic(self):
+        super().periodic()
         self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:

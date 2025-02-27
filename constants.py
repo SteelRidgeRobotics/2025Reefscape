@@ -30,6 +30,9 @@ class Constants:
             .with_k_a(0.0)
         )
 
+        VOLTAGE_INWARDS = 16
+        VOLTAGE_OUTWARDS = -4
+
         SERVO_PORT = 0
         SERVO_DISENGAGED_ANGLE = 0
         SERVO_ENGAGED_ANGLE = 180
