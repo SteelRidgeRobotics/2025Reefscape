@@ -30,6 +30,10 @@ class Constants:
             .with_k_a(0.0)
         )
 
+        SERVO_PORT = 0
+        SERVO_DISENGAGED_ANGLE = 0
+        SERVO_ENGAGED_ANGLE = 180
+
     class ElevatorConstants:
         L1_SCORE_POSITION = 0.690674
         L2_SCORE_POSITION = 1.489746
