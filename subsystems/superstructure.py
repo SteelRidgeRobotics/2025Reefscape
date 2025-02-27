@@ -83,20 +83,14 @@ class Superstructure(Subsystem):
         pivot_state = self.pivot.get_current_state()
         elevator_state = self.elevator.get_current_state()
 
-        # Update old states only when necessary
-        if pivot_state != PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
-            self._pivot_old_state = pivot_state
-
-        if elevator_state != ElevatorSubsystem.SubsystemState.IDLE:
-            self._elevator_old_state = elevator_state
-
         # Only proceed with actions when necessary
-        if self.pivot.is_in_elevator() and not self.elevator.is_at_setpoint():
+        if pivot_state != self._pivot_old_state and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
-            self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.IDLE)
             self.pivot.freeze()
-            self.elevator.freeze()
+            if self.pivot.is_in_elevator():
+                self.elevator.set_desired_state(ElevatorSubsystem.SubsystemState.IDLE)
+                self.elevator.freeze()
 
         # Unfreeze subsystems if safe
         if not self.pivot.is_in_elevator() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
@@ -106,6 +100,13 @@ class Superstructure(Subsystem):
         if self.elevator.is_at_setpoint() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._pivot_old_state)
+
+        # Update old states only when necessary
+        if pivot_state != PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
+            self._pivot_old_state = pivot_state
+
+        if elevator_state != ElevatorSubsystem.SubsystemState.IDLE:
+            self._elevator_old_state = elevator_state
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
