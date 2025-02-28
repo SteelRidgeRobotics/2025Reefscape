@@ -130,4 +130,4 @@ class Superstructure(Subsystem):
         :return:     A command that will set the desired goal
         :rtype:      Command
         """
-        return cmd.runOnce(lambda: self._set_goal(goal), self).alongWith(InstantCommand(lambda: print(f"Goal set: {goal.name}")))
+        return cmd.runOnce(lambda: self._set_goal(goal), self)
