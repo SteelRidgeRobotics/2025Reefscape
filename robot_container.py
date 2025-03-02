@@ -1,10 +1,11 @@
 import commands2
 import commands2.button
-from commands2 import cmd
+from commands2 import cmd, InstantCommand
+from commands2.button import CommandXboxController
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
-from phoenix6 import SignalLogger, swerve, utils
-from wpilib import DriverStation, SmartDashboard
+from phoenix6 import SignalLogger, swerve
+from wpilib import DriverStation, SmartDashboard, XboxController
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
@@ -108,6 +109,14 @@ class RobotContainer:
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
 
+    @staticmethod
+    def rumble_command(controller: CommandXboxController, duration: float, intensity: float):
+        return cmd.sequence(
+            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, intensity)),
+            cmd.waitSeconds(duration),
+            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, 0))
+        )
+
     def _setup_controller_bindings(self) -> None:
         hid = self._driver_controller.getHID()
         self.drivetrain.setDefaultCommand(
@@ -177,6 +186,13 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.FUNNEL_INTAKE),
+            ).repeatedly().until(lambda: self.intake.has_coral()).andThen(
+                cmd.parallel(
+                    self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                    self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+                    self.rumble_command(self._driver_controller, 0.2, 0.25),
+                    self.rumble_command(self._function_controller, 0.2, 0.25),
+                )
             )
         ).onFalse(
             cmd.parallel(
@@ -189,6 +205,13 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FLOOR),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
+            ).repeatedly().until(lambda: self.intake.has_coral()).andThen(
+                cmd.parallel(
+                    self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                    self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+                    self.rumble_command(self._driver_controller, 0.2, 0.25),
+                    self.rumble_command(self._function_controller, 0.2, 0.25),
+                )
             )
         ).onFalse(
             cmd.parallel(
