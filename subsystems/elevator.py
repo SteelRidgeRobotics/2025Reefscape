@@ -68,7 +68,7 @@ class ElevatorSubsystem(StateSubsystem):
     _limit_switch_config.forward_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
     _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS1 # Top Limit Switch
     _limit_switch_config.forward_limit_autoset_position_value = Constants.ElevatorConstants.ELEVATOR_MAX
-    _limit_switch_config.forward_limit_autoset_position_enable = True
+    _limit_switch_config.forward_limit_autoset_position_enable = False
 
     _limit_switch_config.reverse_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
     _limit_switch_config.reverse_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2 # Bottom Limit Switch
