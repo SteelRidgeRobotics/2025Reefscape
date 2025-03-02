@@ -14,7 +14,6 @@ from subsystems import StateSubsystem
 class IntakeSubsystem(StateSubsystem):
     """
     The IntakeSubsystem is responsible for controlling the end effector's compliant wheels.
-    It uses a VelocityDutyCycle request to control the speed of the wheels.
     """
 
     class SubsystemState(Enum):

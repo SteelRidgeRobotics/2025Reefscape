@@ -1,13 +1,10 @@
-import os
-
 import commands2
 import commands2.button
-from commands2 import cmd, InstantCommand
+from commands2 import cmd
 from commands2.sysid import SysIdRoutine
-from ntcore import NetworkTable, NetworkTableInstance
-from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
+from pathplannerlib.auto import AutoBuilder, NamedCommands
 from phoenix6 import SignalLogger, swerve, utils
-from wpilib import DriverStation, SmartDashboard, DataLogManager, getDeployDirectory, SendableChooser
+from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
@@ -20,7 +17,6 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
-from subsystems.swerve.requests import SetpointFieldCentric
 from subsystems.vision import VisionSubsystem
 
 
@@ -78,25 +74,21 @@ class RobotContainer:
         # Build AutoChooser
         self._auto_chooser = AutoBuilder.buildAutoChooser()
         self._auto_chooser.onChange(
-            lambda _: self._set_auto_to_selection()
+            lambda _: self._set_correct_swerve_position()
         )
-
-        # Add Reset Odometry option
-        self._reset_odom = SendableChooser()
-        self._reset_odom.setDefaultOption("No", False)
-        self._reset_odom.addOption("Yes", True)
-
+        # Add basic leave
+        self._auto_chooser.addOption("Basic Leave",
+            self.drivetrain.apply_request(lambda: self._robot_centric.with_velocity_x(1)).withTimeout(1.0)
+        )
         SmartDashboard.putData("Selected Auto", self._auto_chooser)
-        SmartDashboard.putData("Reset Odometry?", self._reset_odom)
 
-    def _set_auto_to_selection(self) -> None:
+    def _set_correct_swerve_position(self) -> None:
         chooser_selected = self._auto_chooser.getSelected()
-        if utils.is_simulation() and DriverStation.isDisabled() and chooser_selected is not None:
-            try:
-                self.drivetrain.reset_pose(self._flip_pose_if_needed(chooser_selected._startingPose))
-                self.robot_state.starting_pose = chooser_selected._startingPose
-            except AttributeError:
-                pass
+        try:
+            self.drivetrain.reset_pose(self._flip_pose_if_needed(chooser_selected._startingPose))
+            self.drivetrain.reset_rotation(chooser_selected._startingPose.rotation() + self.drivetrain.get_operator_forward_direction())
+        except AttributeError:
+            pass
 
     @staticmethod
     def _flip_pose_if_needed(pose: Pose2d) -> Pose2d:
@@ -111,7 +103,7 @@ class RobotContainer:
         common_settings = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
         )
-        self._field_centric = common_settings(SetpointFieldCentric(self.drivetrain.get_auto_config(), 12))
+        self._field_centric = common_settings(swerve.requests.FieldCentric())
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
@@ -121,6 +113,15 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(
             self.drivetrain.apply_request(
                 lambda: self._field_centric
+                .with_velocity_x(-hid.getLeftY() * self._max_speed)
+                .with_velocity_y(-hid.getLeftX() * self._max_speed)
+                .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
+            )
+        )
+
+        self._driver_controller.rightBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: self._robot_centric
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
@@ -156,11 +157,21 @@ class RobotContainer:
             self._function_controller.x(): self.superstructure.Goal.L3_CORAL,
             self._function_controller.b(): self.superstructure.Goal.L2_CORAL,
             self._function_controller.a(): self.superstructure.Goal.L1_CORAL,
-            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT,
+            self._function_controller.y() & self._function_controller.start(): self.superstructure.Goal.NET,
+            self._function_controller.x() & self._function_controller.start(): self.superstructure.Goal.L3_ALGAE,
+            self._function_controller.b() & self._function_controller.start(): self.superstructure.Goal.L2_ALGAE,
+            self._function_controller.a() & self._function_controller.start(): self.superstructure.Goal.PROCESSOR,
+            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT
         }
 
         for button, goal in goal_bindings.items():
-            button.onTrue(self.superstructure.set_goal_command(goal))
+            if goal is self.superstructure.Goal.L3_ALGAE or goal is self.superstructure.Goal.L2_ALGAE or goal is self.superstructure.Goal.PROCESSOR:
+                (button.whileTrue(
+                    self.superstructure.set_goal_command(goal)
+                    .alongWith(self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKE)))
+                 .onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)))
+            else:
+                button.onTrue(self.superstructure.set_goal_command(goal))
 
         self._function_controller.leftBumper().whileTrue(
             cmd.parallel(
@@ -215,7 +226,4 @@ class RobotContainer:
         controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
     def get_autonomous_command(self) -> commands2.Command:
-        # Ignores pose estimates when reset odometry is selected
-        if self._reset_odom.getSelected():
-            self.vision.set_desired_state_command(VisionSubsystem.SubsystemState.DISABLE_ESTIMATES)
         return self._auto_chooser.getSelected()

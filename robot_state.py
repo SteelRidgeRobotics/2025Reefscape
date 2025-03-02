@@ -1,5 +1,4 @@
 from commands2 import Subsystem
-from commands2 import Subsystem
 from ntcore import NetworkTableInstance
 from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, utils
@@ -8,7 +7,6 @@ from wpimath import units
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 
-from constants import Constants
 from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.pivot import PivotSubsystem
@@ -48,21 +46,22 @@ class RobotState(Subsystem):
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._field.getObject("activePath").setPoses(poses[::3]))
 
         self._superstructure_mechanism = None
-        self._setup_simulation_mechanisms()
+        self._climber_mechanism = None
+        if utils.is_simulation():
+            self._setup_simulation_mechanisms()
 
     def _setup_simulation_mechanisms(self):
-        if Constants.mechanism_simulations:
-            self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
-            self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
-            self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
-            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19, 122, 127))
-            SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
+        self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
+        self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
+        self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
+        self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19, 122, 127))
+        SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
-            self._climber_mechanism = Mechanism2d(1, 1)
-            self._climber_root = self._climber_mechanism.getRoot("Root", 1/2, 0)
-            self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
-            self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
-            SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
+        self._climber_mechanism = Mechanism2d(1, 1)
+        self._climber_root = self._climber_mechanism.getRoot("Root", 1/2, 0)
+        self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
+        self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
+        SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
 
     def periodic(self) -> None:
         state = self._swerve.get_state_copy()
@@ -101,9 +100,3 @@ class RobotState(Subsystem):
 
         if self._climber_mechanism:
             self._climber_arm.setAngle(self._climber.get_position() * 360)
-
-    @classmethod
-    def getExpectedAngle(cls):
-        if cls.starting_pose:
-            return cls.starting_pose.rotation()
-        return None

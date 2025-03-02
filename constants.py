@@ -6,7 +6,6 @@ from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 class Constants:
 
     apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
-    mechanism_simulations = True
 
     class CanIDs:
         LEFT_ELEVATOR_TALON = 10
@@ -31,20 +30,28 @@ class Constants:
             .with_k_a(0.0)
         )
 
+        VOLTAGE_INWARDS = 16
+        VOLTAGE_OUTWARDS = -4
+
+        SERVO_PORT = 0
+        SERVO_DISENGAGED_ANGLE = 0
+        SERVO_ENGAGED_ANGLE = 180
+
     class ElevatorConstants:
         L1_SCORE_POSITION = 0.690674
-        L2_SCORE_POSITION = 1.489746
-        L3_SCORE_POSITION = 3.09082
+        L2_SCORE_POSITION = 1.841
+        L3_SCORE_POSITION = 3.576
         L4_SCORE_POSITION = 6.087158
-        L2_ALGAE_POSITION = 3.549561
-        L3_ALGAE_POSITION = 4.732666
+        L2_ALGAE_POSITION = 3.198
+        L3_ALGAE_POSITION = 5
         NET_SCORE_POSITION = 6.052246
         ELEVATOR_MAX = 6.096924
 
         DEFAULT_POSITION = 0
 
-        CRUISE_VELOCITY = 6
-        MM_ACCELERATION = 12
+        CRUISE_VELOCITY = 8
+        MM_UPWARD_ACCELERATION = 18
+        MM_DOWNWARD_ACCELERATION = 4
         EXPO_K_V = 10
         EXPO_K_A = 4
 
@@ -67,10 +74,10 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.33
-        ALGAE_INTAKE_ANGLE = -0.05542
-        HIGH_SCORING_ANGLE =  0.202
-        MID_SCORING_ANGLE = 0.237793
+        FUNNEL_INTAKE_ANGLE = 0.332
+        ALGAE_INTAKE_ANGLE = -0.033
+        HIGH_SCORING_ANGLE =  0.262
+        MID_SCORING_ANGLE = 0.262
         LOW_SCORING_ANGLE = 0.338379
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
@@ -100,9 +107,9 @@ class Constants:
 
     class IntakeConstants:
 
-        CORAL_INTAKE_SPEED = 0.7
+        CORAL_INTAKE_SPEED = 0.5
         FUNNEL_INTAKE_SPEED = 0.4
-        CORAL_OUTPUT_SPEED = 1
+        CORAL_OUTPUT_SPEED = 0.75
 
         ALGAE_INTAKE_SPEED = 1
         ALGAE_OUTPUT_SPEED = -1
@@ -125,7 +132,7 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 0.103
+        CORAL_STATION_POSITION = 0.128
         STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
