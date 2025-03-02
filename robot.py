@@ -73,7 +73,7 @@ class Leviathan(TimedCommandRobot):
                 Notification(
                     level=NotificationLevel.INFO.value,
                     title="Good match!",
-                    description="(again)" if DriverStation.getReplayNumber() > 0 else ""
+                    description="(again)" if DriverStation.getReplayNumber() > 1 else ""
                 )
             )
 

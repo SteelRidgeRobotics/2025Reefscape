@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid to Coral G"
+            "pathName": "Left to Coral I"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.25
+                  "waitTime": 0.5
                 }
               },
               {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Far Reef to Safe End"
+            "pathName": "Coral I Back"
           }
         }
       ]
     }
   },
-  "resetOdom": false,
-  "folder": "1 Coral (Far Reef)",
+  "resetOdom": true,
+  "folder": null,
   "choreoAuto": false
 }

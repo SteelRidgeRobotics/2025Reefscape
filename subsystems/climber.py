@@ -30,9 +30,9 @@ class ClimberSubsystem(StateSubsystem):
                      )
 
     _state_configs: dict[SubsystemState, tuple[int, units.degrees]] = {
-        SubsystemState.STOP: (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
-        SubsystemState.CLIMB_POSITIVE: (Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
-        SubsystemState.CLIMB_NEGATIVE: (Constants.ClimberConstants.VOLTAGE_OUTWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.STOP: (0, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_POSITIVE: (Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_NEGATIVE: (Constants.ClimberConstants.VOLTAGE_OUTWARDS, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
     }
 
     def __init__(self) -> None:
@@ -54,7 +54,7 @@ class ClimberSubsystem(StateSubsystem):
         if not super().set_desired_state(desired_state):
             return
 
-        output, servo_angle = self._state_configs.get(desired_state, (0, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE))
+        output, servo_angle = self._state_configs.get(desired_state, (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE))
         self._climb_request.output = output
         self._climb_servo.setAngle(servo_angle)
 

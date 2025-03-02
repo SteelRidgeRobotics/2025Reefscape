@@ -36,6 +36,7 @@ class PivotSubsystem(StateSubsystem):
         LOW_SCORING = auto()
         NET_SCORING = auto()
         PROCESSOR_SCORING = auto()
+        AVOID_CLIMBER = auto()
 
     _state_configs: dict[SubsystemState, float | None] = {
         SubsystemState.IDLE: None,
@@ -49,6 +50,7 @@ class PivotSubsystem(StateSubsystem):
         SubsystemState.LOW_SCORING: Constants.PivotConstants.LOW_SCORING_ANGLE,
         SubsystemState.NET_SCORING: Constants.PivotConstants.NET_SCORING_ANGLE,
         SubsystemState.PROCESSOR_SCORING: Constants.PivotConstants.PROCESSOR_SCORING_ANGLE,
+        SubsystemState.AVOID_CLIMBER: Constants.PivotConstants.CLIMBER_PRIORITY_ANGLE
     }
 
     _encoder_config = CANcoderConfiguration()

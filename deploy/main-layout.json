@@ -11,8 +11,8 @@
             "title": "Field",
             "x": 0.0,
             "y": 0.0,
-            "width": 896.0,
-            "height": 384.0,
+            "width": 1024.0,
+            "height": 512.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -29,10 +29,10 @@
           },
           {
             "title": "Odometry Frequency",
-            "x": 896.0,
+            "x": 1024.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "Radial Gauge",
             "properties": {
               "topic": "/Telemetry/odometry_frequency",
@@ -50,10 +50,10 @@
           },
           {
             "title": "Match Time",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 384.0,
-            "height": 256.0,
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 640.0,
+            "height": 384.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Match Time",
@@ -66,8 +66,8 @@
           },
           {
             "title": "FMSInfo",
-            "x": 896.0,
-            "y": 384.0,
+            "x": 0.0,
+            "y": 512.0,
             "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
@@ -77,32 +77,11 @@
             }
           },
           {
-            "title": "Current Speed",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/Telemetry/current_speed",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -90.0,
-              "end_angle": 140.0,
-              "min_value": 0.0,
-              "max_value": 4.73,
-              "number_of_labels": 2,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
             "title": "Swerve Data",
             "x": 1280.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "SwerveDrive",
             "properties": {
               "topic": "/Telemetry/Swerve Data",
@@ -113,8 +92,8 @@
           },
           {
             "title": "Battery Voltage",
-            "x": 1280.0,
-            "y": 384.0,
+            "x": 384.0,
+            "y": 512.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Voltage View",
@@ -131,8 +110,8 @@
           },
           {
             "title": "Selected Auto",
-            "x": 640.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
@@ -154,16 +133,16 @@
             "title": "Match Time",
             "x": 256.0,
             "y": 0.0,
-            "width": 896.0,
-            "height": 512.0,
+            "width": 384.0,
+            "height": 256.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Match Time",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 5,
-              "yellow_start_time": 15
+              "red_start_time": 8,
+              "yellow_start_time": 20
             }
           },
           {
@@ -175,13 +154,13 @@
             "type": "Radial Gauge",
             "properties": {
               "topic": "/Telemetry/odometry_frequency",
-              "period": 0.06,
+              "period": 0.02,
               "data_type": "double",
-              "start_angle": -135.0,
-              "end_angle": 135.0,
+              "start_angle": -140.0,
+              "end_angle": 140.0,
               "min_value": 0.0,
               "max_value": 250.0,
-              "number_of_labels": 10,
+              "number_of_labels": 8,
               "wrap_value": false,
               "show_pointer": true,
               "show_ticks": true
@@ -190,31 +169,13 @@
           {
             "title": "FMSInfo",
             "x": 256.0,
-            "y": 512.0,
+            "y": 256.0,
             "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
             "properties": {
               "topic": "/FMSInfo",
               "period": 0.06
-            }
-          },
-          {
-            "title": "Battery Voltage",
-            "x": 640.0,
-            "y": 512.0,
-            "width": 512.0,
-            "height": 128.0,
-            "type": "Voltage View",
-            "properties": {
-              "topic": "/SmartDashboard/Battery Voltage",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
             }
           },
           {
@@ -238,38 +199,31 @@
             }
           },
           {
-            "title": "Current Speed",
-            "x": 1152.0,
-            "y": 0.0,
+            "title": "Swerve Drive",
+            "x": 1408.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/Telemetry/current_speed",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -90.0,
-              "end_angle": 140.0,
-              "min_value": 0.0,
-              "max_value": 4.73,
-              "number_of_labels": 2,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Swerve Drive",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 384.0,
             "type": "SwerveDrive",
             "properties": {
               "topic": "/SmartDashboard/Swerve Drive",
               "period": 0.06,
               "show_robot_rotation": true,
               "rotation_unit": "Radians"
+            }
+          },
+          {
+            "title": "limelight-front",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 768.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-front",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "fps": 15
             }
           }
         ]
@@ -323,12 +277,11 @@
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Text Display",
+                "type": "Large Text Display",
                 "properties": {
                   "topic": "/Climber/Current State",
                   "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
+                  "data_type": "string"
                 }
               },
               {
@@ -667,7 +620,7 @@
               "robot_length": 0.85,
               "show_other_objects": true,
               "show_trajectories": true,
-              "field_rotation": -90.0,
+              "field_rotation": 90.0,
               "robot_color": 4294198070,
               "trajectory_color": 4294967295
             }
@@ -703,14 +656,13 @@
             "title": "Current State",
             "x": 384.0,
             "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 1280.0,
+            "height": 256.0,
+            "type": "Large Text Display",
             "properties": {
               "topic": "/Vision/Current State",
               "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
+              "data_type": "string"
             }
           }
         ]

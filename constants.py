@@ -34,8 +34,8 @@ class Constants:
         VOLTAGE_OUTWARDS = -4
 
         SERVO_PORT = 0
-        SERVO_DISENGAGED_ANGLE = 0
-        SERVO_ENGAGED_ANGLE = 180
+        SERVO_ENGAGED_ANGLE = 0
+        SERVO_DISENGAGED_ANGLE = 90
 
     class ElevatorConstants:
         L1_SCORE_POSITION = 0.690674
@@ -50,8 +50,8 @@ class Constants:
         DEFAULT_POSITION = 0
 
         CRUISE_VELOCITY = 8
-        MM_UPWARD_ACCELERATION = 18
-        MM_DOWNWARD_ACCELERATION = 4
+        MM_UPWARD_ACCELERATION = 24
+        MM_DOWNWARD_ACCELERATION = 12
         EXPO_K_V = 10
         EXPO_K_A = 4
 
@@ -74,13 +74,14 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.332
+        FUNNEL_INTAKE_ANGLE = 0.322
         ALGAE_INTAKE_ANGLE = -0.033
         HIGH_SCORING_ANGLE =  0.262
         MID_SCORING_ANGLE = 0.262
         LOW_SCORING_ANGLE = 0.338379
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
+        CLIMBER_PRIORITY_ANGLE = 0.201943
 
         MINIMUM_ANGLE = -0.091
         MAXIMUM_ANGLE = 0.392822
@@ -91,7 +92,7 @@ class Constants:
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
                  .with_k_g(0.0)
-                 .with_k_p(39.189)
+                 .with_k_p(60)
                  .with_k_i(0.0)
                  .with_k_d(0.0)
                  .with_k_s(0.0)
@@ -109,7 +110,7 @@ class Constants:
 
         CORAL_INTAKE_SPEED = 0.5
         FUNNEL_INTAKE_SPEED = 0.4
-        CORAL_OUTPUT_SPEED = 0.75
+        CORAL_OUTPUT_SPEED = 0.425
 
         ALGAE_INTAKE_SPEED = 1
         ALGAE_OUTPUT_SPEED = -1
