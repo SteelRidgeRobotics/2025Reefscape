@@ -21,32 +21,8 @@ from wpimath.geometry import (
 
 
 class ConcurrentDict(dict):
-	"""
-	Thread-safe dictionary that ensures atomic operations for concurrent access.
-
-	Similar to Java's ConcurrentHashMap.
-	"""
-
-	def __init__(self):
-		super().__init__()
-		self._lock = threading.Lock()
-
-	def __getitem__(self, key):
-		with self._lock:
-			return super().__getitem__(key)
-
-	def __setitem__(self, key, value):
-		with self._lock:
-			super().__setitem__(key, value)
-
-	def compute_if_absent(self, key, mapping_function):
-		"""Computes and stores the value if the key is absent, ensuring thread safety."""
-		if key in self:
-			return super().__getitem__(key)
-
-		with self._lock:
-			super().__setitem__(key, mapping_function())
-			return super().__getitem__(key)
+    def compute_if_absent(self, key, mapping_function):
+        return self.setdefault(key, mapping_function())
 
 @dataclass
 class RawFiducial:
@@ -134,6 +110,7 @@ class LimelightHelpers:
 	LimelightHelpers provides static methods and classes for interfacing with Limelight vision cameras in FRC.
 	This library supports all Limelight features including AprilTag tracking, Neural Networks, and standard color/retroreflective tracking.
 	"""
+	_nt_instance = NetworkTableInstance.getDefault()
 	_double_array_entries = ConcurrentDict()
 
 	@staticmethod
@@ -223,41 +200,33 @@ class LimelightHelpers:
 	def _get_botpose_estimate(limelight_name: str, entry_name: str, is_megatag_2: bool) -> PoseEstimate:
 		pose_entry = LimelightHelpers.get_limelight_double_array_entry(limelight_name, entry_name)
 
-		ts_value = pose_entry.getAtomic()
-		pose_array = ts_value.value
-		timestamp = ts_value.time
+		ts_value = pose_entry.getAtomic()  # Consider replacing this if needed
+		pose_array, timestamp = ts_value.value, ts_value.time
 
-		if len(pose_array) == 0:
-			# Handle the case where no data is available
+		if not pose_array:
 			return PoseEstimate()
 
-		pose = LimelightHelpers.to_Pose2D(pose_array)
-		latency = LimelightHelpers._extract_array_entry(pose_array, 6)
-		tag_count = int(LimelightHelpers._extract_array_entry(pose_array, 7))
-		tag_span = LimelightHelpers._extract_array_entry(pose_array, 8)
-		tag_dist = LimelightHelpers._extract_array_entry(pose_array, 9)
-		tag_area = LimelightHelpers._extract_array_entry(pose_array, 10)
+		latency = pose_array[6]
+		tag_count = int(pose_array[7])
+		tag_span, tag_dist, tag_area = pose_array[8:11]
 
-		# Convert server timestamp from microseconds to seconds and adjust for latency
-		adjusted_timestamp = (timestamp / 1000000.0) - (latency / 1000.0)
+		# Timestamp adjustment
+		timestamp = timestamp * 1e-6 - latency * 1e-3  # Avoid extra divisions
 
-		raw_fiducials = []
 		vals_per_fiducial = 7
-		expected_total_vals = 11 + vals_per_fiducial * tag_count
+		base_index = 11
+		raw_fiducials = [
+			RawFiducial(
+				int(pose_array[i]),
+				*pose_array[i + 1: i + 7]
+			)
+			for i in range(base_index, base_index + tag_count * vals_per_fiducial, vals_per_fiducial)
+		] if len(pose_array) >= base_index + tag_count * vals_per_fiducial else []
 
-		if len(pose_array) == expected_total_vals:
-			for i in range(tag_count):
-				base_index = 11 + (i * vals_per_fiducial)
-				tag_id = int(pose_array[base_index])
-				txnc = pose_array[base_index + 1]
-				tync = pose_array[base_index + 2]
-				ta = pose_array[base_index + 3]
-				dist_to_camera = pose_array[base_index + 4]
-				dist_to_robot = pose_array[base_index + 5]
-				ambiguity = pose_array[base_index + 6]
-				raw_fiducials.append(RawFiducial(tag_id, txnc, tync, ta, dist_to_camera, dist_to_robot, ambiguity))
-
-		return PoseEstimate(pose, adjusted_timestamp, latency, tag_count, tag_span, tag_dist, tag_area, raw_fiducials, is_megatag_2)
+		return PoseEstimate(
+			LimelightHelpers.to_Pose2D(pose_array),
+			timestamp, latency, tag_count, tag_span, tag_dist, tag_area, raw_fiducials, is_megatag_2
+		)
 
 	@staticmethod
 	def get_raw_fiducials(limelight_name: str) -> list[RawFiducial]:
@@ -376,11 +345,11 @@ class LimelightHelpers:
 
 	@staticmethod
 	def get_limelight_NTTable(table_name: str) -> NetworkTable:
-		return NetworkTableInstance.getDefault().getTable(LimelightHelpers._sanitize_name(table_name))
+		return LimelightHelpers._nt_instance.getTable(LimelightHelpers._sanitize_name(table_name))
 
 	@staticmethod
 	def flush() -> None:
-		NetworkTableInstance.getDefault().flush()
+		LimelightHelpers._nt_instance.flush()
 
 	@staticmethod
 	def get_limelight_NTTableEntry(table_name: str, entry_name: str) -> NetworkTableEntry:
@@ -388,9 +357,13 @@ class LimelightHelpers:
 
 	@staticmethod
 	def get_limelight_double_array_entry(table_name: str, entry_name: str) -> DoubleArrayEntry:
-		return LimelightHelpers._double_array_entries.compute_if_absent(
-			f"{table_name}/{entry_name}",
-			lambda: LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
+		key = f"{table_name}/{entry_name}"
+		if key in LimelightHelpers._double_array_entries:
+			return LimelightHelpers._double_array_entries[key]
+
+		return LimelightHelpers._double_array_entries.setdefault(
+			key,
+			LimelightHelpers.get_limelight_NTTable(table_name).getDoubleArrayTopic(entry_name).getEntry([])
 		)
 
 	@staticmethod

@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": 903,
-      "y": 287,
-      "width": 1100,
-      "height": 650,
+      "x": -8,
+      "y": -8,
+      "width": 1722,
+      "height": 1034,
       "state": {
         "sidebar": {
-          "width": 364,
+          "width": 472,
           "expanded": [
             "/PathPlanner/currentPose/rotation",
             "/Drive",
@@ -16,13 +16,16 @@
             "/SmartDashboard/Field/Robot",
             "/DS",
             "/NT",
-            "/Telemetry",
             "/NT/limelight",
-            "/NT/limelight/robot_orientation_set"
+            "/NT/limelight/robot_orientation_set",
+            "/Elevator",
+            "/SmartDashboard",
+            "/Climber",
+            "/Pivot"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -128,7 +131,7 @@
                     }
                   }
                 ],
-                "game": "2025 Field",
+                "game": "2025 Field (Welded)",
                 "bumpers": "auto",
                 "origin": "blue",
                 "orientation": 0,
@@ -176,7 +179,7 @@
                     "type": "heatmap",
                     "logKey": "NT:/Telemetry/current_pose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "timeRange": "enabled"
                     }
@@ -202,7 +205,7 @@
                     }
                   }
                 ],
-                "game": "2025 Field",
+                "game": "2025 Field (Welded)",
                 "origin": "blue"
               },
               "controllerUUID": "bfjft2gzcf4vb4e9038fedtnxq3lbetd",
@@ -210,16 +213,48 @@
                 "cameraIndex": -1,
                 "orbitFov": 90,
                 "cameraPosition": [
-                  8.499736985862954,
-                  2.1017553848682144,
-                  -2.7693389010459004
+                  -7.434067814248061,
+                  4.1295811684932175,
+                  -1.0157788821436327
                 ],
                 "cameraTarget": [
-                  1.5775040935458258,
-                  -0.910800907554398,
-                  1.272524689733425
+                  -3.4340393146700183,
+                  1.4324999999813754,
+                  0.9786834025388584
                 ]
               },
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Mechanism",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "NT:/SmartDashboard/Climber Mechanism",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "udkeda16s0qc5byxsmlqtqzru70uc40n",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Mechanism",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "NT:/SmartDashboard/Superstructure Mechanism",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "cx6gqjh1pkb4igobcfmsd9tskkqvbe46",
+              "renderer": null,
               "controlsHeight": 200
             },
             {
@@ -289,5 +324,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.0"
+  "version": "4.1.2"
 }
