@@ -38,7 +38,44 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral I Back"
+            "pathName": "Coral I to Left Tree"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Tree to Coral L"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Coral Output"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral L to Station"
           }
         }
       ]

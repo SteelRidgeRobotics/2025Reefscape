@@ -1,0 +1,136 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.294914772727273,
+        "y": 5.086974431818182
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.680504966887417,
+        "y": 5.53592715231788
+      },
+      "isLocked": false,
+      "linkedName": "Coral I"
+    },
+    {
+      "anchor": {
+        "x": 3.8063741721854303,
+        "y": 5.855546357615894
+      },
+      "prevControl": {
+        "x": 5.014298511645073,
+        "y": 5.855546357615894
+      },
+      "nextControl": {
+        "x": 0.9914512310626464,
+        "y": 5.855546357615894
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6997930463576159,
+        "y": 5.855546357615894
+      },
+      "prevControl": {
+        "x": 2.18697356834641,
+        "y": 5.855546357615894
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Tree"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3922294172062805,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Erm... lower the elevator",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0161038961038984,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1600.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Intake Slowdown",
+      "minWaypointRelativePos": 1.5189610389610433,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1600.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.225,
+        "y": 5.85
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.6836363636363564,
+      "maxWaypointRelativePos": 2.0,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Grab le Coral",
+      "waypointRelativePos": 0.05194805194805073,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Floor"
+        }
+      }
+    },
+    {
+      "name": "sUCK",
+      "waypointRelativePos": 1.2010389610389542,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Coral Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1600.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Toddlers",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.834252581689478,
-        "y": 5.176754314916073
+        "x": 5.294914772727273,
+        "y": 5.086974431818182
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.568075106551104,
-        "y": 5.469293325109056
+        "x": 5.677341159190656,
+        "y": 5.837480787697175
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral I"
     },
     {
       "anchor": {
-        "x": 1.6809253246753246,
-        "y": 7.351237824675325
+        "x": 5.8134375,
+        "y": 6.004360795454545
       },
       "prevControl": {
-        "x": 1.8790081001621952,
-        "y": 7.1401607373310485
+        "x": 5.527244218682068,
+        "y": 5.459354111642849
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Coral Station (Hugging Left)"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,19 +33,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Funnel",
-      "waypointRelativePos": 0.15,
+      "name": "Default",
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Funnel"
+          "name": "Default"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1000.0,
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -53.8418145601917
+    "rotation": -119.89890183861456
   },
   "reversed": false,
-  "folder": "Coral Stations",
+  "folder": "Babies",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": false
 }
