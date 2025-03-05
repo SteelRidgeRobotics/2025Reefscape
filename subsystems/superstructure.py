@@ -1,7 +1,7 @@
 from enum import auto, Enum
 from typing import Optional
 
-from commands2 import Command, Subsystem, cmd, InstantCommand
+from commands2 import Command, Subsystem, cmd
 from wpilib import DriverStation, SmartDashboard
 
 from subsystems.elevator import ElevatorSubsystem
