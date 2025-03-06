@@ -2,7 +2,7 @@ from enum import auto, Enum
 from typing import Optional
 
 from commands2 import Command, Subsystem, cmd
-from wpilib import DriverStation, SmartDashboard
+from wpilib import DriverStation, SmartDashboard, Mechanism2d, Color8Bit
 
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
@@ -79,6 +79,12 @@ class Superstructure(Subsystem):
         self._elevator_old_state = self.elevator.get_current_state()
         self._pivot_old_state = self.pivot.get_current_state()
 
+        self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
+        self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
+        self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
+        self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19, 122, 127))
+        SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
+
     def periodic(self):
         if DriverStation.isDisabled():
             return
@@ -109,6 +115,9 @@ class Superstructure(Subsystem):
 
         if elevator_state != ElevatorSubsystem.SubsystemState.IDLE:
             self._elevator_old_state = elevator_state
+
+        self._elevator_mech.setLength(self.elevator.get_height())
+        self._pivot_mech.setAngle(self.pivot.get_angle() - 90)
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
