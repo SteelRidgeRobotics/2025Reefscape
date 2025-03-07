@@ -197,8 +197,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._auto_target_pub.set(pose))
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
 
-        self.register_telemetry(self.log_telemetry)
-
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
         self._steer_characterization = swerve.requests.SysIdSwerveSteerGains()
@@ -348,7 +346,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 )
                 self._has_applied_operator_perspective = True
 
-    def log_telemetry(self, state: SwerveDrivetrain.SwerveDriveState) -> None:
+        state = self.get_state_copy()
         self._field.setRobotPose(state.pose)
         self._pose_pub.set(state.pose)
         self._odom_freq.set(1.0 / state.odometry_period)

@@ -31,7 +31,7 @@ class RobotContainer:
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        self.climber = ClimberSubsystem()
+        #self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
@@ -207,6 +207,7 @@ class RobotContainer:
             )
         )
 
+        """
         self._function_controller.povLeft().onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE),
@@ -221,6 +222,7 @@ class RobotContainer:
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
+        """
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)

@@ -13,7 +13,6 @@ class Constants:
         INTAKE_TALON = 12
         LEFT_PIVOT_TALON = 13
         RIGHT_PIVOT_TALON = 14
-        CLIMB_TALON = 15
         FUNNEL_TALON = 22
 
         ELEVATOR_CANDI = 20
@@ -75,7 +74,7 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.2854
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.322
+        FUNNEL_INTAKE_ANGLE = 0.315
         ALGAE_INTAKE_ANGLE = -0.033
         HIGH_SCORING_ANGLE =  0.262
         MID_SCORING_ANGLE = 0.262
@@ -134,7 +133,7 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 0.128
+        CORAL_STATION_POSITION = 0.107
         STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
@@ -143,7 +142,7 @@ class Constants:
 
         SETPOINT_TOLERANCE = 0.01
 
-        MM_ACCELERATION = 1
+        MM_ACCELERATION = 3.5
 
         GAINS = (Slot0Configs()
             .with_k_p(35)
@@ -152,9 +151,9 @@ class Constants:
             .with_k_s(0.0)
             .with_k_v(0.0)
             .with_k_a(0.0)
-            .with_k_g(0.2811) # Shoutout StormBots
+            .with_k_g(0.25)
             .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
-        SUPPLY_LIMIT = 20
-        STATOR_LIMIT = 50
+        SUPPLY_CURRENT = 20
+        STATOR_CURRENT = 50
