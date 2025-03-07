@@ -72,7 +72,7 @@ class Constants:
     class PivotConstants:
         INSIDE_ELEVATOR_ANGLE = 0.262207 # Used for subsystem collision checking
         ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
-        STOW_ANGLE = 0.2854
+        STOW_ANGLE = 0.253174
         GROUND_INTAKE_ANGLE = -0.081543
         FUNNEL_INTAKE_ANGLE = 0.315
         ALGAE_INTAKE_ANGLE = -0.033
@@ -108,7 +108,7 @@ class Constants:
 
     class IntakeConstants:
 
-        CORAL_INTAKE_SPEED = 0.5
+        CORAL_INTAKE_SPEED = 0.4
         FUNNEL_INTAKE_SPEED = 0.4
         CORAL_OUTPUT_SPEED = 0.425
 
