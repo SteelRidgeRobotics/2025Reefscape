@@ -24,9 +24,9 @@ class RobotState:
             raise RuntimeError("RobotState has not been initialized.")
         return cls._instance
 
-    def get_pivot_angle(self) -> units.degrees:
-        """:returns: The pivot position, in degrees. An angle of 0 means the pivot is fully extended horizontally."""
-        return self._pivot.get_angle()
+    def get_pivot_position(self) -> units.degrees:
+        """:returns: The pivot position, in rotations. An position of 0 means the pivot is fully extended horizontally."""
+        return self._pivot.get_position()
 
     def get_pivot_state(self) -> StateSubsystem.SubsystemState:
         """:returns: the current state of the pivot."""

@@ -171,6 +171,6 @@ class PivotSubsystem(StateSubsystem):
     def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
         return self._sys_id_routine.dynamic(direction).andThen(self.stop())
 
-    def get_angle(self) -> float:
+    def get_position(self) -> float:
         """Returns the current angle of the pivot, in degrees."""
-        return self._master_motor.get_position().value * 360
+        return self._master_motor.get_position().value

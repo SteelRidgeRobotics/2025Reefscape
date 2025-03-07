@@ -4,6 +4,7 @@ from typing import Optional
 from commands2 import Command, Subsystem, cmd
 from wpilib import DriverStation, SmartDashboard, Mechanism2d, Color8Bit
 
+from constants import Constants
 from robot_state import RobotState
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
@@ -96,9 +97,8 @@ class Superstructure(Subsystem):
         pivot_state = state.get_pivot_state()
         elevator_state = state.get_elevator_state()
 
-        # Only proceed with actions when necessary. Are the subsystems moving? And is the pivot inside the elevator or will be inside?
-        if pivot_state != self._pivot_old_state and not self.elevator.is_at_setpoint(): 
-
+        # If the elevator needs to move and the current pivot position travels into the elevator via it's desired setpoint, prioritize the elevator, then the pivot.
+        if ((self.pivot.get_position() < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE < self.pivot.get_setpoint()) or (self.pivot.get_position() > Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE > self.pivot.get_setpoint())) and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
             self.pivot.freeze()
@@ -123,7 +123,7 @@ class Superstructure(Subsystem):
             self._elevator_old_state = elevator_state
 
         self._elevator_mech.setLength(self.elevator.get_height())
-        self._pivot_mech.setAngle(self.pivot.get_angle() - 90)
+        self._pivot_mech.setAngle(state.get_pivot_position() * 360 - 90)
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
