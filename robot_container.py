@@ -2,7 +2,7 @@ from typing import Callable
 import commands2
 import commands2.button
 from commands2 import cmd, InstantCommand
-from commands2.button import CommandXboxController
+from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
 from phoenix6 import SignalLogger, swerve
@@ -111,12 +111,11 @@ class RobotContainer:
         self._point = swerve.requests.PointWheelsAt()
 
     @staticmethod
-    def rumble_command(controller: CommandXboxController, duration: float, intensity: float):
-        return cmd.sequence(
-            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, intensity)),
-            cmd.waitSeconds(duration),
-            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, 0))
-        )
+    def rumble_controller(controller: CommandXboxController, intensity: float, duration: float):
+        return (cmd.runOnce(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, intensity))
+                .withTimeout(duration)
+                .andThen(cmd.runOnce(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, 0)))
+                )
 
     def _setup_controller_bindings(self) -> None:
         hid = self._driver_controller.getHID()
@@ -232,6 +231,11 @@ class RobotContainer:
             self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUT)
         ).onFalse(
             self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
+        )
+
+        # Vibrate driver controller once the end effector no longer contains coral
+        (self._function_controller.rightBumper() & Trigger(lambda: not self.intake.has_coral())).onTrue(
+            self.rumble_controller(self._driver_controller, 0.3, 0.25)
         )
 
     def _setup_sysid_bindings(self, controller, subsystem, forward_btn, reverse_btn):
