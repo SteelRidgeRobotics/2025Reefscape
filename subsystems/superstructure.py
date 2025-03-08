@@ -81,6 +81,7 @@ class Superstructure(Subsystem):
         state = RobotState.get_instance()
         self._elevator_old_state = state.get_elevator_state()
         self._pivot_old_state = state.get_pivot_state()
+        self._pivot_old_setpoint = pivot.get_setpoint()
 
         self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
         self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
@@ -98,7 +99,7 @@ class Superstructure(Subsystem):
         elevator_state = state.get_elevator_state()
 
         # If the elevator needs to move and the current pivot position travels into the elevator via it's desired setpoint, prioritize the elevator, then the pivot.
-        if ((self.pivot.get_position() < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE < self.pivot.get_setpoint()) or (self.pivot.get_position() > Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE > self.pivot.get_setpoint())) and not self.elevator.is_at_setpoint():
+        if ((min(self._pivot_old_setpoint, state.get_pivot_position()) < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE < self.pivot.get_setpoint()) or (max(self._pivot_old_setpoint, state.get_pivot_position()) > Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE > self.pivot.get_setpoint())) and not self.elevator.is_at_setpoint():
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
             self.pivot.freeze()
@@ -118,6 +119,7 @@ class Superstructure(Subsystem):
         # Update old states only when necessary
         if pivot_state is not PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self._pivot_old_state = pivot_state
+            self._pivot_old_setpoint = self.pivot.get_setpoint()
 
         if elevator_state is not ElevatorSubsystem.SubsystemState.IDLE:
             self._elevator_old_state = elevator_state
