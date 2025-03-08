@@ -6,7 +6,7 @@ from phoenix6 import SignalLogger, utils, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration, MotionMagicConfigs
 from phoenix6.controls import VoltageOut, Follower, MotionMagicVoltage
 from phoenix6.hardware import CANcoder, TalonFX
-from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue
+from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue, ForwardLimitValue
 from phoenix6.sim import ChassisReference
 from wpilib import DriverStation, RobotBase, RobotController
 from wpilib.sysid import SysIdRoutineLog
