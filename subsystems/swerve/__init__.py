@@ -7,16 +7,18 @@ from ntcore import NetworkTableInstance
 from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from pathplannerlib.logging import PathPlannerLogging
+from pathplannerlib.util import DriveFeedforwards
 from phoenix6 import swerve, units, utils, SignalLogger
-from phoenix6.swerve import SwerveModule, SwerveDrivetrain
-from phoenix6.swerve.requests import ApplyRobotSpeeds
+from phoenix6.swerve import SwerveModule
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
 from wpilib import DriverStation, Notifier, RobotController, Field2d, SmartDashboard
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 from wpiutil import Sendable, SendableBuilder
+
 from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
+from subsystems.swerve.util import SwerveSetpointGenerator, SwerveSetpoint
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
@@ -277,21 +279,25 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._sys_id_routine_to_apply = self._sys_id_routine_translation
         """The SysId routine to test"""
 
+        config = RobotConfig.fromGUISettings()
+        self._setpoint_generator = SwerveSetpointGenerator.from_rots_per_sec(config, 5)
+        self._prev_setpoint = SwerveSetpoint(
+            ChassisSpeeds(),
+            [SwerveModuleState() for _ in range(config.numModules)],
+            DriveFeedforwards.zeros(config.numModules)
+        )
+
         if utils.is_simulation():
             self._start_sim_thread()
         self._configure_auto_builder()
 
-    @classmethod
-    def get_auto_config(cls) -> RobotConfig:
-        return RobotConfig.fromGUISettings()
-    
     def _configure_auto_builder(self) -> None:
         """
         Method to configure the auto builder
         """
 
-        config = self.get_auto_config()
-        self._apply_robot_speeds = ApplyRobotSetpointSpeeds(config, 10)
+        config = RobotConfig.fromGUISettings()
+        self._apply_robot_speeds = ApplyRobotSetpointSpeeds(self.get_setpoint_generator(), self.update_setpoint)
         AutoBuilder.configure(
             lambda: self.get_state().pose,  # Supplier of current robot pose
             self.reset_pose,  # Consumer for seeding pose against auto
@@ -309,6 +315,13 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
             lambda: DriverStation.getAlliance() == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise
             self
         )
+
+    def get_setpoint_generator(self) -> SwerveSetpointGenerator:
+        return self._setpoint_generator
+
+    def update_setpoint(self, desired_state_robot_relative: ChassisSpeeds, dt: float) -> SwerveSetpoint:
+        self._prev_setpoint = self._setpoint_generator.generateSetpoint(self._prev_setpoint, desired_state_robot_relative, dt)
+        return self._prev_setpoint
 
     def apply_request(
             self, request: Callable[[], swerve.requests.SwerveRequest]

@@ -6,7 +6,6 @@ from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
-from pathplannerlib.config import RobotConfig
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SmartDashboard, XboxController
 from wpimath.geometry import Rotation2d, Pose2d
@@ -15,13 +14,11 @@ from wpimath.units import rotationsToRadians
 from constants import Constants
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
-from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
-from subsystems.swerve.requests import SetpointFieldCentric
 from subsystems.vision import VisionSubsystem
 
 
@@ -108,7 +105,7 @@ class RobotContainer:
         common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.VELOCITY
         ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.MOTION_MAGIC_EXPO)
-        self._field_centric = common_settings(SetpointFieldCentric(RobotConfig.fromGUISettings(), 12))
+        self._field_centric = common_settings(swerve.requests.FieldCentric())
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
