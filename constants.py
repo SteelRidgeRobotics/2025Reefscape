@@ -5,7 +5,7 @@ from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
 class Constants:
 
-    apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
+    FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
 
     class CanIDs:
         LEFT_ELEVATOR_TALON = 10
@@ -70,15 +70,15 @@ class Constants:
         SETPOINT_TOLERANCE = 0.1
 
     class PivotConstants:
-        INSIDE_ELEVATOR_ANGLE = 0.262207 # Used for subsystem collision checking
-        ELEVATOR_PRIORITY_ANGLE = 0.201943 # We move the pivot to this position until the elevator has reached its setpoint.
-        STOW_ANGLE = 0.253174
+        INSIDE_ELEVATOR_ANGLE = 0.2 # Used for subsystem collision checking
+        ELEVATOR_PRIORITY_ANGLE = 0.188 # We move the pivot to this position until the elevator has reached its setpoint.
+        STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.315
-        ALGAE_INTAKE_ANGLE = -0.033
-        HIGH_SCORING_ANGLE =  0.262
-        MID_SCORING_ANGLE = 0.262
-        LOW_SCORING_ANGLE = -0.077
+        FUNNEL_INTAKE_ANGLE = 0.275
+        ALGAE_INTAKE_ANGLE = -0.05
+        HIGH_SCORING_ANGLE =  0.22
+        MID_SCORING_ANGLE = 0.22
+        LOW_SCORING_ANGLE = -0.009
         NET_SCORING_ANGLE = 0.123535
         PROCESSOR_SCORING_ANGLE = 0.004639
         CLIMBER_PRIORITY_ANGLE = 0.201943
@@ -87,22 +87,22 @@ class Constants:
         MAXIMUM_ANGLE = 0.392822
 
         CRUISE_VELOCITY = 3
-        MM_ACCELERATION = 2
+        MM_ACCELERATION = 3
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(0.0)
-                 .with_k_p(60)
+                 .with_k_g(0.27)
+                 .with_k_p(30)
                  .with_k_i(0.0)
-                 .with_k_d(0.0)
-                 .with_k_s(0.0)
-                 .with_k_v(0.0)
-                 .with_k_a(0.0)
+                 .with_k_d(0.25)
+                 .with_k_s(0.19)
+                 .with_k_v(0.2)
+                 .with_k_a(0.18)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
-        CANCODER_DISCONTINUITY = 0.8
-        CANCODER_OFFSET = 0.6541
+        CANCODER_DISCONTINUITY = 0.5
+        CANCODER_OFFSET = 0.380126953125
 
         SETPOINT_TOLERANCE = 0.03125
 
@@ -157,3 +157,20 @@ class Constants:
 
         SUPPLY_CURRENT = 20
         STATOR_CURRENT = 50
+    
+    class AutoAlignConstants:
+
+        MAX_DISTANCE = 3.6343
+        
+        TRANSLATION_P = 12
+        TRANSLATION_I = 0
+        TRANSLATION_D = 0.1
+        
+        HEADING_P = 2
+        HEADING_I = 0
+        HEADING_D = 0.2
+        
+        HEADING_TOLERANCE = 2
+
+        VELOCITY_DEADBAND = 0.1
+        ROTATIONAL_DEADBAND = 0.02
