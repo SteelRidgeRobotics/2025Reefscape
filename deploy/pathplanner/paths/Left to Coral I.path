@@ -3,36 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.955905032467532,
-        "y": 0.7557426948051943
+        "x": 7.941659902597403,
+        "y": 7.493689123376623
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.955905032467555,
-        "y": 0.7557426948051944
+        "x": 6.264635945257958,
+        "y": 7.029803236516936
       },
       "isLocked": false,
-      "linkedName": "Right Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6652703800550297,
-        "y": 2.9679810024475146
+        "x": 5.294914772727273,
+        "y": 5.086974431818182
       },
       "prevControl": {
-        "x": 3.5470373376636464,
-        "y": 2.386810064933129
+        "x": 5.238439644134453,
+        "y": 4.773196075839051
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral I"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3843085106382974,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7041198501872696,
+      "minWaypointRelativePos": 0.55,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 4.0,
@@ -48,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 0.13483146067415752,
+      "waypointRelativePos": 0.06471981057616784,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -59,16 +64,16 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 1000.0,
+    "maxVelocity": 1.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Start",
@@ -76,5 +81,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

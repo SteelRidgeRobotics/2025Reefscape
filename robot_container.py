@@ -1,11 +1,12 @@
 import commands2
 import commands2.button
-from commands2 import cmd
+from commands2 import cmd, InstantCommand
+from commands2.button import CommandXboxController
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
 from pathplannerlib.config import RobotConfig
-from phoenix6 import SignalLogger, swerve, utils
-from wpilib import DriverStation, SmartDashboard
+from phoenix6 import SignalLogger, swerve
+from wpilib import DriverStation, SmartDashboard, XboxController
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
@@ -110,6 +111,14 @@ class RobotContainer:
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
 
+    @staticmethod
+    def rumble_command(controller: CommandXboxController, duration: float, intensity: float):
+        return cmd.sequence(
+            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, intensity)),
+            cmd.waitSeconds(duration),
+            InstantCommand(lambda: controller.setRumble(XboxController.RumbleType.kBothRumble, 0))
+        )
+
     def _setup_controller_bindings(self) -> None:
         hid = self._driver_controller.getHID()
         self.drivetrain.setDefaultCommand(
@@ -158,12 +167,12 @@ class RobotContainer:
             self._function_controller.y(): self.superstructure.Goal.L4_CORAL,
             self._function_controller.x(): self.superstructure.Goal.L3_CORAL,
             self._function_controller.b(): self.superstructure.Goal.L2_CORAL,
-            self._function_controller.a(): self.superstructure.Goal.L1_CORAL,
+            self._function_controller.a(): self.superstructure.Goal.DEFAULT,
             self._function_controller.y() & self._function_controller.start(): self.superstructure.Goal.NET,
             self._function_controller.x() & self._function_controller.start(): self.superstructure.Goal.L3_ALGAE,
             self._function_controller.b() & self._function_controller.start(): self.superstructure.Goal.L2_ALGAE,
             self._function_controller.a() & self._function_controller.start(): self.superstructure.Goal.PROCESSOR,
-            self._function_controller.leftStick(): self.superstructure.Goal.DEFAULT
+            self._function_controller.leftStick(): self.superstructure.Goal.L1_CORAL
         }
 
         for button, goal in goal_bindings.items():
@@ -179,6 +188,13 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FUNNEL),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.FUNNEL_INTAKE),
+            ).repeatedly().until(lambda: self.intake.has_coral()).andThen(
+                cmd.parallel(
+                    self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                    self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+                    self.rumble_command(self._driver_controller, 0.2, 0.25),
+                    self.rumble_command(self._function_controller, 0.2, 0.25),
+                )
             )
         ).onFalse(
             cmd.parallel(
@@ -191,6 +207,13 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.FLOOR),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_INTAKE),
+            ).repeatedly().until(lambda: self.intake.has_coral()).andThen(
+                cmd.parallel(
+                    self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
+                    self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+                    self.rumble_command(self._driver_controller, 0.2, 0.25),
+                    self.rumble_command(self._function_controller, 0.2, 0.25),
+                )
             )
         ).onFalse(
             cmd.parallel(
@@ -200,11 +223,18 @@ class RobotContainer:
         )
 
         self._function_controller.povLeft().onTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE)
+            cmd.parallel(
+                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE),
+                self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
+            )
+
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
 
         self._function_controller.povRight().onTrue(
-            self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE)
+            cmd.parallel(
+                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE),
+                self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
+            )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
 
         self._function_controller.rightBumper().whileTrue(

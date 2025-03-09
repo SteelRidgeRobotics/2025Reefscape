@@ -86,9 +86,9 @@ class VisionSubsystem(StateSubsystem):
     def _get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:
         """ Computes dynamic standard deviations based on tag count and distance. """
         if estimate.tag_count == 0:
-            return 0.7, 0.7, 0.7
+            return 0.5, 0.5, 0.5
 
         avg_dist = sum(f.dist_to_camera for f in estimate.raw_fiducials) / estimate.tag_count
         factor = 1 + (avg_dist ** 2 / 30)
 
-        return 0.7 * factor, 0.7 * factor, math.inf if estimate.is_megatag_2 else (0.7 * factor)
+        return 0.5 * factor, 0.5 * factor, math.inf if estimate.is_megatag_2 else (0.5 * factor)

@@ -5,7 +5,7 @@ from commands2 import Command, cmd
 from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VelocityDutyCycle, DutyCycleOut
 from phoenix6.hardware import TalonFX
-from phoenix6.signals import NeutralModeValue
+from phoenix6.signals import NeutralModeValue, ForwardLimitValue
 
 from constants import Constants
 from subsystems import StateSubsystem
@@ -60,3 +60,6 @@ class IntakeSubsystem(StateSubsystem):
 
     def set_desired_state_command(self, state: SubsystemState) -> Command:
         return cmd.runOnce(lambda: self.set_desired_state(state), self)
+
+    def has_coral(self) -> bool:
+        return self._intake_motor.get_forward_limit().value is ForwardLimitValue.CLOSED_TO_GROUND
