@@ -3,6 +3,7 @@ import commands2.button
 from commands2 import cmd
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
+from pathplannerlib.config import RobotConfig
 from phoenix6 import SignalLogger, swerve, utils
 from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Rotation2d, Pose2d
@@ -17,6 +18,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve.requests import SetpointFieldCentric
 from subsystems.vision import VisionSubsystem
 
 
@@ -103,7 +105,7 @@ class RobotContainer:
         common_settings = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
         )
-        self._field_centric = common_settings(swerve.requests.FieldCentric())
+        self._field_centric = common_settings(SetpointFieldCentric(RobotConfig.fromGUISettings(), 12))
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()

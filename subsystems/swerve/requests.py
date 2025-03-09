@@ -2,7 +2,7 @@ from typing import Self
 
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.util import DriveFeedforwards
-from pathplannerlib.util.swerve import SwerveSetpointGenerator, SwerveSetpoint
+from subsystems.swerve.util import SwerveSetpointGenerator, SwerveSetpoint
 from phoenix6 import StatusCode
 from phoenix6.swerve import SwerveModule, SwerveControlParameters, Translation2d
 from phoenix6.swerve.requests import SwerveRequest, ApplyRobotSpeeds, ForwardPerspectiveValue, FieldCentric
