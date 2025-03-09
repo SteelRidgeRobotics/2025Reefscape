@@ -16,7 +16,6 @@ from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 from wpiutil import Sendable, SendableBuilder
-
 from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
 
 
