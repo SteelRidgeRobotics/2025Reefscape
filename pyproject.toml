@@ -10,5 +10,5 @@ robotpy_extras = [
 # Other pip packages to install
 requires = [
     "robotpy-pathplannerlib==2025.2.5",
-    "phoenix6==25.3.0"
+    "phoenix6==25.3.1"
 ]

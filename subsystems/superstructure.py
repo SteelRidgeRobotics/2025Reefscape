@@ -1,9 +1,11 @@
 from enum import auto, Enum
 from typing import Optional
 
-from commands2 import Command, Subsystem, cmd, InstantCommand
-from wpilib import DriverStation, SmartDashboard
+from commands2 import Command, Subsystem, cmd
+from wpilib import DriverStation, SmartDashboard, Mechanism2d, Color8Bit
 
+from constants import Constants
+from robot_state import RobotState
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.pivot import PivotSubsystem
@@ -39,8 +41,8 @@ class Superstructure(Subsystem):
             ]] = {
         Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L3_CORAL: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L2_CORAL: (PivotSubsystem.SubsystemState.MID_SCORING, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L3_CORAL: (PivotSubsystem.SubsystemState.L3_CORAL, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
+        Goal.L2_CORAL: (PivotSubsystem.SubsystemState.L2_CORAL, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L1_CORAL: (PivotSubsystem.SubsystemState.LOW_SCORING, ElevatorSubsystem.SubsystemState.L1, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L2_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L2_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L3_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L3_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
@@ -76,17 +78,28 @@ class Superstructure(Subsystem):
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
 
-        self._elevator_old_state = self.elevator.get_current_state()
-        self._pivot_old_state = self.pivot.get_current_state()
+        state = RobotState.get_instance()
+        self._elevator_old_state = state.get_elevator_state()
+        self._pivot_old_state = state.get_pivot_state()
+        self._pivot_old_setpoint = pivot.get_setpoint()
+
+        self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
+        self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
+        self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
+        self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19, 122, 127))
+        SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
     def periodic(self):
         if DriverStation.isDisabled():
             return
-        pivot_state = self.pivot.get_current_state()
-        elevator_state = self.elevator.get_current_state()
 
-        # Only proceed with actions when necessary
-        if pivot_state != self._pivot_old_state and not self.elevator.is_at_setpoint():
+        state = RobotState.get_instance()
+
+        pivot_state = state.get_pivot_state()
+        elevator_state = state.get_elevator_state()
+
+        # If the elevator needs to move and the current pivot position travels into the elevator via it's desired setpoint, prioritize the elevator, then the pivot. Ran anytime we have coral.
+        if (((min(self._pivot_old_setpoint, state.get_pivot_position()) < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE < self.pivot.get_setpoint()) or (max(self._pivot_old_setpoint, state.get_pivot_position()) > Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE > self.pivot.get_setpoint())) and not self.elevator.is_at_setpoint()) or (pivot_state is not self._pivot_old_state and state.has_coral() and not self.elevator.is_at_setpoint()):
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
             self.pivot.freeze()
@@ -95,20 +108,24 @@ class Superstructure(Subsystem):
                 self.elevator.freeze()
 
         # Unfreeze subsystems if safe
-        if not self.pivot.is_in_elevator() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR and elevator_state is ElevatorSubsystem.SubsystemState.IDLE:
+        if not state.is_pivot_in_elevator() and pivot_state is PivotSubsystem.SubsystemState.AVOID_ELEVATOR and elevator_state is ElevatorSubsystem.SubsystemState.IDLE:
             self.elevator.unfreeze()
             self.elevator.set_desired_state(self._elevator_old_state)
 
-        if self.elevator.is_at_setpoint() and pivot_state == PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
+        if state.is_elevator_at_setpoint() and pivot_state is PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._pivot_old_state)
 
         # Update old states only when necessary
-        if pivot_state != PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
+        if pivot_state is not PivotSubsystem.SubsystemState.AVOID_ELEVATOR:
             self._pivot_old_state = pivot_state
+            self._pivot_old_setpoint = self.pivot.get_setpoint()
 
-        if elevator_state != ElevatorSubsystem.SubsystemState.IDLE:
+        if elevator_state is not ElevatorSubsystem.SubsystemState.IDLE:
             self._elevator_old_state = elevator_state
+
+        self._elevator_mech.setLength(self.elevator.get_height())
+        self._pivot_mech.setAngle(state.get_pivot_position() * 360 - 90)
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal

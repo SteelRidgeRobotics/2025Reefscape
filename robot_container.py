@@ -1,3 +1,5 @@
+from typing import Callable
+
 import commands2
 import commands2.button
 from commands2 import cmd, InstantCommand
@@ -32,7 +34,7 @@ class RobotContainer:
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        self.climber = ClimberSubsystem()
+        #self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
@@ -45,7 +47,7 @@ class RobotContainer:
             Constants.VisionConstants.BACK_CENTER,
         )
 
-        self.robot_state = RobotState(self.drivetrain, self.pivot, self.elevator, self.climber)
+        self.robot_state = RobotState(self.intake, self.pivot, self.elevator)
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
         )
@@ -103,9 +105,9 @@ class RobotContainer:
         return pose
 
     def _setup_swerve_requests(self):
-        common_settings = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
-            swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
-        )
+        common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
+            swerve.SwerveModule.DriveRequestType.VELOCITY
+        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.MOTION_MAGIC_EXPO)
         self._field_centric = common_settings(SetpointFieldCentric(RobotConfig.fromGUISettings(), 12))
         self._robot_centric = common_settings(swerve.requests.RobotCentric())
         self._brake = swerve.requests.SwerveDriveBrake()
@@ -221,7 +223,7 @@ class RobotContainer:
                 self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
             )
         )
-
+        """
         self._function_controller.povLeft().onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE),
@@ -236,6 +238,7 @@ class RobotContainer:
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
+        """
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)

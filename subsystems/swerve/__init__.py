@@ -3,15 +3,19 @@ from typing import Callable, overload
 
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
+from ntcore import NetworkTableInstance
 from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
+from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, units, utils, SignalLogger
+from phoenix6.swerve import SwerveModule, SwerveDrivetrain
 from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from wpilib import DriverStation, Notifier, RobotController
+from wpilib import DriverStation, Notifier, RobotController, Field2d, SmartDashboard
 from wpilib.sysid import SysIdRoutineLog
-from wpimath.geometry import Rotation2d
-from wpimath.units import rotationsToRadians
+from wpimath.geometry import Rotation2d, Pose2d
+from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
+from wpiutil import Sendable, SendableBuilder
 
 from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
 
@@ -28,8 +32,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
     """Blue alliance sees forward as 0 degrees (toward red alliance wall)"""
     _RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.fromDegrees(180)
     """Red alliance sees forward as 180 degrees (toward blue alliance wall)"""
-
-    _MAX_STEERING_VELOCITY: units.radians_per_second = rotationsToRadians(15)
 
     @overload
     def __init__(
@@ -163,6 +165,39 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
         # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
+
+        # Telemetry
+        self._field = Field2d()
+        SmartDashboard.putData("Field", self._field)
+        self._field.setRobotPose(Pose2d())
+
+        self._table = NetworkTableInstance.getDefault().getTable("Telemetry")
+
+        class SwerveModuleSendable(Sendable):
+            def __init__(self, modules: list[SwerveModule[DriveMotorT, SteerMotorT, EncoderT]], rotation_getter: Callable[[], float]):
+                super().__init__()
+                self._modules = modules
+                self._get_rotation = rotation_getter
+
+            def initSendable(self, builder: SendableBuilder):
+                builder.setSmartDashboardType("SwerveDrive")
+
+                for i, name in enumerate(["Front Left", "Front Right", "Back Left", "Back Right"]):
+                    builder.addDoubleProperty(f"{name} Angle", lambda: self._modules[i].get_current_state().angle.radians(), lambda _: None)
+                    builder.addDoubleProperty(f"{name} Velocity", lambda: self._modules[i].get_current_state().speed, lambda _: None)
+                builder.addDoubleProperty("Robot Angle", self._get_rotation, lambda _: None)
+        SmartDashboard.putData("Swerve Modules", SwerveModuleSendable(self.modules, lambda: (self.get_state_copy().pose.rotation() + self.get_operator_forward_direction()).radians()))
+
+        self._pose_pub = self._table.getStructTopic("current_pose", Pose2d).publish()
+        self._speeds_pub = self._table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
+        self._odom_freq = self._table.getDoubleTopic("odometry_frequency").publish()
+        self._module_states_pub = self._table.getStructArrayTopic("module_states", SwerveModuleState).publish()
+        self._module_targets_pub = self._table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
+
+        self._auto_target_pub = self._table.getStructTopic("auto_target", Pose2d).publish()
+        self._auto_path_pub = self._table.getStructArrayTopic("auto_path", Pose2d).publish()
+        PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._auto_target_pub.set(pose))
+        PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
 
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
@@ -312,7 +347,15 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                     if alliance_color == DriverStation.Alliance.kRed
                     else self._BLUE_ALLIANCE_PERSPECTIVE_ROTATION
                 )
-                self._has_applied_operator_perspective = True 
+                self._has_applied_operator_perspective = True
+
+        state = self.get_state_copy()
+        self._field.setRobotPose(state.pose)
+        self._pose_pub.set(state.pose)
+        self._odom_freq.set(1.0 / state.odometry_period)
+        self._module_states_pub.set(state.module_states)
+        self._module_targets_pub.set(state.module_targets)
+        self._speeds_pub.set(state.speeds)
 
     def _start_sim_thread(self) -> None:
         """

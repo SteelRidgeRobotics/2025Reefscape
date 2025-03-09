@@ -97,7 +97,7 @@ class ElevatorSubsystem(StateSubsystem):
             0
         )
 
-        self._brake_request = VoltageOut(0)
+        self._brake_request = DynamicMotionMagicVoltage(0, Constants.ElevatorConstants.CRUISE_VELOCITY, Constants.ElevatorConstants.MM_BRAKE_ACCELERATION, 0)
         self._sys_id_request = VoltageOut(0)
 
         self._master_motor.set_control(self._brake_request)
@@ -139,6 +139,7 @@ class ElevatorSubsystem(StateSubsystem):
         position = self._state_configs.get(desired_state, None)
 
         if position is None:
+            self._brake_request.position = self._master_motor.get_position().value
             self._master_motor.set_control(self._brake_request)
         else:
             if self._master_motor.get_position().value < position:
