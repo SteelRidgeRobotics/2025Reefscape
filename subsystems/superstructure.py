@@ -98,8 +98,9 @@ class Superstructure(Subsystem):
         pivot_state = state.get_pivot_state()
         elevator_state = state.get_elevator_state()
 
-        # If the elevator needs to move and the current pivot position travels into the elevator via it's desired setpoint, prioritize the elevator, then the pivot. Ran anytime we have coral.
-        if (((min(self._pivot_old_setpoint, state.get_pivot_position()) < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE < self.pivot.get_setpoint()) or (max(self._pivot_old_setpoint, state.get_pivot_position()) > Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE > self.pivot.get_setpoint())) and not self.elevator.is_at_setpoint()) or (pivot_state is not self._pivot_old_state and state.has_coral() and not self.elevator.is_at_setpoint()):
+        # If the elevator needs to move, check if the elevator has coral or if the pivot could interfere with the elevator. 
+        if not self.elevator.is_at_setpoint() and (state.has_coral() or 
+                                                   self.pivot.is_in_elevator(max(self._pivot_old_setpoint, state.get_pivot_position(), self.pivot._state_configs[pivot_state]))):
             # Wait for Pivot to leave elevator
             self.pivot.set_desired_state(PivotSubsystem.SubsystemState.AVOID_ELEVATOR)
             self.pivot.freeze()
