@@ -7,7 +7,7 @@ from wpilib import RobotController
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.util import DriveFeedforwards
 import math
-from typing import Callable, overload
+from typing import Callable
 
 
 @dataclass
@@ -38,6 +38,7 @@ class SwerveSetpointGenerator:
         """
         self._config = config
         self._max_steer_velocity_rads_per_sec = max_steer_velocity_rads_per_sec
+        self._brownoutVoltage = RobotController.getBrownoutVoltage()
 
     @classmethod
     def from_rots_per_sec(cls, config: RobotConfig, max_steer_velocity: float) -> "SwerveSetpointGenerator":
@@ -50,7 +51,8 @@ class SwerveSetpointGenerator:
         """
         return cls(config, rotationsToRadians(max_steer_velocity))
 
-    def generateSetpoint(self, prev_setpoint: SwerveSetpoint, desired_state_robot_relative: ChassisSpeeds, dt: float) -> SwerveSetpoint:
+    def generateSetpoint(self, prev_setpoint: SwerveSetpoint, desired_state_robot_relative: ChassisSpeeds, dt: float,
+                         input_voltage: float = None) -> SwerveSetpoint:
         """
         Generate a new setpoint. Note: Do not discretize ChassisSpeeds passed into or returned from
         this method. This method will discretize the speeds for you.
@@ -59,18 +61,31 @@ class SwerveSetpointGenerator:
         :param desired_state_robot_relative: The desired state of motion, such as from the driver sticks or
         a path following algorithm.
         :param dt: The loop time.
+        :param input_voltage: The input voltage of the drive motor controllers, in volts. This can also
+            be a static nominal voltage if you do not want the setpoint generator to react to changes
+            in input voltage. If the given voltage is NaN, it will be assumed to be 12v. The input
+            voltage will be clamped to a minimum of the robot controller's brownout voltage.
         :return: A Setpoint object that satisfies all the kinematic/friction limits while converging to
         desired_state quickly.
         """
+        if input_voltage is None:
+            input_voltage = RobotController.getInputVoltage()
+
+        if math.isnan(input_voltage):
+            input_voltage = 12.0
+        else:
+            input_voltage = max(input_voltage, self._brownoutVoltage)
+
         desired_module_states = self._config.toSwerveModuleStates(desired_state_robot_relative)
         # Make sure desired_state respects velocity limits.
-        SwerveDrive4Kinematics.desaturateWheelSpeeds(desired_module_states, self._config.moduleConfig.maxDriveVelocityMPS)
+        SwerveDrive4Kinematics.desaturateWheelSpeeds(desired_module_states,
+            self._config.moduleConfig.maxDriveVelocityMPS)
         desired_state_robot_relative = self._config.toChassisSpeeds(desired_module_states)
 
         # Special case: desired_state is a complete stop. In this case, module angle is arbitrary, so
         # just use the previous angle.
         need_to_steer = True
-        if self._epsilonEquals(desired_state_robot_relative, ChassisSpeeds()):
+        if self._epsilonEqualsSpeeds(desired_state_robot_relative, ChassisSpeeds()):
             need_to_steer = False
             for m in range(self._config.numModules):
                 desired_module_states[m].angle = prev_setpoint.module_states[m].angle
@@ -112,11 +127,11 @@ class SwerveSetpointGenerator:
                 if required_rotation_rad < math.pi / 2.0:
                     all_modules_should_flip = False
         if all_modules_should_flip \
-                and not self._epsilonEquals(prev_setpoint.robot_relative_speeds, ChassisSpeeds()) \
-                and not self._epsilonEquals(desired_state_robot_relative, ChassisSpeeds()):
+                and not self._epsilonEqualsSpeeds(prev_setpoint.robot_relative_speeds, ChassisSpeeds()) \
+                and not self._epsilonEqualsSpeeds(desired_state_robot_relative, ChassisSpeeds()):
             # It will (likely) be faster to stop the robot, rotate the modules in place to the complement
             # of the desired angle, and accelerate again.
-            return self.generateSetpoint(prev_setpoint, ChassisSpeeds(), dt)
+            return self.generateSetpoint(prev_setpoint, ChassisSpeeds(), dt, input_voltage)
 
         # Compute the deltas between start and goal. We can then interpolate from the start state to
         # the goal state; then find the amount we can move from start towards goal in this cycle such
@@ -132,7 +147,7 @@ class SwerveSetpointGenerator:
         # In cases where an individual module is stopped, we want to remember the right steering angle
         # to command (since inverse kinematics doesn't care about angle, we can be opportunistically
         # lazy).
-        override_steering: list[Rotation2d | None] = []
+        override_steering = []
         # Enforce steering velocity limits. We do this by taking the derivative of steering angle at
         # the current angle, and then backing out the maximum interpolant between start and goal
         # states. We remember the minimum across all modules, since that is the active constraint.
@@ -152,8 +167,7 @@ class SwerveSetpointGenerator:
                     override_steering[m] = prev_setpoint.module_states[m].angle
                     continue
 
-                necessary_rotation = (-prev_setpoint.module_states[m].angle
-                                      ).rotateBy(desired_module_states[m].angle)
+                necessary_rotation = (-prev_setpoint.module_states[m].angle).rotateBy(desired_module_states[m].angle)
                 if self.flipHeading(necessary_rotation):
                     necessary_rotation = necessary_rotation.rotateBy(Rotation2d(math.pi))
 
@@ -209,8 +223,7 @@ class SwerveSetpointGenerator:
             # battery is sagging down to 11v, which will affect the max torque output
             current_draw = \
                 self._config.moduleConfig.driveMotor.current(
-                    math.fabs(last_vel_rad_per_sec), RobotController.getInputVoltage()
-                )
+                    math.fabs(last_vel_rad_per_sec), input_voltage)
             current_draw = min(current_draw, self._config.moduleConfig.driveCurrentLimit)
             module_torque = self._config.moduleConfig.driveMotor.torque(current_draw)
 
@@ -364,17 +377,10 @@ class SwerveSetpointGenerator:
         else:
             return angle
 
-    class Function2d:
-        def __init__(self, func: Callable[[float, float], float]):
-            self.func = func
-
-        def __call__(self, x: float, y: float) -> float:
-            return self.func(x, y)
-
     @classmethod
     def _findRoot(
         cls,
-        func: Function2d,
+        func: Callable[[float, float], float],
         x_0: float,
         y_0: float,
         f_0: float,
@@ -435,7 +441,10 @@ class SwerveSetpointGenerator:
             # Can go all the way to s=1
             return 1.0
         offset = f_0 + cls._signum(diff) * max_deviation
-        func = lambda x, y: cls._unwrapAngle(f_0, math.atan2(y, x)) - offset
+
+        def func(x: float, y: float):
+            return cls._unwrapAngle(f_0, math.atan2(y, x)) - offset
+
         return cls._findRoot(func, x_0, y_0, f_0 - offset, x_1, y_1, f_1 - offset, cls._MAX_STEER_ITERATIONS)
 
     @classmethod
@@ -454,46 +463,33 @@ class SwerveSetpointGenerator:
             # Can go all the way to s=1.
             return 1.0
         offset = f_0 + cls._signum(diff) * max_vel_step
-        func = lambda x, y: math.hypot(x, y) - offset
+
+        def func(x: float, y: float):
+            return math.hypot(x, y) - offset
+
         return cls._findRoot(func, x_0, y_0, f_0 - offset, x_1, y_1, f_1 - offset, cls._MAX_DRIVE_ITERATIONS)
-
-    @staticmethod
-    @overload
-    def _epsilonEquals(a: float, b: float, epsilon: float) -> bool:
-        ...
-
-    @staticmethod
-    @overload
-    def _epsilonEquals(a: float, b: float) -> bool:
-        ...
-
-    @staticmethod
-    @overload
-    def _epsilonEquals(s1: ChassisSpeeds, s2: ChassisSpeeds) -> bool:
-        ...
-
-    @staticmethod
-    @overload
-    def _epsilonEquals(s1: ChassisSpeeds, s2: ChassisSpeeds, epsilon: float) -> bool:
-        ...
 
     @classmethod
     def _epsilonEquals(
         cls,
-        a: float | ChassisSpeeds,
-        b: float | ChassisSpeeds,
+        a: float,
+        b: float,
         epsilon: float = _k_epsilon
     ) -> bool:
-        if isinstance(a, float) and isinstance(b, float):
-            return (a - epsilon <= b) and (a + epsilon >= b)
-        elif isinstance(a, ChassisSpeeds) and isinstance(b, ChassisSpeeds):
-            return (
-                    cls._epsilonEquals(a.vx, b.vx, epsilon)
-                    and cls._epsilonEquals(a.vy, b.vy, epsilon)
-                    and cls._epsilonEquals(a.omega, b.omega, epsilon)
-            )
-        else:
-            raise TypeError("Invalid argument types for _epsilonEquals, must be (float, float) or (ChassisSpeeds, ChassisSpeeds).")
+        return (a - epsilon <= b) and (a + epsilon >= b)
+
+    @classmethod
+    def _epsilonEqualsSpeeds(
+        cls,
+        a: ChassisSpeeds,
+        b: ChassisSpeeds,
+        epsilon: float = _k_epsilon
+    ) -> bool:
+        return (
+                cls._epsilonEquals(a.vx, b.vx, epsilon)
+                and cls._epsilonEquals(a.vy, b.vy, epsilon)
+                and cls._epsilonEquals(a.omega, b.omega, epsilon)
+        )
 
     @staticmethod
     def _signum(x: float) -> float:
