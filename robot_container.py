@@ -75,13 +75,8 @@ class RobotContainer:
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
 
         # Build AutoChooser
-        if not AutoBuilder.isConfigured():
-            raise RuntimeError('AutoBuilder was not configured before attempting to build an auto chooser')
-        auto_folder_path = os.path.join(getDeployDirectory(), 'pathplanner', 'autos')
-        auto_list = os.listdir(auto_folder_path)
-
         self._auto_chooser = SendableChooser()
-        for auto in auto_list:
+        for auto in os.listdir(os.path.join(getDeployDirectory(), 'pathplanner', 'autos')):
             auto = auto.removesuffix(".auto")
             self._auto_chooser.addOption(auto, PathPlannerAuto(auto))
             self._auto_chooser.addOption(auto + " (Mirrored)", PathPlannerAuto(auto, True))
