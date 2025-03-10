@@ -8,6 +8,7 @@ from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from pathplannerlib.logging import PathPlannerLogging
 from pathplannerlib.util import DriveFeedforwards
+from pathplannerlib.util.swerve import SwerveSetpointGenerator, SwerveSetpoint
 from phoenix6 import swerve, units, utils, SignalLogger
 from phoenix6.swerve import SwerveModule
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
@@ -18,7 +19,6 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 from wpiutil import Sendable, SendableBuilder
 
 from subsystems.swerve.requests import ApplyRobotSetpointSpeeds
-from subsystems.swerve.util import SwerveSetpointGenerator, SwerveSetpoint
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
