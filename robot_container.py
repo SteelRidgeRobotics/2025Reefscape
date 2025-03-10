@@ -1,19 +1,20 @@
+import os
 from typing import Callable
+
 import commands2
 import commands2.button
 from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController
 from commands2.sysid import SysIdRoutine
-from pathplannerlib.auto import AutoBuilder, NamedCommands
+from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
 from phoenix6 import SignalLogger, swerve
-from wpilib import DriverStation, SmartDashboard, XboxController
+from wpilib import DriverStation, SmartDashboard, XboxController, SendableChooser, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
 from constants import Constants
 from generated.tuner_constants import TunerConstants
 from robot_state import RobotState
-from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
@@ -74,11 +75,17 @@ class RobotContainer:
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
 
         # Build AutoChooser
-        self._auto_chooser = AutoBuilder.buildAutoChooser()
+        self._auto_chooser = SendableChooser()
+        for auto in os.listdir(os.path.join(getDeployDirectory(), 'pathplanner', 'autos')):
+            auto = auto.removesuffix(".auto")
+            self._auto_chooser.addOption(auto, PathPlannerAuto(auto))
+            self._auto_chooser.addOption(auto + " (Mirrored)", PathPlannerAuto(auto, True))
+        self._auto_chooser.setDefaultOption("None", cmd.none())
         self._auto_chooser.onChange(
             lambda _: self._set_correct_swerve_position()
         )
-        # Add basic leave
+
+        # Basic Leave auto (drive forward for 1 second) (not clickbait)
         self._auto_chooser.addOption("Basic Leave",
             self.drivetrain.apply_request(lambda: self._robot_centric.with_velocity_x(1)).withTimeout(1.0)
         )
