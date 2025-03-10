@@ -292,10 +292,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._configure_auto_builder()
 
     def _configure_auto_builder(self) -> None:
-        """
-        Method to configure the auto builder
-        """
-
         config = RobotConfig.fromGUISettings()
         self._apply_robot_speeds = ApplyRobotSetpointSpeeds(self.get_setpoint_generator(), self.update_setpoint)
         AutoBuilder.configure(
@@ -312,7 +308,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 PIDConstants(5.0, 0.0, 0.0)
             ),
             config,
-            lambda: DriverStation.getAlliance() == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise
+            lambda: DriverStation.getAlliance() == DriverStation.Alliance.kRed,
             self
         )
 

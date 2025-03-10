@@ -10,7 +10,7 @@ from subsystems.swerve.util import SwerveSetpointGenerator, SwerveSetpoint
 
 class ApplyRobotSetpointSpeeds(SwerveRequest):
     """
-    Accepts a generic robot-centric ChassisSpeeds to apply PathPlanner's SwerveSetpointGenerator to allow for more path following control.
+    Accepts a generic robot-centric ChassisSpeeds to apply Team 254's SwerveSetpointGenerator to allow for more path following control.
     """
 
     def __init__(self, setpoint_generator: SwerveSetpointGenerator, update_setpoint: Callable[[ChassisSpeeds, float], SwerveSetpoint]) -> None:
@@ -41,7 +41,7 @@ class ApplyRobotSetpointSpeeds(SwerveRequest):
         """
         Modifies the speeds parameter and returns itself.
 
-        The desired robot-centric chassis speeds to apply to the drivetrain.
+        The desired robot-centric chassis speeds to generator the setpoint for the drivetrain.
 
         :param new_speeds: Parameter to modify
         :type new_speeds: ChassisSpeeds
