@@ -8,28 +8,8 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Field",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 768.0,
-            "height": 384.0,
-            "type": "Field",
-            "properties": {
-              "topic": "/SmartDashboard/Field",
-              "period": 0.03,
-              "field_game": "Reefscape",
-              "robot_width": 0.91,
-              "robot_length": 0.91,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295
-            }
-          },
-          {
             "title": "Odometry Frequency",
-            "x": 768.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -50,8 +30,8 @@
           },
           {
             "title": "Match Time",
-            "x": 1280.0,
-            "y": 0.0,
+            "x": 0.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Match Time",
@@ -66,8 +46,8 @@
           },
           {
             "title": "FMSInfo",
-            "x": 0.0,
-            "y": 384.0,
+            "x": 512.0,
+            "y": 0.0,
             "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
@@ -77,41 +57,9 @@
             }
           },
           {
-            "title": "Swerve Data",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/Telemetry/Swerve Data",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
-            "title": "Battery Voltage",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Voltage View",
-            "properties": {
-              "topic": "/SmartDashboard/Battery Voltage",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
-            }
-          },
-          {
             "title": "Selected Auto",
-            "x": 768.0,
-            "y": 256.0,
+            "x": 256.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
@@ -119,6 +67,19 @@
               "topic": "/SmartDashboard/Selected Auto",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "limelight-front",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-front",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]
@@ -131,9 +92,9 @@
         "containers": [
           {
             "title": "Match Time",
-            "x": 0.0,
+            "x": 384.0,
             "y": 0.0,
-            "width": 384.0,
+            "width": 256.0,
             "height": 384.0,
             "type": "Match Time",
             "properties": {
@@ -146,20 +107,6 @@
             }
           },
           {
-            "title": "Swerve Drive",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/SmartDashboard/Swerve Drive",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
             "title": "limelight-front",
             "x": 640.0,
             "y": 0.0,
@@ -169,26 +116,20 @@
             "properties": {
               "topic": "/CameraPublisher/limelight-front",
               "period": 0.06,
-              "rotation_turns": 0,
-              "fps": 15
+              "rotation_turns": 0
             }
           },
           {
-            "title": "Battery Voltage",
+            "title": "limelight-back",
             "x": 0.0,
-            "y": 384.0,
-            "width": 640.0,
-            "height": 128.0,
-            "type": "Voltage View",
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
             "properties": {
-              "topic": "/SmartDashboard/Battery Voltage",
+              "topic": "/CameraPublisher/limelight-back",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
+              "rotation_turns": 0
             }
           }
         ]

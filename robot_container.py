@@ -1,19 +1,18 @@
 from typing import Callable
+
 import commands2
 import commands2.button
 from commands2 import cmd, InstantCommand
-from commands2.button import CommandXboxController
+from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
 from phoenix6 import SignalLogger, swerve
-from wpilib import DriverStation, SmartDashboard, XboxController
+from wpilib import DriverStation, XboxController, SmartDashboard
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
 from constants import Constants
 from generated.tuner_constants import TunerConstants
-from robot_state import RobotState
-from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
@@ -44,7 +43,6 @@ class RobotContainer:
             Constants.VisionConstants.BACK_CENTER,
         )
 
-        self.robot_state = RobotState(self.intake, self.pivot, self.elevator)
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
         )
@@ -136,6 +134,12 @@ class RobotContainer:
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
             )
+        )
+
+        Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).whileTrue(
+            self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
+        ).onFalse(
+            self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
         )
 
         self._driver_controller.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))

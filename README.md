@@ -43,10 +43,6 @@ Contains test code executed before code is deployed to the robot. This ensures t
 
 Contains all Limelight pipelines used by our Vision subsystem. These are manually tuned at each event in order to provide the best AprilTag visibility.
 
-[`robot_state.py`](robot_state.py)
-
-Handles all robot position data and mechanism logging for dashboard use and analysis.
-
 ## Credits
 
 This robot could not have been programmed without the incredible talent, skills, and determination from the following:

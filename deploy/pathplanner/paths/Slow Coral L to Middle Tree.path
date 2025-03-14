@@ -3,80 +3,76 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1526076158940395,
-        "y": 4.13396109271523
+        "x": 3.682884933774835,
+        "y": 5.092818708609271
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9050609738893933,
-        "y": 4.099023147265855
+        "x": 2.440728476821192,
+        "y": 4.8748965231788075
       },
       "isLocked": false,
-      "linkedName": "Coral A"
+      "linkedName": "Coral L"
     },
     {
       "anchor": {
-        "x": 1.721585264900662,
-        "y": 2.6375620860927156
+        "x": 1.6271523178807947,
+        "y": 4.431788079470198
       },
       "prevControl": {
-        "x": 1.9322433774834438,
-        "y": 2.7755794701986747
+        "x": 1.8464300850001847,
+        "y": 4.5518599781273545
       },
       "nextControl": {
-        "x": 1.512469982505723,
-        "y": 2.500555521764998
+        "x": 1.4078745507614048,
+        "y": 4.311716180813041
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.682884933774835,
-        "y": 2.957181291390728
+        "x": 3.1526076158940395,
+        "y": 4.13396109271523
       },
       "prevControl": {
-        "x": 2.586009933774834,
-        "y": 3.0443501655629137
+        "x": 2.4843129139072846,
+        "y": 4.112168874172185
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral A"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": -138.57633437499732
-    },
-    {
-      "waypointRelativePos": 1.7983348751156334,
-      "rotationDegrees": 59.99999999999999
+      "waypointRelativePos": 0.6697502312673453,
+      "rotationDegrees": -142.67413476722464
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 1.0140259740259776,
+      "minWaypointRelativePos": 1.7599999999999951,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 1.5,
-        "maxAcceleration": 4.0,
+        "maxVelocity": 0.75,
+        "maxAcceleration": 7.0,
         "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1000.0,
+        "maxAngularAcceleration": 1600.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
     },
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.8555844155844186,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 0.75,
-        "maxAcceleration": 4.0,
+        "maxVelocity": 1.5,
+        "maxAcceleration": 7.0,
         "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1000.0,
+        "maxAngularAcceleration": 1600.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -97,7 +93,7 @@
     },
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -119,22 +115,22 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 1000.0,
+    "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
-  },
-  "reversed": false,
-  "folder": "Elders'",
-  "idealStartingState": {
-    "velocity": 0,
     "rotation": 0.3819662047291033
   },
-  "useDefaultConstraints": true
+  "reversed": false,
+  "folder": "Men",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "useDefaultConstraints": false
 }

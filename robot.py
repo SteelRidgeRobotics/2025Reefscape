@@ -1,8 +1,9 @@
 import os.path
 
 from commands2 import CommandScheduler, TimedCommandRobot
+from ntcore import NetworkTableInstance
 from phoenix6 import SignalLogger
-from wpilib import DataLogManager, DriverStation, SmartDashboard, Timer, RobotController
+from wpilib import DataLogManager, DriverStation, Timer
 from wpinet import WebServer, PortForwarder
 
 from constants import Constants
@@ -19,8 +20,8 @@ class Leviathan(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        SignalLogger.enable_auto_logging(True)
-        DataLogManager.start(period=0.02)
+        SignalLogger.enable_auto_logging(DriverStation.isFMSAttached())
+        DataLogManager.start(period=0.2)
         DriverStation.startDataLog(DataLogManager.getLog())
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
@@ -31,6 +32,9 @@ class Leviathan(TimedCommandRobot):
 
         DataLogManager.log("Robot initialized")
 
+        dashboard_nt = NetworkTableInstance.getDefault().getTable("Elastic")
+        self._match_time_pub = dashboard_nt.getFloatTopic("Match Time").publish()
+
     @staticmethod
     def get_deploy_directory():
         if os.path.exists("/home/lvuser"):
@@ -39,9 +43,7 @@ class Leviathan(TimedCommandRobot):
             return os.path.join(os.getcwd(), "deploy")
 
     def robotPeriodic(self) -> None:
-        # Log important info
-        SmartDashboard.putNumber("Match Time", Timer.getMatchTime())
-        SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage())
+        self._match_time_pub.set(Timer.getMatchTime())
 
     def _simulationPeriodic(self) -> None:
         pass

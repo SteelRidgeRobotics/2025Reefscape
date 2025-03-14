@@ -4,7 +4,7 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
-from wpilib import Servo, Mechanism2d, SmartDashboard, Color8Bit
+from wpilib import Servo, Mechanism2d, Color8Bit
 from wpimath import units
 from wpimath.system.plant import DCMotor
 
@@ -50,7 +50,7 @@ class ClimberSubsystem(StateSubsystem):
         self._climber_root = self._climber_mechanism.getRoot("Root", 1 / 2, 0)
         self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
         self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
-        SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
+        #SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
 
     def periodic(self):
         super().periodic()

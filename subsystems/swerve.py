@@ -8,10 +8,10 @@ from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, units, utils, SignalLogger
-from phoenix6.swerve import SwerveModule, SwerveDrivetrain
+from phoenix6.swerve import SwerveModule
 from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from wpilib import DriverStation, Notifier, RobotController, Field2d, SmartDashboard
+from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
@@ -164,27 +164,22 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
 
-        # Telemetry
-        self._field = Field2d()
-        SmartDashboard.putData("Field", self._field)
-        self._field.setRobotPose(Pose2d())
-
         self._table = NetworkTableInstance.getDefault().getTable("Telemetry")
 
-        class SwerveModuleSendable(Sendable):
-            def __init__(self, modules: list[SwerveModule[DriveMotorT, SteerMotorT, EncoderT]], rotation_getter: Callable[[], float]):
-                super().__init__()
-                self._modules = modules
-                self._get_rotation = rotation_getter
-
-            def initSendable(self, builder: SendableBuilder):
-                builder.setSmartDashboardType("SwerveDrive")
-
-                for i, name in enumerate(["Front Left", "Front Right", "Back Left", "Back Right"]):
-                    builder.addDoubleProperty(f"{name} Angle", lambda: self._modules[i].get_current_state().angle.radians(), lambda _: None)
-                    builder.addDoubleProperty(f"{name} Velocity", lambda: self._modules[i].get_current_state().speed, lambda _: None)
-                builder.addDoubleProperty("Robot Angle", self._get_rotation, lambda _: None)
-        SmartDashboard.putData("Swerve Modules", SwerveModuleSendable(self.modules, lambda: (self.get_state_copy().pose.rotation() + self.get_operator_forward_direction()).radians()))
+        # class SwerveModuleSendable(Sendable):
+        #     def __init__(self, modules: list[SwerveModule[DriveMotorT, SteerMotorT, EncoderT]], rotation_getter: Callable[[], float]):
+        #         super().__init__()
+        #         self._modules = modules
+        #         self._get_rotation = rotation_getter
+        #
+        #     def initSendable(self, builder: SendableBuilder):
+        #         builder.setSmartDashboardType("SwerveDrive")
+        #
+        #         for i, name in enumerate(["Front Left", "Front Right", "Back Left", "Back Right"]):
+        #             builder.addDoubleProperty(f"{name} Angle", lambda: self._modules[i].get_current_state().angle.radians(), lambda _: None)
+        #             builder.addDoubleProperty(f"{name} Velocity", lambda: self._modules[i].get_current_state().speed, lambda _: None)
+        #         builder.addDoubleProperty("Robot Angle", self._get_rotation, lambda _: None)
+        # SmartDashboard.putData("Swerve Modules", SwerveModuleSendable(self.modules, lambda: (self.get_state_copy().pose.rotation() + self.get_operator_forward_direction()).radians()))
 
         self._pose_pub = self._table.getStructTopic("current_pose", Pose2d).publish()
         self._speeds_pub = self._table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
@@ -347,7 +342,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 self._has_applied_operator_perspective = True
 
         state = self.get_state_copy()
-        self._field.setRobotPose(state.pose)
         self._pose_pub.set(state.pose)
         self._odom_freq.set(1.0 / state.odometry_period)
         self._module_states_pub.set(state.module_states)
