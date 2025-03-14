@@ -84,6 +84,12 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back uop"
+          }
         }
       ]
     }
