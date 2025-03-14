@@ -6,7 +6,7 @@ import commands2.button
 from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
-from pathplannerlib.auto import AutoBuilder, NamedCommands
+from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SendableChooser, XboxController, SmartDashboard, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
@@ -79,7 +79,8 @@ class RobotContainer:
             auto = auto.removesuffix(".auto")
             if auto ==".DS_Store":
                 continue
-            self._auto_chooser.addOption(auto, AutoBuilder.buildAuto(auto))
+            self._auto_chooser.addOption(auto, PathPlannerAuto(auto, False))
+            self._auto_chooser.addOption(auto + " (Mirrored)", PathPlannerAuto(auto, True))
         self._auto_chooser.setDefaultOption("None", cmd.none())
         self._auto_chooser.onChange(
             lambda _: self._set_correct_swerve_position()
