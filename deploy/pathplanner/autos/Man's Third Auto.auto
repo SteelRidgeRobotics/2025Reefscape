@@ -23,13 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Hold"
+                  "waitTime": 0.06
                 }
               }
             ]
@@ -60,13 +54,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Hold"
+                  "waitTime": 0.06
                 }
               }
             ]
@@ -76,6 +64,25 @@
           "type": "path",
           "data": {
             "pathName": "Coral L to Middle Tree"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Coral Output"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.06
+                }
+              }
+            ]
           }
         }
       ]

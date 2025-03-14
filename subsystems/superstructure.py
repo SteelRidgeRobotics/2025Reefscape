@@ -28,6 +28,7 @@ class Superstructure(Subsystem):
         L3_ALGAE = auto()
         PROCESSOR = auto()
         NET = auto()
+        
         FUNNEL = auto()
         FLOOR = auto()
         CLIMBING = auto()

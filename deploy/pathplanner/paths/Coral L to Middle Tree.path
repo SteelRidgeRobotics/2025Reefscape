@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.682884933774835,
-        "y": 5.092818708609271
+        "x": 3.7091423468576568,
+        "y": 5.039631251510638
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.440728476821192,
-        "y": 4.8748965231788075
+        "x": 2.466985889904014,
+        "y": 4.8217090660801745
       },
       "isLocked": false,
       "linkedName": "Coral L"
@@ -20,24 +20,24 @@
         "y": 4.431788079470198
       },
       "prevControl": {
-        "x": 1.8464300850001847,
-        "y": 4.5518599781273545
+        "x": 1.8010702401620358,
+        "y": 4.691465928819444
       },
       "nextControl": {
-        "x": 1.4078745507614048,
-        "y": 4.311716180813041
+        "x": 1.4880349164519624,
+        "y": 4.224071087821249
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.1526076158940395,
-        "y": 4.13396109271523
+        "x": 3.200262943297604,
+        "y": 4.176109818310333
       },
       "prevControl": {
-        "x": 2.4843129139072846,
-        "y": 4.112168874172185
+        "x": 2.531968241310849,
+        "y": 4.154317599767287
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,36 +48,13 @@
     {
       "waypointRelativePos": 0.6697502312673453,
       "rotationDegrees": -142.67413476722464
-    }
-  ],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.7599999999999951,
-      "maxWaypointRelativePos": 2.0,
-      "constraints": {
-        "maxVelocity": 0.75,
-        "maxAcceleration": 7.0,
-        "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1600.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
     },
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.5,
-        "maxAcceleration": 7.0,
-        "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1600.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
+      "waypointRelativePos": 1.8044426305970152,
+      "rotationDegrees": 0.0
     }
   ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -104,7 +81,7 @@
     },
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 1.3328177876480551,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -115,12 +92,12 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 0.9,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
@@ -132,5 +109,5 @@
     "velocity": 0,
     "rotation": -59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

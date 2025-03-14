@@ -1,3 +1,4 @@
+import os
 from typing import Callable
 
 import commands2
@@ -7,7 +8,7 @@ from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, NamedCommands
 from phoenix6 import SignalLogger, swerve
-from wpilib import DriverStation, XboxController, SmartDashboard
+from wpilib import DriverStation, SendableChooser, XboxController, SmartDashboard, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
@@ -72,7 +73,14 @@ class RobotContainer:
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
 
         # Build AutoChooser
-        self._auto_chooser = AutoBuilder.buildAutoChooser()
+        self._auto_chooser = SendableChooser()
+
+        for auto in os.listdir(os.path.join(getDeployDirectory(), 'pathplanner', 'autos')):
+            auto = auto.removesuffix(".auto")
+            if auto ==".DS_Store":
+                continue
+            self._auto_chooser.addOption(auto, AutoBuilder.buildAuto(auto))
+        self._auto_chooser.setDefaultOption("None", cmd.none())
         self._auto_chooser.onChange(
             lambda _: self._set_correct_swerve_position()
         )
