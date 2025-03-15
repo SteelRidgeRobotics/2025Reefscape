@@ -23,7 +23,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.06
+                  "waitTime": 0.3
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
                 }
               }
             ]
@@ -54,7 +60,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.06
+                  "waitTime": 0.3
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
                 }
               }
             ]
@@ -79,7 +91,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.06
+                  "waitTime": 0.3
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hold"
                 }
               }
             ]
@@ -89,25 +107,6 @@
           "type": "path",
           "data": {
             "pathName": "Back uop"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Coral Output"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.06
-                }
-              }
-            ]
           }
         }
       ]

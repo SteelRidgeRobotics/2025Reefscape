@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6997930463576159,
+        "x": 1.455852272727273,
         "y": 5.855546357615894
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.212336544581505,
-        "y": 5.097247359566882
+        "x": 1.9099015290951415,
+        "y": 5.855546357615894
       },
       "isLocked": false,
       "linkedName": "Left Tree"
     },
     {
       "anchor": {
-        "x": 3.7091423468576568,
-        "y": 5.039631251510638
+        "x": 3.201923076923076,
+        "y": 5.855546357615894
       },
       "prevControl": {
-        "x": 3.396787214407325,
-        "y": 5.112271979987459
+        "x": 2.99225543493672,
+        "y": 5.991706116369651
+      },
+      "nextControl": {
+        "x": 3.4115907189094323,
+        "y": 5.719386598862137
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.717948717948717,
+        "y": 5.036410256410257
+      },
+      "prevControl": {
+        "x": 3.5303253145516433,
+        "y": 5.36138352378298
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,30 +46,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 1.1,
       "rotationDegrees": -59.99999999999999
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Go pretty slow",
-      "minWaypointRelativePos": 0.4987012987013036,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.0,
-        "maxAngularVelocity": 180.0,
-        "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 0.01662337662337498,
+      "waypointRelativePos": 0.05,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -64,10 +66,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 500.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 450.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

@@ -48,8 +48,9 @@ class Constants:
 
         DEFAULT_POSITION = 0
 
-        CRUISE_VELOCITY = 8
-        MM_UPWARD_ACCELERATION = 48
+        CRUISE_VELOCITY = 9.5
+        MM_JERK = 6000
+        MM_UPWARD_ACCELERATION = 65
         MM_BRAKE_ACCELERATION = 24
         MM_DOWNWARD_ACCELERATION = 12
         EXPO_K_V = 10
@@ -74,9 +75,9 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.168 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.299
+        FUNNEL_INTAKE_ANGLE = 0.286
         ALGAE_INTAKE_ANGLE = -0.05
-        HIGH_SCORING_ANGLE =  0.22
+        HIGH_SCORING_ANGLE =  0.21
         MID_SCORING_ANGLE = 0.22
         LOW_SCORING_ANGLE = -0.081543
         NET_SCORING_ANGLE = 0.123535
@@ -110,7 +111,8 @@ class Constants:
 
         CORAL_INTAKE_SPEED = 0.4*1.2*1.1
         FUNNEL_INTAKE_SPEED = 0.8*0.75
-        CORAL_OUTPUT_SPEED = 0.425
+        CORAL_OUTPUT_SPEED = 0.6
+        L1_OUTPUT_SPEED = -0.4
 
         ALGAE_INTAKE_SPEED = 1
         ALGAE_OUTPUT_SPEED = -1
@@ -133,7 +135,7 @@ class Constants:
 
     class FunnelConstants:
 
-        CORAL_STATION_POSITION = 0.098
+        CORAL_STATION_POSITION = 0.105
         STOWED_POSITION = 0
 
         GEAR_RATIO = 192/7
@@ -145,7 +147,7 @@ class Constants:
         MM_ACCELERATION = 3.5
 
         GAINS = (Slot0Configs()
-            .with_k_p(35)
+            .with_k_p(45)
             .with_k_i(0.0)
             .with_k_d(0.0)
             .with_k_s(0.0)

@@ -23,6 +23,7 @@ class IntakeSubsystem(StateSubsystem):
         CORAL_OUTPUT = auto()
         ALGAE_INTAKE = auto()
         ALGAE_OUTPUT = auto()
+        L1_OUTPUT = auto()
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.IntakeConstants.GAINS)
@@ -37,6 +38,7 @@ class IntakeSubsystem(StateSubsystem):
         SubsystemState.CORAL_OUTPUT: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
         SubsystemState.ALGAE_INTAKE: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
         SubsystemState.ALGAE_OUTPUT: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
+        SubsystemState.L1_OUTPUT: (Constants.IntakeConstants.L1_OUTPUT_SPEED, True)
     }
 
     def __init__(self) -> None:
@@ -63,3 +65,5 @@ class IntakeSubsystem(StateSubsystem):
 
     def has_coral(self) -> bool:
         return self._intake_motor.get_forward_limit().value is ForwardLimitValue.CLOSED_TO_GROUND
+
+    

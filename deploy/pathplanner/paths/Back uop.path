@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.200262943297604,
-        "y": 4.176109818310333
+        "x": 3.1526076158940395,
+        "y": 4.13396109271523
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9515888375028188,
-        "y": 4.1503962206008715
+        "x": 2.9039335100992543,
+        "y": 4.108247495005769
       },
       "isLocked": false,
       "linkedName": "Coral A"
@@ -60,7 +60,7 @@
   "folder": "Men",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 0.3819662047291033
   },
   "useDefaultConstraints": false
 }

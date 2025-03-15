@@ -94,7 +94,7 @@ class ElevatorSubsystem(StateSubsystem):
             0,
             Constants.ElevatorConstants.CRUISE_VELOCITY,
             Constants.ElevatorConstants.MM_UPWARD_ACCELERATION,
-            0
+            Constants.ElevatorConstants.MM_JERK
         )
 
         self._brake_request = DynamicMotionMagicVoltage(0, Constants.ElevatorConstants.CRUISE_VELOCITY, Constants.ElevatorConstants.MM_BRAKE_ACCELERATION, 0)

@@ -295,8 +295,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ),
             PPHolonomicDriveController(
-                PIDConstants(5.0, 0.0, 0.0),
-                PIDConstants(5.0, 0.0, 0.0)
+                PIDConstants(7.0, 0.0, 0.0),
+                PIDConstants(7.0, 0.0, 0.0)
             ),
             config,
             lambda: DriverStation.getAlliance() == DriverStation.Alliance.kRed, # If getAlliance() is None (maybe the robot doesn't know its alliance yet), it defaults to blue. This returns True if the alliance is red, and False otherwise

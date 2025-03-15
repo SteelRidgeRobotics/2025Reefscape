@@ -244,7 +244,7 @@ class RobotContainer:
         )
 
         (self._function_controller.rightBumper() & self._function_controller.start()).onTrue(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_OUTPUT)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.L1_OUTPUT)
         ).onFalse(
             self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
         )
