@@ -25,35 +25,19 @@ class PivotSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        IDLE = auto()
-        AVOID_ELEVATOR = auto()
-        STOW = auto()
-        GROUND_INTAKE = auto()
-        FUNNEL_INTAKE = auto()
-        ALGAE_INTAKE = auto()
-        HIGH_SCORING = auto()
-        L3_CORAL = auto()
-        L2_CORAL = auto()
-        LOW_SCORING = auto()
-        NET_SCORING = auto()
-        PROCESSOR_SCORING = auto()
-        AVOID_CLIMBER = auto()
-
-    _state_configs: dict[SubsystemState, float | None] = {
-        SubsystemState.IDLE: None,
-        SubsystemState.AVOID_ELEVATOR: Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE,
-        SubsystemState.STOW: Constants.PivotConstants.STOW_ANGLE,
-        SubsystemState.GROUND_INTAKE: Constants.PivotConstants.GROUND_INTAKE_ANGLE,
-        SubsystemState.FUNNEL_INTAKE: Constants.PivotConstants.FUNNEL_INTAKE_ANGLE,
-        SubsystemState.ALGAE_INTAKE: Constants.PivotConstants.ALGAE_INTAKE_ANGLE,
-        SubsystemState.HIGH_SCORING: Constants.PivotConstants.HIGH_SCORING_ANGLE,
-        SubsystemState.L3_CORAL: Constants.PivotConstants.MID_SCORING_ANGLE,
-        SubsystemState.L2_CORAL: Constants.PivotConstants.MID_SCORING_ANGLE,
-        SubsystemState.LOW_SCORING: Constants.PivotConstants.LOW_SCORING_ANGLE,
-        SubsystemState.NET_SCORING: Constants.PivotConstants.NET_SCORING_ANGLE,
-        SubsystemState.PROCESSOR_SCORING: Constants.PivotConstants.PROCESSOR_SCORING_ANGLE,
-        SubsystemState.AVOID_CLIMBER: Constants.PivotConstants.CLIMBER_PRIORITY_ANGLE
-    }
+        IDLE = None
+        AVOID_ELEVATOR = Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE
+        STOW = Constants.PivotConstants.STOW_ANGLE
+        GROUND_INTAKE = Constants.PivotConstants.GROUND_INTAKE_ANGLE
+        FUNNEL_INTAKE = Constants.PivotConstants.FUNNEL_INTAKE_ANGLE
+        ALGAE_INTAKE = Constants.PivotConstants.ALGAE_INTAKE_ANGLE
+        HIGH_SCORING = Constants.PivotConstants.HIGH_SCORING_ANGLE
+        L3_CORAL = Constants.PivotConstants.MID_SCORING_ANGLE
+        L2_CORAL = Constants.PivotConstants.MID_SCORING_ANGLE
+        LOW_SCORING = Constants.PivotConstants.LOW_SCORING_ANGLE
+        NET_SCORING = Constants.PivotConstants.NET_SCORING_ANGLE
+        PROCESSOR_SCORING = Constants.PivotConstants.PROCESSOR_SCORING_ANGLE
+        AVOID_CLIMBER = Constants.PivotConstants.CLIMBER_PRIORITY_ANGLE
 
     _encoder_config = CANcoderConfiguration()
     (
@@ -143,7 +127,7 @@ class PivotSubsystem(StateSubsystem):
         if not super().set_desired_state(desired_state):
             return
 
-        position = self._state_configs.get(desired_state, None)
+        position = desired_state.value
         if position is None:
             self._master_motor.set_control(self._brake_request)
             return

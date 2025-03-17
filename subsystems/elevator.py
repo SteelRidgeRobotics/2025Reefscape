@@ -1,5 +1,5 @@
 import math
-from enum import Enum, auto
+from enum import Enum
 
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
@@ -26,27 +26,15 @@ class ElevatorSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        IDLE = auto()
-        DEFAULT = auto()
-        L1 = auto()
-        L2 = auto()
-        L3 = auto()
-        L4 = auto()
-        L2_ALGAE = auto()
-        L3_ALGAE = auto()
-        NET = auto()
-
-    _state_configs: dict[SubsystemState, float | None] = {
-        SubsystemState.DEFAULT: Constants.ElevatorConstants.DEFAULT_POSITION,
-        SubsystemState.L1: Constants.ElevatorConstants.L1_SCORE_POSITION,
-        SubsystemState.L2: Constants.ElevatorConstants.L2_SCORE_POSITION,
-        SubsystemState.L3: Constants.ElevatorConstants.L3_SCORE_POSITION,
-        SubsystemState.L4: Constants.ElevatorConstants.L4_SCORE_POSITION,
-        SubsystemState.L2_ALGAE: Constants.ElevatorConstants.L2_ALGAE_POSITION,
-        SubsystemState.L3_ALGAE: Constants.ElevatorConstants.L3_ALGAE_POSITION,
-        SubsystemState.NET: Constants.ElevatorConstants.NET_SCORE_POSITION,
-        SubsystemState.IDLE: None,
-    }
+        IDLE = None
+        DEFAULT = Constants.ElevatorConstants.DEFAULT_POSITION
+        L1 = Constants.ElevatorConstants.L1_SCORE_POSITION
+        L2 = Constants.ElevatorConstants.L2_SCORE_POSITION
+        L3 = Constants.ElevatorConstants.L3_SCORE_POSITION
+        L4 = Constants.ElevatorConstants.L4_SCORE_POSITION
+        L2_ALGAE = Constants.ElevatorConstants.L2_ALGAE_POSITION
+        L3_ALGAE = Constants.ElevatorConstants.L3_ALGAE_POSITION
+        NET = Constants.ElevatorConstants.NET_SCORE_POSITION
 
     _candi_config = CANdiConfiguration()
 
@@ -105,7 +93,6 @@ class ElevatorSubsystem(StateSubsystem):
 
         self._add_talon_sim_model(self._master_motor, DCMotor.krakenX60FOC(2), Constants.ElevatorConstants.GEAR_RATIO)
 
-        self._at_setpoint_debounce = Debouncer(0.1, Debouncer.DebounceType.kRising)
         self._at_setpoint = True
 
         self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION)
@@ -129,14 +116,14 @@ class ElevatorSubsystem(StateSubsystem):
         latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
             self._master_motor.get_position(), self._master_motor.get_velocity()
         )
-        self._at_setpoint = self._at_setpoint_debounce.calculate(abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE)
+        self._at_setpoint = abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE
         self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
 
-        position = self._state_configs.get(desired_state, None)
+        position = desired_state.value
 
         if position is None:
             self._brake_request.position = self._master_motor.get_position().value
@@ -151,6 +138,13 @@ class ElevatorSubsystem(StateSubsystem):
             self._master_motor.set_control(self._position_request)
 
     def is_at_setpoint(self) -> bool:
+        if self._subsystem_state is self.SubsystemState.IDLE:
+            return False
+        latency_compensated_position = BaseStatusSignal.get_latency_compensated_value(
+            self._master_motor.get_position(), self._master_motor.get_velocity()
+        )
+        self._at_setpoint = abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE
+        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
         return self._at_setpoint
 
     def stop(self) -> Command:
