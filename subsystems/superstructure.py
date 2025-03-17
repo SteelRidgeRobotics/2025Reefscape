@@ -29,18 +29,18 @@ class Superstructure(Subsystem):
         L3_ALGAE = auto()
         PROCESSOR = auto()
         NET = auto()
-        
+
         FUNNEL = auto()
         FLOOR = auto()
         CLIMBING = auto()
 
     # Map each goal to each subsystem state to reduce code complexity
     _goal_to_states: dict[Goal,
-            tuple[
-                Optional[PivotSubsystem.SubsystemState],
-                Optional[ElevatorSubsystem.SubsystemState],
-                Optional[FunnelSubsystem.SubsystemState]
-            ]] = {
+    tuple[
+        Optional[PivotSubsystem.SubsystemState],
+        Optional[ElevatorSubsystem.SubsystemState],
+        Optional[FunnelSubsystem.SubsystemState]
+    ]] = {
         Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
         Goal.L3_CORAL: (PivotSubsystem.SubsystemState.L3_CORAL, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
@@ -54,7 +54,7 @@ class Superstructure(Subsystem):
         Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
         Goal.CLIMBING: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN)
     }
-        
+
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem) -> None:
         """
         Constructs the superstructure using instance of each subsystem.
@@ -100,7 +100,8 @@ class Superstructure(Subsystem):
             self.elevator.set_desired_state(self._desired_elevator_state)
 
         # If the elevator reaches its setpoint or the pivot is outside the elevator and can reach its target safely, unfreeze the pivot
-        if self.pivot.get_current_state() is PivotSubsystem.SubsystemState.AVOID_ELEVATOR and not self.pivot.is_in_elevator() and (self.elevator.is_at_setpoint() or self._desired_pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE): #(not self.pivot.is_in_elevator() and self._desired_pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE)):
+        if self.pivot.get_current_state() is PivotSubsystem.SubsystemState.AVOID_ELEVATOR and not self.pivot.is_in_elevator() and (
+                self.elevator.is_at_setpoint() or self._desired_pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE):
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._desired_pivot_state)
 
@@ -136,8 +137,8 @@ class Superstructure(Subsystem):
     def _should_enable_safety_checks(self, pivot_state: PivotSubsystem.SubsystemState) -> bool:
         """Safety checks are always activated, unless we're already outside the elevator and the new state is also outside the elevator."""
         return not (
-            self.pivot.get_current_state().value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
-            and pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
+                self.pivot.get_current_state().value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
+                and pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
         )
 
     def set_goal_command(self, goal: Goal) -> Command:

@@ -37,7 +37,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         self.setName(name.title())
 
         self._frozen = False
-        self._subsystem_state = None # This allows set_desired_state to succeed
+        self._subsystem_state = None  # This allows set_desired_state to succeed
         self.__starting_state = starting_state
 
         # Create NT folder for organization
@@ -53,7 +53,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
-    def set_desired_state(self, desired_state: SubsystemState) -> bool: # type: ignore
+    def set_desired_state(self, desired_state: SubsystemState) -> bool:  # type: ignore
         """
         Sets the desired state of the subsystem.
         It's recommended to override this function in order to update objects such as control requests.
@@ -77,12 +77,18 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
             model[0].setInputVoltage(sim.motor_voltage)
             model[0].update(0.02)
 
-            sim.set_raw_rotor_position(units.radiansToRotations(model[0].getAngularPosition())
-                                       * model[0].getGearing())
-            sim.set_rotor_velocity(units.radiansToRotations(model[0].getAngularVelocity())
-                                       * model[0].getGearing())
-            sim.set_rotor_acceleration(units.radiansToRotations(model[0].getAngularAcceleration())
-                                       * model[0].getGearing())
+            sim.set_raw_rotor_position(
+                units.radiansToRotations(model[0].getAngularPosition())
+                * model[0].getGearing()
+                )
+            sim.set_rotor_velocity(
+                units.radiansToRotations(model[0].getAngularVelocity())
+                * model[0].getGearing()
+                )
+            sim.set_rotor_acceleration(
+                units.radiansToRotations(model[0].getAngularAcceleration())
+                * model[0].getGearing()
+                )
 
     def freeze(self) -> None:
         """Prevents new state changes."""
@@ -96,7 +102,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
     def is_frozen(self) -> bool:
         return self._frozen
-            
+
     def get_current_state(self) -> SubsystemState | None:
         state = self._subsystem_state
         return state
@@ -108,8 +114,9 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     def get_network_table(self) -> NetworkTable:
         return self._network_table
 
-    def _add_talon_sim_model(self, talon: TalonFX, motor: DCMotor, gearing: float, 
-                             moi: float=0.001) -> None:
+    def _add_talon_sim_model(self, talon: TalonFX, motor: DCMotor, gearing: float,
+                             moi: float = 0.001
+                             ) -> None:
         """Creates a DCMotorSim that updates periodically during 
         simulation. This also logs the talon's status signals to Network
         Tables, regardless if simulated.
@@ -135,8 +142,8 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
                 ),
                 motor
             ),
-            talon)
+             talon)
         )
-    
+
     def set_desired_state_command(self, state: SubsystemState) -> Command:
         return InstantCommand(lambda: self.set_desired_state(state))

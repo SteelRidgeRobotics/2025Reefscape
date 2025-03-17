@@ -1,4 +1,4 @@
-from enum import auto, Enum
+from enum import Enum
 
 from commands2 import Command
 from commands2.sysid import SysIdRoutine
@@ -6,9 +6,9 @@ from phoenix6 import SignalLogger, utils, BaseStatusSignal
 from phoenix6.configs import TalonFXConfiguration, CANcoderConfiguration, MotionMagicConfigs
 from phoenix6.controls import VoltageOut, Follower, MotionMagicVoltage
 from phoenix6.hardware import CANcoder, TalonFX
-from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue, ForwardLimitValue
+from phoenix6.signals import InvertedValue, FeedbackSensorSourceValue, NeutralModeValue
 from phoenix6.sim import ChassisReference
-from wpilib import DriverStation, RobotBase, RobotController
+from wpilib import RobotBase, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.filter import Debouncer
 from wpimath.system.plant import DCMotor
@@ -51,12 +51,14 @@ class PivotSubsystem(StateSubsystem):
      .with_rotor_to_sensor_ratio(Constants.PivotConstants.GEAR_RATIO)
      .with_feedback_sensor_source(FeedbackSensorSourceValue.REMOTE_CANCODER)
      .with_feedback_remote_sensor_id(Constants.CanIDs.PIVOT_CANCODER)
-    )
+     )
     _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     _master_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
 
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
-    _master_config.with_motion_magic(MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.PivotConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.PivotConstants.MM_ACCELERATION))
+    _master_config.with_motion_magic(
+        MotionMagicConfigs().with_motion_magic_cruise_velocity(Constants.PivotConstants.CRUISE_VELOCITY).with_motion_magic_acceleration(Constants.PivotConstants.MM_ACCELERATION)
+    )
 
     _follower_config = TalonFXConfiguration()
     _follower_config.feedback.with_rotor_to_sensor_ratio(Constants.PivotConstants.GEAR_RATIO)
@@ -122,7 +124,7 @@ class PivotSubsystem(StateSubsystem):
             cancoder_sim.set_supply_voltage(RobotController.getBatteryVoltage())
             cancoder_sim.set_raw_position(talon_sim.getAngularPosition() / Constants.PivotConstants.GEAR_RATIO)
             cancoder_sim.set_velocity(talon_sim.getAngularVelocity() / Constants.PivotConstants.GEAR_RATIO)
-            
+
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
@@ -142,7 +144,7 @@ class PivotSubsystem(StateSubsystem):
         if not position:
             position = self._master_motor.get_position(True).value
         return position >= Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE
-    
+
     def get_setpoint(self) -> float:
         return self._position_request.position
 
