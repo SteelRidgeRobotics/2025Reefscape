@@ -49,6 +49,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
 
         frozen_nt = self._network_table.getBooleanTopic("Frozen")
         self._frozen_pub = frozen_nt.publish()
+        self._frozen_pub.set(self._frozen)
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
