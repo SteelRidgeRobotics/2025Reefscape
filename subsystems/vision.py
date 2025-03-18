@@ -23,14 +23,17 @@ class VisionSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        ENABLE_ESTIMATES = auto()
-        """ Enables MegaTag 2 pose estimates to the robot."""
+        ALL_ESTIMATES = auto()
+        """ Enables MegaTag 2 pose estimates to the robot from all tags."""
 
-        DISABLE_ESTIMATES = auto()
+        REEF_ESTIMATES = auto()
+        """Only allows pose estimates from tags from the reef."""
+
+        NO_ESTIMATES = auto()
         """ Ignores all Limelight pose estimates. """
 
     def __init__(self, swerve: SwerveSubsystem, *cameras: str):
-        super().__init__("Vision", self.SubsystemState.ENABLE_ESTIMATES)
+        super().__init__("Vision", self.SubsystemState.ALL_ESTIMATES)
 
         self._swerve = swerve
         self._cameras = tuple(cameras)
@@ -44,10 +47,10 @@ class VisionSubsystem(StateSubsystem):
         super().periodic()
 
         state = self._subsystem_state
-        if state is self.SubsystemState.DISABLE_ESTIMATES:
+        if state is self.SubsystemState.NO_ESTIMATES:
             return
 
-        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720 or state == self.SubsystemState.DISABLE_ESTIMATES:
+        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720 or state == self.SubsystemState.NO_ESTIMATES:
             return
 
         futures = [
