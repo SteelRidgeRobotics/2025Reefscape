@@ -4,7 +4,9 @@ from enum import Enum
 
 from phoenix6 import utils
 from wpilib import DataLogManager
+from wpimath.geometry import Pose3d
 
+from constants import Constants
 from lib.limelight import PoseEstimate, LimelightHelpers
 from subsystems import StateSubsystem
 from subsystems.swerve import SwerveSubsystem
@@ -39,6 +41,8 @@ class VisionSubsystem(StateSubsystem):
         self._swerve = swerve
         self._cameras = tuple(cameras)
 
+        self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tabs", Pose3d).publish()
+
         if not all(isinstance(cam, str) for cam in self._cameras):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
@@ -48,10 +52,7 @@ class VisionSubsystem(StateSubsystem):
         super().periodic()
 
         state = self._subsystem_state
-        if state is self.SubsystemState.NO_ESTIMATES:
-            return
-
-        if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720 or state == self.SubsystemState.NO_ESTIMATES:
+        if state is self.SubsystemState.NO_ESTIMATES or abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720:
             return
 
         futures = [
@@ -60,11 +61,16 @@ class VisionSubsystem(StateSubsystem):
         ]
 
         best_estimate = None
+        visible_tags = []
         for future in concurrent.futures.as_completed(futures):
             try:
                 camera, estimate = future.result()
                 if not estimate or estimate.tag_count == 0:
                     continue
+
+                visible_tags.extend(
+                    Constants.FIELD_LAYOUT.getTagPose(f.id) for f in estimate.raw_fiducials
+                )
 
                 if best_estimate is None or self._is_better_estimate(estimate, best_estimate):
                     best_estimate = estimate
@@ -77,6 +83,8 @@ class VisionSubsystem(StateSubsystem):
                 utils.fpga_to_current_time(best_estimate.timestamp_seconds),
                 self._get_dynamic_std_devs(best_estimate),
             )
+
+        self._visible_tags_pub.set(list(visible_tags))
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
