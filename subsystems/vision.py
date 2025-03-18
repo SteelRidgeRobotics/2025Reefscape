@@ -69,7 +69,7 @@ class VisionSubsystem(StateSubsystem):
                 if best_estimate is None or self._is_better_estimate(estimate, best_estimate):
                     best_estimate = estimate
             except Exception as e:
-                DataLogManager.log(f"Vision processing failed for a camera: {e}")  # Replace with proper logging
+                DataLogManager.log(f"Vision processing failed for a camera: {e}")
 
         if best_estimate:
             self._swerve.add_vision_measurement(
