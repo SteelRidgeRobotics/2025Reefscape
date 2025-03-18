@@ -3,6 +3,7 @@ import math
 from enum import Enum
 
 from phoenix6 import utils
+from wpilib import DataLogManager
 
 from lib.limelight import PoseEstimate, LimelightHelpers
 from subsystems import StateSubsystem
@@ -58,14 +59,24 @@ class VisionSubsystem(StateSubsystem):
             for cam in self._cameras
         ]
 
+        best_estimate = None
         for future in concurrent.futures.as_completed(futures):
-            estimate = future.result()
-            if estimate and estimate.tag_count > 0:
-                self._swerve.add_vision_measurement(
-                    estimate.pose,
-                    utils.fpga_to_current_time(estimate.timestamp_seconds),
-                    self._get_dynamic_std_devs(estimate),
-                )
+            try:
+                camera, estimate = future.result()
+                if not estimate or estimate.tag_count == 0:
+                    continue
+
+                if best_estimate is None or self._is_better_estimate(estimate, best_estimate):
+                    best_estimate = estimate
+            except Exception as e:
+                DataLogManager.log(f"Vision processing failed for a camera: {e}")  # Replace with proper logging
+
+        if best_estimate:
+            self._swerve.add_vision_measurement(
+                best_estimate.pose,
+                utils.fpga_to_current_time(best_estimate.timestamp_seconds),
+                self._get_dynamic_std_devs(best_estimate),
+            )
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
@@ -74,19 +85,29 @@ class VisionSubsystem(StateSubsystem):
         for camera in self._cameras:
             LimelightHelpers.set_fiducial_id_filters_override(camera, desired_state.value)
 
-    def _process_camera(self, camera: str) -> PoseEstimate | None:
-        """ Retrieves pose estimate for a single camera and ensures it's closer to expected than the last one. """
+    def _process_camera(self, camera: str) -> tuple[str, PoseEstimate | None]:
         state = self._swerve.get_state_copy().pose.rotation()
         LimelightHelpers.set_robot_orientation(
             camera,
             state.degrees(),
-            0,0, 0, 0, 0
+            0, 0, 0, 0, 0
         )
         pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
 
         if pose is None or pose.tag_count == 0:
-            return None  # Reject immediately if invalid
-        return pose
+            return camera, None  # Reject immediately if invalid
+
+        return camera, pose
+
+    @staticmethod
+    def _is_better_estimate(new_estimate: PoseEstimate, current_best: PoseEstimate) -> bool:
+        if new_estimate.tag_count > current_best.tag_count:
+            return True
+        if new_estimate.tag_count == current_best.tag_count:
+            new_ambiguity = sum(f.ambiguity for f in new_estimate.raw_fiducials) / new_estimate.tag_count
+            current_ambiguity = sum(f.ambiguity for f in current_best.raw_fiducials) / current_best.tag_count
+            return new_ambiguity < current_ambiguity
+        return False
 
     @staticmethod
     def _get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:
