@@ -1,6 +1,6 @@
 import concurrent.futures
 import math
-from enum import Enum, auto
+from enum import Enum
 
 from phoenix6 import utils
 
@@ -23,13 +23,13 @@ class VisionSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        ALL_ESTIMATES = auto()
+        ALL_ESTIMATES = list(range(1,23))
         """ Enables MegaTag 2 pose estimates to the robot from all tags."""
 
-        REEF_ESTIMATES = auto()
+        REEF_ESTIMATES = [6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22]
         """Only allows pose estimates from tags from the reef."""
 
-        NO_ESTIMATES = auto()
+        NO_ESTIMATES = []
         """ Ignores all Limelight pose estimates. """
 
     def __init__(self, swerve: SwerveSubsystem, *cameras: str):
@@ -70,6 +70,9 @@ class VisionSubsystem(StateSubsystem):
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
+
+        for camera in self._cameras:
+            LimelightHelpers.set_fiducial_id_filters_override(camera, desired_state.value)
 
     def _process_camera(self, camera: str) -> PoseEstimate | None:
         """ Retrieves pose estimate for a single camera and ensures it's closer to expected than the last one. """
