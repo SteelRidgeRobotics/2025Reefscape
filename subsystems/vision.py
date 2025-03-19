@@ -4,7 +4,7 @@ from enum import Enum
 
 from phoenix6 import utils
 from wpilib import DataLogManager
-from wpimath.geometry import Pose3d
+from wpimath.geometry import Pose3d, Pose2d
 
 from constants import Constants
 from lib.limelight import PoseEstimate, LimelightHelpers
@@ -41,12 +41,14 @@ class VisionSubsystem(StateSubsystem):
         self._swerve = swerve
         self._cameras = tuple(cameras)
 
-        self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tabs", Pose3d).publish()
-
         if not all(isinstance(cam, str) for cam in self._cameras):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
         self._executor = concurrent.futures.ThreadPoolExecutor()
+
+        self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tags", Pose3d).publish()
+        self._final_measurement_pub = self.get_network_table().getStructTopic("Best Measurement", Pose2d).publish()
+        self._vision_measurements = self.get_network_table().getStructArrayTopic("All Measurements", Pose2d).publish()
 
     def periodic(self):
         super().periodic()
@@ -62,6 +64,7 @@ class VisionSubsystem(StateSubsystem):
 
         best_estimate = None
         visible_tags = []
+        all_measurements = []
         for future in concurrent.futures.as_completed(futures):
             try:
                 camera, estimate = future.result()
@@ -71,6 +74,7 @@ class VisionSubsystem(StateSubsystem):
                 visible_tags.extend(
                     Constants.FIELD_LAYOUT.getTagPose(f.id) for f in estimate.raw_fiducials
                 )
+                all_measurements.append(estimate.pose)
 
                 if best_estimate is None or self._is_better_estimate(estimate, best_estimate):
                     best_estimate = estimate
@@ -84,6 +88,11 @@ class VisionSubsystem(StateSubsystem):
                 self._get_dynamic_std_devs(best_estimate),
             )
 
+            self._final_measurement_pub.set(best_estimate.pose)
+        else:
+            self._final_measurement_pub.set(Pose2d())
+
+        self._vision_measurements.set(all_measurements)
         self._visible_tags_pub.set(list(visible_tags))
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
@@ -103,7 +112,7 @@ class VisionSubsystem(StateSubsystem):
         pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
 
         if pose is None or pose.tag_count == 0:
-            return camera, None  # Reject immediately if invalid
+            return camera, None
 
         return camera, pose
 
