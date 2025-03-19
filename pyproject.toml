@@ -4,11 +4,14 @@ robotpy_version = "2025.3.1.1"
 
 robotpy_extras = [
     "apriltag",
-    "commands2"
+    "commands2",
+    "cscore"
 ]
 
 # Other pip packages to install
 requires = [
     "robotpy-pathplannerlib==2025.2.6",
-    "phoenix6==25.3.1"
+    "phoenix6==25.3.1",
+    "robotpy-opencv; platform_machine == 'roborio'",
+    "opencv-python; platform_machine != 'roborio'"
 ]

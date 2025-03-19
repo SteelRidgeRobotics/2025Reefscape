@@ -2,10 +2,11 @@ from enum import auto, Enum
 
 import commands2.cmd
 from commands2 import Command, cmd
-from phoenix6.configs import TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs
+from phoenix6 import utils
+from phoenix6.configs import CANrangeConfiguration, TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, HardwareLimitSwitchConfigs
 from phoenix6.controls import VelocityDutyCycle, DutyCycleOut
-from phoenix6.hardware import TalonFX
-from phoenix6.signals import NeutralModeValue, ForwardLimitValue
+from phoenix6.hardware import TalonFX, CANrange
+from phoenix6.signals import NeutralModeValue, ForwardLimitValue, ForwardLimitSourceValue
 
 from constants import Constants
 from subsystems import StateSubsystem
@@ -25,11 +26,17 @@ class IntakeSubsystem(StateSubsystem):
         ALGAE_OUTPUT = auto()
         L1_OUTPUT = auto()
 
+    _canrange_config = (CANrangeConfiguration())
+
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.IntakeConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
                      )
+
+    _limit_switch_config = HardwareLimitSwitchConfigs()
+    _limit_switch_config.forward_limit_remote_sensor_id = Constants.CanIDs.INTAKE_CANRANGE
+    _limit_switch_config.forward_limit_source = ForwardLimitSourceValue.REMOTE_CANRANGE # Top Limit Switch
 
     _state_configs: dict[SubsystemState, tuple[int, bool]] = {
         SubsystemState.HOLD: (0, False),
@@ -45,7 +52,13 @@ class IntakeSubsystem(StateSubsystem):
         super().__init__("Intake", self.SubsystemState.HOLD)
 
         self._intake_motor = TalonFX(Constants.CanIDs.INTAKE_TALON)
+        _motor_config = self._motor_config
+        if not utils.is_simulation():
+            _motor_config.hardware_limit_switch = self._limit_switch_config
         self._intake_motor.configurator.apply(self._motor_config)
+
+        self._canrange = CANrange(Constants.CanIDs.INTAKE_CANRANGE)
+        self._canrange.configurator.apply(self._canrange_config)
 
         self._velocity_request = DutyCycleOut(0)
 

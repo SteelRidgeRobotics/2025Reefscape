@@ -18,6 +18,8 @@ class Constants:
         ELEVATOR_CANDI = 20
         PIVOT_CANCODER = 21
 
+        INTAKE_CANRANGE = 23
+
     class ClimberConstants:
         GEAR_RATIO = 61504/189
         GAINS = (Slot0Configs()
