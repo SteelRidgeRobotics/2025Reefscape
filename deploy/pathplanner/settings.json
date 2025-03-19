@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Babies",
-    "Men",
     "Elders'",
+    "Men",
+    "Blind",
     "Toddlers"
   ],
   "autoFolders": [],
