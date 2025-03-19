@@ -26,7 +26,7 @@ class VisionSubsystem(StateSubsystem):
     """
 
     class SubsystemState(Enum):
-        ALL_ESTIMATES = list(range(1,23))
+        ALL_ESTIMATES = list(range(1, 23))
         """ Enables MegaTag 2 pose estimates to the robot from all tags."""
 
         REEF_ESTIMATES = [6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22]
