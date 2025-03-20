@@ -166,16 +166,17 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
 
-        self._table = NetworkTableInstance.getDefault().getTable("Telemetry")
+        table = NetworkTableInstance.getDefault().getTable("Telemetry")
 
-        self._pose_pub = self._table.getStructTopic("current_pose", Pose2d).publish()
-        self._speeds_pub = self._table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
-        self._odom_freq = self._table.getDoubleTopic("odometry_frequency").publish()
-        self._module_states_pub = self._table.getStructArrayTopic("module_states", SwerveModuleState).publish()
-        self._module_targets_pub = self._table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
+        self._pose_pub = table.getStructTopic("current_pose", Pose2d).publish()
+        self._speeds_pub = table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
+        self._odom_freq = table.getDoubleTopic("odometry_frequency").publish()
+        self._module_states_pub = table.getStructArrayTopic("module_states", SwerveModuleState).publish()
+        self._module_targets_pub = table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
+        self._wheels_stalled_pub = table.getBooleanTopic("Wheels Stalled").publish()
 
-        self._auto_target_pub = self._table.getStructTopic("auto_target", Pose2d).publish()
-        self._auto_path_pub = self._table.getStructArrayTopic("auto_path", Pose2d).publish()
+        self._auto_target_pub = table.getStructTopic("auto_target", Pose2d).publish()
+        self._auto_path_pub = table.getStructArrayTopic("auto_path", Pose2d).publish()
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._auto_target_pub.set(pose))
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
 
@@ -348,6 +349,15 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._module_states_pub.set(state.module_states)
         self._module_targets_pub.set(state.module_targets)
         self._speeds_pub.set(state.speeds)
+
+        modules_stalled = 0
+        for module in self.modules:
+            target_speed = abs(module.get_target_state().speed)
+            current_speed = abs(module.get_current_state().speed)
+
+            if 0 != target_speed > 0 and current_speed < 1e-5:
+                modules_stalled += 1
+        self._wheels_stalled_pub.set(modules_stalled >= 3)
 
     def _start_sim_thread(self) -> None:
         """
