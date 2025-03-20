@@ -1,26 +1,19 @@
-from enum import Enum, auto
 import math
-from typing import Callable, overload, Self
+from typing import Callable, overload
 
-from constants import Constants
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from ntcore import NetworkTableInstance
 from pathplannerlib.auto import AutoBuilder, RobotConfig
 from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from pathplannerlib.logging import PathPlannerLogging
-from phoenix6 import swerve, units, utils, SignalLogger, StatusCode
-from phoenix6.swerve import SwerveModule, SwerveControlParameters
-from phoenix6.swerve.requests import ApplyRobotSpeeds, FieldCentric, FieldCentricFacingAngle, ForwardPerspectiveValue, SwerveRequest
+from phoenix6 import swerve, units, utils, SignalLogger
+from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from phoenix6.swerve.utility.phoenix_pid_controller import PhoenixPIDController
-from phoenix6.units import meters_per_second, meter, radians_per_second
 from wpilib import DriverStation, Notifier, RobotController, Field2d, SmartDashboard
 from wpilib.sysid import SysIdRoutineLog
-from wpimath.geometry import Rotation2d, Pose2d, Translation2d
+from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
-from wpimath.units import degreesToRadians
-from wpiutil import Sendable, SendableBuilder
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
@@ -174,21 +167,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._has_applied_operator_perspective = False
 
         self._table = NetworkTableInstance.getDefault().getTable("Telemetry")
-
-        # class SwerveModuleSendable(Sendable):
-        #     def __init__(self, modules: list[SwerveModule[DriveMotorT, SteerMotorT, EncoderT]], rotation_getter: Callable[[], float]):
-        #         super().__init__()
-        #         self._modules = modules
-        #         self._get_rotation = rotation_getter
-        #
-        #     def initSendable(self, builder: SendableBuilder):
-        #         builder.setSmartDashboardType("SwerveDrive")
-        #
-        #         for i, name in enumerate(["Front Left", "Front Right", "Back Left", "Back Right"]):
-        #             builder.addDoubleProperty(f"{name} Angle", lambda: self._modules[i].get_current_state().angle.radians(), lambda _: None)
-        #             builder.addDoubleProperty(f"{name} Velocity", lambda: self._modules[i].get_current_state().speed, lambda _: None)
-        #         builder.addDoubleProperty("Robot Angle", self._get_rotation, lambda _: None)
-        # SmartDashboard.putData("Swerve Modules", SwerveModuleSendable(self.modules, lambda: (self.get_state_copy().pose.rotation() + self.get_operator_forward_direction()).radians()))
 
         self._pose_pub = self._table.getStructTopic("current_pose", Pose2d).publish()
         self._speeds_pub = self._table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()

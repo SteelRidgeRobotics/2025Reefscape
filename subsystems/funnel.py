@@ -4,7 +4,6 @@ from phoenix6.configs import CurrentLimitsConfigs, TalonFXConfiguration, MotionM
 from phoenix6.controls import VoltageOut, MotionMagicVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
-from wpilib import DriverStation
 from wpimath.system.plant import DCMotor
 
 from constants import Constants

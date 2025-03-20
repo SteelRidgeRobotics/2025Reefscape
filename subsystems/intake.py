@@ -1,10 +1,9 @@
 from enum import auto, Enum
 
-import commands2.cmd
 from commands2 import Command, cmd
 from phoenix6 import utils
 from phoenix6.configs import CANrangeConfiguration, TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, HardwareLimitSwitchConfigs, ProximityParamsConfigs
-from phoenix6.controls import VelocityDutyCycle, DutyCycleOut
+from phoenix6.controls import DutyCycleOut
 from phoenix6.hardware import TalonFX, CANrange
 from phoenix6.signals import NeutralModeValue, ForwardLimitValue, ForwardLimitSourceValue
 

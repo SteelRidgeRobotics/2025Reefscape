@@ -6,7 +6,7 @@ import commands2.button
 from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
-from pathplannerlib.auto import AutoBuilder, NamedCommands, PathPlannerAuto
+from pathplannerlib.auto import NamedCommands, PathPlannerAuto
 from phoenix6 import SignalLogger, swerve
 from wpilib import DriverStation, SendableChooser, XboxController, SmartDashboard, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
@@ -14,12 +14,12 @@ from wpimath.units import rotationsToRadians
 
 from constants import Constants
 from generated.tuner_constants import TunerConstants
-from subsystems.auto_align import DriverAssist
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve.requests import DriverAssist
 from subsystems.vision import VisionSubsystem
 
 
