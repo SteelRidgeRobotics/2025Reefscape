@@ -12,36 +12,17 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
+            "height": 128.0,
+            "type": "Number Bar",
             "properties": {
               "topic": "/Telemetry/odometry_frequency",
               "period": 0.06,
               "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": 75.0,
+              "min_value": 0.0,
               "max_value": 250.0,
-              "number_of_labels": 5,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Match Time",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Match Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Seconds Only",
-              "red_start_time": 3,
-              "yellow_start_time": 7
+              "divisions": 6,
+              "inverted": false,
+              "orientation": "horizontal"
             }
           },
           {
@@ -70,11 +51,40 @@
             }
           },
           {
+            "title": "Match Time",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/Elastic/Match Time",
+              "period": 0.25,
+              "data_type": "float",
+              "time_display_mode": "Seconds Only",
+              "red_start_time": 3,
+              "yellow_start_time": 7
+            }
+          },
+          {
+            "title": "USB Camera 0",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/USB Camera 0",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
             "title": "limelight-front",
             "x": 896.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 512.0,
+            "width": 384.0,
+            "height": 384.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-front",
@@ -83,16 +93,23 @@
             }
           },
           {
-            "title": "USB Camera 0",
-            "x": 256.0,
+            "title": "Field",
+            "x": 0.0,
             "y": 128.0,
-            "width": 640.0,
-            "height": 512.0,
-            "type": "Camera Stream",
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Field",
             "properties": {
-              "topic": "/CameraPublisher/USB Camera 0",
+              "topic": "/SmartDashboard/Field",
               "period": 0.06,
-              "rotation_turns": 2
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4278190185,
+              "trajectory_color": 4294967295
             }
           }
         ]
@@ -104,27 +121,11 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Match Time",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Match Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 8,
-              "yellow_start_time": 20
-            }
-          },
-          {
             "title": "limelight-front",
             "x": 640.0,
             "y": 0.0,
-            "width": 768.0,
-            "height": 512.0,
+            "width": 640.0,
+            "height": 384.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-front",
@@ -137,12 +138,45 @@
             "x": 0.0,
             "y": 0.0,
             "width": 384.0,
-            "height": 384.0,
+            "height": 256.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/USB Camera 0",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/Elastic/Match Time",
+              "period": 0.25,
+              "data_type": "float",
+              "time_display_mode": "Seconds Only",
+              "red_start_time": 3,
+              "yellow_start_time": 7
+            }
+          },
+          {
+            "title": "Wheels Stalled",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Telemetry/Wheels Stalled",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "X"
             }
           }
         ]
@@ -153,81 +187,11 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Superstructure",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Superstructure Goal",
-                "x": 640.0,
-                "y": 128.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Superstructure Goal",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "Climber",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Current State",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/Climber/Current State",
-                  "period": 0.06,
-                  "data_type": "string"
-                }
-              },
-              {
-                "title": "Frozen",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Climber/Frozen",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
             "title": "Elevator",
-            "x": 1152.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -285,10 +249,10 @@
           },
           {
             "title": "Pivot",
-            "x": 1408.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -360,134 +324,14 @@
                 }
               }
             ]
-          },
-          {
-            "title": "Funnel",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Frozen",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Funnel/Frozen",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Current State",
-                "x": 768.0,
-                "y": 512.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Funnel/Current State",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "Intake",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Current State",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Intake/Current State",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Frozen",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Intake/Frozen",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
           }
         ],
         "containers": [
           {
-            "title": "Swerve Data",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/Telemetry/Swerve Data",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
-            "title": "Battery Voltage",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Voltage View",
-            "properties": {
-              "topic": "/SmartDashboard/Battery Voltage",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
-            }
-          },
-          {
             "title": "Field",
             "x": 0.0,
-            "y": 256.0,
-            "width": 640.0,
+            "y": 0.0,
+            "width": 768.0,
             "height": 384.0,
             "type": "Field",
             "properties": {
@@ -504,16 +348,16 @@
             }
           },
           {
-            "title": "Selected Auto",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 384.0,
+            "title": "Current Goal",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 512.0,
             "height": 128.0,
-            "type": "ComboBox Chooser",
+            "type": "Large Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Selected Auto",
+              "topic": "/Superstructure/Current Goal",
               "period": 0.06,
-              "sort_options": false
+              "data_type": "string"
             }
           }
         ]
@@ -525,31 +369,11 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Field",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 768.0,
-            "type": "Field",
-            "properties": {
-              "topic": "/SmartDashboard/Field",
-              "period": 0.03,
-              "field_game": "Reefscape",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 90.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295
-            }
-          },
-          {
             "title": "limelight-front",
             "x": 384.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 512.0,
+            "width": 512.0,
+            "height": 384.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-front",
@@ -560,10 +384,10 @@
           },
           {
             "title": "limelight-back",
-            "x": 1024.0,
+            "x": 0.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 512.0,
+            "width": 384.0,
+            "height": 384.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-back",
@@ -572,16 +396,16 @@
             }
           },
           {
-            "title": "Current State",
-            "x": 384.0,
-            "y": 512.0,
-            "width": 1280.0,
-            "height": 256.0,
-            "type": "Large Text Display",
+            "title": "USB Camera 0",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
             "properties": {
-              "topic": "/Vision/Current State",
+              "topic": "/CameraPublisher/USB Camera 0",
               "period": 0.06,
-              "data_type": "string"
+              "rotation_turns": 0
             }
           }
         ]
