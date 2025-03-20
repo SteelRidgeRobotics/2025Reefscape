@@ -7,7 +7,7 @@
       "height": 1034,
       "state": {
         "sidebar": {
-          "width": 472,
+          "width": 500,
           "expanded": [
             "/PathPlanner/currentPose/rotation",
             "/Drive",
@@ -19,13 +19,37 @@
             "/NT/limelight",
             "/NT/limelight/robot_orientation_set",
             "/Elevator",
-            "/SmartDashboard",
             "/Climber",
-            "/Pivot"
+            "/Log0",
+            "/Log0/NT",
+            "/Log0/NT/Telemetry",
+            "/Log0/NT/Vision",
+            "/Log1",
+            "/Log1/Phoenix6",
+            "/Log1/Phoenix6/TalonFX-1",
+            "/Log1/Phoenix6/TalonFX-1/PIDTorqueCurrent",
+            "/Log0/NT/Telemetry/module_targets/3",
+            "/Log0/NT/Telemetry/module_targets/2",
+            "/Log0/NT/Telemetry/module_targets/1",
+            "/Log0/NT/Telemetry/module_targets/0",
+            "/Log0/NT/Vision/Visible Tabs",
+            "/Log0/NT/Vision/Visible Tabs/1/rotation",
+            "/Telemetry/module_targets/0",
+            "/Vision/Visible Tags",
+            "/Vision/Visible Tags/0",
+            "/Vision/Visible Tags/0/translation",
+            "/limelight-back/fiducial_id_filters_set",
+            "/Telemetry/current_pose",
+            "/Telemetry/current_pose/translation",
+            "/Vision",
+            "/NT/CameraPublisher/USB Camera 0",
+            "/PathPlanner",
+            "/NT/LiveWindow/.status",
+            "/NT/PathPlanner"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
@@ -34,112 +58,6 @@
               "controllerUUID": "vrfifz3f3nnnj5rb8apz6vhtk4ln8xuz",
               "renderer": "#/",
               "controlsHeight": 0
-            },
-            {
-              "type": 1,
-              "title": "Line Graph",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "smooth",
-                    "logKey": "NT:/Telemetry/odometry_frequency",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [],
-                "discreteSources": [],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "type": null,
-                  "factor": 1
-                },
-                "rightUnitConversion": {
-                  "type": null,
-                  "factor": 1
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "dbo03fxsmdaetki0ufj7t4e51ni92d81",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 2,
-              "title": "Odometry",
-              "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "NT:/Telemetry/current_pose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {}
-                  },
-                  {
-                    "type": "swerveStates",
-                    "logKey": "NT:/Telemetry/module_states",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "swerveStates",
-                    "logKey": "NT:/Telemetry/module_targets",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "heatmap",
-                    "logKey": "NT:/Telemetry/current_pose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "timeRange": "enabled"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/PathPlanner/targetPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "trajectory",
-                    "logKey": "NT:/PathPlanner/activePath",
-                    "logType": "Pose2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "game": "2025 Field (Welded)",
-                "bumpers": "auto",
-                "origin": "blue",
-                "orientation": 0,
-                "size": 24
-              },
-              "controllerUUID": "mgek5e9v859tdyzodro4hnhi2ihhmqar",
-              "renderer": null,
-              "controlsHeight": 200
             },
             {
               "type": 3,
@@ -176,12 +94,114 @@
                     }
                   },
                   {
+                    "type": "ghost",
+                    "logKey": "NT:/PathPlanner/targetPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Oil Spill",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Vision/Best Measurement",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Oil Spill",
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "aprilTag",
+                    "logKey": "NT:/Vision/Visible Tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "family": "36h11"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Vision/All Measurements",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "Oil Spill",
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/PathPlanner/activePath",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
                     "type": "heatmap",
                     "logKey": "NT:/Telemetry/current_pose",
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
                       "timeRange": "enabled"
+                    }
+                  }
+                ],
+                "game": "2025 Field (Welded)",
+                "origin": "blue"
+              },
+              "controllerUUID": "bfjft2gzcf4vb4e9038fedtnxq3lbetd",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 90,
+                "cameraPosition": [
+                  -6.953556664897187,
+                  3.606912776722745,
+                  1.3812420074452845
+                ],
+                "cameraTarget": [
+                  -6.726722303929858,
+                  2.105284781940462,
+                  0.4799010408993422
+                ]
+              },
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "Odometry",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/Telemetry/current_pose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "NT:/Telemetry/module_states",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "NT:/Telemetry/module_targets",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
                     }
                   },
                   {
@@ -190,7 +210,6 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Oil Spill",
                       "color": "#00ff00"
                     }
                   },
@@ -203,69 +222,53 @@
                       "color": "#00ff00",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "arrow",
+                    "logKey": "NT:/Vision/Visible Tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "position": "center"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Vision/Best Measurement",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Vision/All Measurements",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "heatmap",
+                    "logKey": "NT:/Telemetry/current_pose",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "timeRange": "enabled"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
-                "origin": "blue"
+                "bumpers": "auto",
+                "origin": "blue",
+                "orientation": 0,
+                "size": 24
               },
-              "controllerUUID": "bfjft2gzcf4vb4e9038fedtnxq3lbetd",
-              "renderer": {
-                "cameraIndex": -1,
-                "orbitFov": 90,
-                "cameraPosition": [
-                  -7.434067814248061,
-                  4.1295811684932175,
-                  -1.0157788821436327
-                ],
-                "cameraTarget": [
-                  -3.4340393146700183,
-                  1.4324999999813754,
-                  0.9786834025388584
-                ]
-              },
-              "controlsHeight": 200
-            },
-            {
-              "type": 10,
-              "title": "Mechanism",
-              "controller": [
-                {
-                  "type": "mechanism",
-                  "logKey": "NT:/SmartDashboard/Climber Mechanism",
-                  "logType": "Mechanism2d",
-                  "visible": true,
-                  "options": {}
-                }
-              ],
-              "controllerUUID": "udkeda16s0qc5byxsmlqtqzru70uc40n",
+              "controllerUUID": "mgek5e9v859tdyzodro4hnhi2ihhmqar",
               "renderer": null,
               "controlsHeight": 200
-            },
-            {
-              "type": 10,
-              "title": "Mechanism",
-              "controller": [
-                {
-                  "type": "mechanism",
-                  "logKey": "NT:/SmartDashboard/Superstructure Mechanism",
-                  "logType": "Mechanism2d",
-                  "visible": true,
-                  "options": {}
-                }
-              ],
-              "controllerUUID": "cx6gqjh1pkb4igobcfmsd9tskkqvbe46",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 5,
-              "title": "Console",
-              "controller": "messages",
-              "controllerUUID": "447qi8qps69hp5zyeiymli08zdtdd5bc",
-              "renderer": {
-                "highlight": false
-              },
-              "controlsHeight": 0
             },
             {
               "type": 9,
@@ -307,16 +310,157 @@
                     "logType": "Rotation2d",
                     "visible": true,
                     "options": {}
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/Log0/NT:/Telemetry/module_states",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,1,2,3"
+                    }
                   }
                 ],
-                "maxSpeed": 5,
-                "sizeX": 0.65,
-                "sizeY": 0.65,
+                "maxSpeed": 4.2,
+                "sizeX": 0.91,
+                "sizeY": 0.91,
                 "orientation": 0
               },
               "controllerUUID": "0xw1qkc0ddeqabrzfyf1k6obrdw3emqt",
               "renderer": null,
               "controlsHeight": 154
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Telemetry/odometry_frequency",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Elastic/Match Time",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "DS:enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "DS:autonomous",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Superstructure/Current Goal",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Pivot/In Elevator",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Elevator/Current State",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "dbo03fxsmdaetki0ufj7t4e51ni92d81",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 8,
+              "title": "Joysticks",
+              "controller": [
+                "Xbox Controller (White)",
+                "Xbox Controller (White)",
+                "None",
+                "None",
+                "None",
+                "None"
+              ],
+              "controllerUUID": "mnz5djmk8dgmx889h2tuxk2uiw7ddxhv",
+              "renderer": null,
+              "controlsHeight": 85
+            },
+            {
+              "type": 4,
+              "title": "Table",
+              "controller": [
+                "NT:/Superstructure/Current Goal",
+                "NT:/Elevator/Current State",
+                "NT:/Pivot/Current State",
+                "NT:/Intake/Current State",
+                "NT:/Funnel/Current State"
+              ],
+              "controllerUUID": "rasz23gemia8p5106eslhdfo73qlrymp",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 5,
+              "title": "Console",
+              "controller": "messages",
+              "controllerUUID": "447qi8qps69hp5zyeiymli08zdtdd5bc",
+              "renderer": {
+                "highlight": false
+              },
+              "controlsHeight": 0
             }
           ]
         }
@@ -324,5 +468,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.2"
+  "version": "4.1.5"
 }
