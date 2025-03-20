@@ -3,7 +3,6 @@ Translated into Python from https://github.com/LimelightVision/limelightlib-wpij
 Version 1.11
 """
 
-import threading
 from dataclasses import dataclass
 from math import radians
 from urllib.parse import urlparse, ParseResult

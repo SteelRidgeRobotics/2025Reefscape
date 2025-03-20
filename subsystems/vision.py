@@ -44,7 +44,7 @@ class VisionSubsystem(StateSubsystem):
         if not all(isinstance(cam, str) for cam in self._cameras):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
-        self._executor = concurrent.futures.ThreadPoolExecutor()
+        self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(self._cameras))
 
         self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tags", Pose3d).publish()
         self._final_measurement_pub = self.get_network_table().getStructTopic("Best Measurement", Pose2d).publish()
@@ -87,7 +87,6 @@ class VisionSubsystem(StateSubsystem):
                 utils.fpga_to_current_time(best_estimate.timestamp_seconds),
                 self._get_dynamic_std_devs(best_estimate),
             )
-
             self._final_measurement_pub.set(best_estimate.pose)
         else:
             self._final_measurement_pub.set(Pose2d())
@@ -128,7 +127,7 @@ class VisionSubsystem(StateSubsystem):
 
     @staticmethod
     def _get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:
-        """ Computes dynamic standard deviations based on tag count and distance. """
+        """Computes dynamic standard deviations based on tag count and distance."""
         if estimate.tag_count == 0:
             return 0.5, 0.5, 0.5
 
