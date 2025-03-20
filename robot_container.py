@@ -67,7 +67,7 @@ class RobotContainer:
         NamedCommands.registerCommand("Funnel", self.superstructure.set_goal_command(Superstructure.Goal.FUNNEL))
         NamedCommands.registerCommand("Floor", self.superstructure.set_goal_command(Superstructure.Goal.FLOOR))
 
-        NamedCommands.registerCommand("Hold", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.HOLD))
+        NamedCommands.registerCommand("Hold", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.IDLE))
         NamedCommands.registerCommand("Coral Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_INTAKE))
         NamedCommands.registerCommand("Coral Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUT))
         NamedCommands.registerCommand("Algae Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKE))
@@ -159,7 +159,7 @@ class RobotContainer:
         self._driver_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
         ).onFalse(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE)
         )
 
         self._driver_controller.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
@@ -250,7 +250,7 @@ class RobotContainer:
                 (button.whileTrue(
                     self.superstructure.set_goal_command(goal)
                     .alongWith(self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKE)))
-                 .onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)))
+                 .onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE)))
             else:
                 button.onTrue(self.superstructure.set_goal_command(goal))
 
@@ -262,7 +262,7 @@ class RobotContainer:
         ).onFalse(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
+                self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE)
             )
         )
 
@@ -274,7 +274,7 @@ class RobotContainer:
         ).onFalse(
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
-                self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+                self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE),
             )
         )
 
@@ -310,13 +310,13 @@ class RobotContainer:
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
         ).onFalse(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE)
         )
 
         (self._function_controller.rightBumper() & self._function_controller.start()).onTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.L1_OUTPUT)
         ).onFalse(
-            self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
+            self.intake.set_desired_state_command(self.intake.SubsystemState.IDLE)
         )
 
     def _setup_sysid_bindings(self, controller, subsystem, forward_btn, reverse_btn):
