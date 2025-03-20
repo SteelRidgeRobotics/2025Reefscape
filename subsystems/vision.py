@@ -103,11 +103,11 @@ class VisionSubsystem(StateSubsystem):
             LimelightHelpers.set_fiducial_id_filters_override(camera, desired_state.value)
 
     def _process_camera(self, camera: str) -> tuple[str, PoseEstimate | None]:
-        state = self._swerve.get_state_copy().pose.rotation()
+        state = self._swerve.get_state_copy()
         LimelightHelpers.set_robot_orientation(
             camera,
-            state.degrees(),
-            0, 0, 0, 0, 0
+            state.pose.rotation().degrees(),
+            state.speeds.omega_dps, 0, 0, 0, 0
         )
         pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
 
