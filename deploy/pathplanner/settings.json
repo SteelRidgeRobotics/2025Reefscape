@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Babies",
-    "Men",
     "Elders'",
+    "Men",
+    "Blind",
     "Toddlers"
   ],
   "autoFolders": [],
@@ -14,7 +15,7 @@
   "defaultMaxAngVel": 720.0,
   "defaultMaxAngAccel": 1600.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 68.0389,
+  "robotMass": 61.235,
   "robotMOI": 6.634,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.051,

@@ -268,7 +268,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         See the documentation of swerve.requests.SysIdSwerveRotation for info on importing the log to SysId.
         """
 
-        self._sys_id_routine_to_apply = self._sys_id_routine_translation
+        self._sys_id_routine_to_apply = self._sys_id_routine_steer
         """The SysId routine to test"""
 
         if utils.is_simulation():

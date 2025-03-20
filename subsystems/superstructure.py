@@ -36,23 +36,24 @@ class Superstructure(Subsystem):
 
     # Map each goal to each subsystem state to reduce code complexity
     _goal_to_states: dict[Goal,
-    tuple[
-        Optional[PivotSubsystem.SubsystemState],
-        Optional[ElevatorSubsystem.SubsystemState],
-        Optional[FunnelSubsystem.SubsystemState]
-    ]] = {
-        Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L3_CORAL: (PivotSubsystem.SubsystemState.L3_CORAL, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L2_CORAL: (PivotSubsystem.SubsystemState.L2_CORAL, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L1_CORAL: (PivotSubsystem.SubsystemState.LOW_SCORING, ElevatorSubsystem.SubsystemState.L1, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L2_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L2_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.L3_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L3_ALGAE, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.PROCESSOR: (PivotSubsystem.SubsystemState.PROCESSOR_SCORING, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.NET: (PivotSubsystem.SubsystemState.NET_SCORING, ElevatorSubsystem.SubsystemState.NET, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.FUNNEL: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP),
-        Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN),
-        Goal.CLIMBING: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN)
+            tuple[
+                Optional[PivotSubsystem.SubsystemState],
+                Optional[ElevatorSubsystem.SubsystemState],
+                Optional[FunnelSubsystem.SubsystemState],
+                Optional[VisionSubsystem.SubsystemState]
+            ]] = {
+        Goal.DEFAULT: (PivotSubsystem.SubsystemState.STOW, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
+        Goal.L4_CORAL: (PivotSubsystem.SubsystemState.HIGH_SCORING, ElevatorSubsystem.SubsystemState.L4, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.L3_CORAL: (PivotSubsystem.SubsystemState.L3_CORAL, ElevatorSubsystem.SubsystemState.L3, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.L2_CORAL: (PivotSubsystem.SubsystemState.L2_CORAL, ElevatorSubsystem.SubsystemState.L2, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.L1_CORAL: (PivotSubsystem.SubsystemState.LOW_SCORING, ElevatorSubsystem.SubsystemState.L1, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.L2_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L2_ALGAE, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.L3_ALGAE: (PivotSubsystem.SubsystemState.ALGAE_INTAKE, ElevatorSubsystem.SubsystemState.L3_ALGAE, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.REEF_ESTIMATES),
+        Goal.PROCESSOR: (PivotSubsystem.SubsystemState.PROCESSOR_SCORING, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
+        Goal.NET: (PivotSubsystem.SubsystemState.NET_SCORING, ElevatorSubsystem.SubsystemState.NET, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
+        Goal.FUNNEL: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
+        Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
+        Goal.CLIMBING: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.NO_ESTIMATES)
     }
 
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem) -> None:
@@ -112,8 +113,7 @@ class Superstructure(Subsystem):
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
 
-        pivot_state, elevator_state, funnel_state = self._goal_to_states.get(goal, (None, None, None))
-
+        pivot_state, elevator_state, funnel_state, vision_state = self._goal_to_states.get(goal, (None, None, None, None))
         safety_checks = self._should_enable_safety_checks(pivot_state)
         if pivot_state:
             self._desired_pivot_state = pivot_state
@@ -131,6 +131,8 @@ class Superstructure(Subsystem):
                 self.elevator.set_desired_state(elevator_state)
         if funnel_state:
             self.funnel.set_desired_state(funnel_state)
+        if vision_state:
+            self.vision.set_desired_state(vision_state)
 
         self._current_goal_pub.set(goal.name)
 
