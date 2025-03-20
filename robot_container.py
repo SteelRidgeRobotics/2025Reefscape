@@ -179,7 +179,7 @@ class RobotContainer:
                 .with_fallback(self._field_centric)
                 .with_change_target_pose(True)
                 .with_branch_side(DriverAssist.BranchSide.LEFT)
-            )
+            ).alongWith(self.rumble_command(self._function_controller, 0.25, 0.25))
             .andThen(
                 self.drivetrain.apply_request(
                 lambda: self._driver_assist
@@ -194,7 +194,6 @@ class RobotContainer:
         )
 
         Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).whileTrue(
-            # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
             self.drivetrain.apply_request_once(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
@@ -203,7 +202,7 @@ class RobotContainer:
                 .with_fallback(self._field_centric)
                 .with_change_target_pose(True)
                 .with_branch_side(DriverAssist.BranchSide.RIGHT)
-            )
+            ).alongWith(self.rumble_command(self._function_controller, 0.25, 0.25))
             .andThen(
                 self.drivetrain.apply_request(
                 lambda: self._driver_assist
@@ -276,6 +275,18 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
+            )
+        )
+
+        Trigger(self.intake.has_coral).onTrue(
+            cmd.parallel(
+                self.rumble_command(self._driver_controller, 0.3, 0.5),
+                self.rumble_command(self._function_controller, 0.3, 0.5)
+            )
+        ).onFalse(
+            cmd.parallel(
+                self.rumble_command(self._driver_controller, 0.1, 0.25),
+                self.rumble_command(self._function_controller, 0.1, 0.25)
             )
         )
 
