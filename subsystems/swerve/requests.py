@@ -104,7 +104,7 @@ class DriverAssist(SwerveRequest):
         """
         Get distance from the robot to a pose. This is used to determine whether we should align or not.
         """
-        return math.sqrt((target_pose.X() - robot_pose.X()) ** 2 + (target_pose.Y() - robot_pose.Y()) ** 2)
+        return (target_pose.X() - robot_pose.X()) ** 2 + (target_pose.Y() - robot_pose.Y()) ** 2
 
     @staticmethod
     def _get_distance_to_line(robot_pose: Pose2d, target_pose: Pose2d):
@@ -164,7 +164,7 @@ class DriverAssist(SwerveRequest):
         if self.change_target_pose:
             self.target_pose = self._find_closest_pose(current_pose, self._branch_targets[alliance][self.branch_side])
 
-        if self._get_distance_to_pose(current_pose, self.target_pose) > self.max_distance:
+        if self._get_distance_to_pose(current_pose, self.target_pose) > self.max_distance**2:
             return (self.fallback
                     .with_velocity_x(self.velocity_x)
                     .with_velocity_y(self.velocity_y)
