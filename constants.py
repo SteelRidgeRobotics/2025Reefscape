@@ -1,6 +1,5 @@
 from phoenix6.configs.config_groups import Slot0Configs
 from phoenix6.signals import GravityTypeValue
-from phoenix6.units import meter
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 
 
@@ -112,7 +111,6 @@ class Constants:
 
     class IntakeConstants:
 
-        IDLE_SPEED = 0.25
         CORAL_INTAKE_SPEED = 0.4*1.2*1.1
         FUNNEL_INTAKE_SPEED = 0.8*0.75
         CORAL_OUTPUT_SPEED = 0.6
@@ -120,10 +118,6 @@ class Constants:
 
         ALGAE_INTAKE_SPEED = 1
         ALGAE_OUTPUT_SPEED = -1
-
-        SUPPLY_CURRENT = 35
-
-        PROXIMITY_THRESHOLD: meter = 0.125
 
         GEAR_RATIO = 4
         GAINS = (Slot0Configs()
