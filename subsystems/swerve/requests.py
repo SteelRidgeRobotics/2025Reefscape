@@ -107,12 +107,12 @@ class DriverAssist(SwerveRequest):
         return (target_pose.X() - robot_pose.X()) ** 2 + (target_pose.Y() - robot_pose.Y()) ** 2
 
     @staticmethod
-    def _get_distance_to_line(robot_pose: Pose2d, target_pose: Pose2d):
+    def _get_distance_to_line(robot_pose: Pose2d, target_pose: Pose2d) -> float:
         """
         Find the distance from the robot to the line emanating from the target pose.
         """
 
-        # To accomplish this, we need to find the intersection point of the line 
+        # To accomplish this, we need to find the intersection point of the line
         # emanating from the target pose and the line perpendicular to it that passes through the robot pose.
         # If theta is the target rotation, tan(theta) is the slope of the line from the pose. We can just call that S for the sake of solving this.
         # Where S is the slope, (t_x, t_y) is the target position, and (r_x, r_y) is the robot position:
@@ -134,12 +134,9 @@ class DriverAssist(SwerveRequest):
 
         reef_x = 4.4735 if DriverStation.getAlliance() == DriverStation.Alliance.kBlue else Constants.FIELD_LAYOUT.getFieldLength() - 4.4735
 
-        # Check if the reef pose is on the same side as our possible pose
         if (target_pose.X() - reef_x <= 0) == (x - reef_x <= 0):
             return math.sqrt((possible_pose.X() - robot_pose.X()) ** 2 + (possible_pose.Y() - robot_pose.Y()) ** 2)
-        else:
-            # Don't consider pose
-            return math.inf
+        return math.inf
 
     def _find_closest_pose(self, robot_pose: Pose2d, list_of_poses: list[Pose2d]) -> Pose2d:
         """
@@ -164,17 +161,13 @@ class DriverAssist(SwerveRequest):
         if self.change_target_pose:
             self.target_pose = self._find_closest_pose(current_pose, self._branch_targets[alliance][self.branch_side])
 
-        if self._get_distance_to_pose(current_pose, self.target_pose) > self.max_distance**2:
-            return (self.fallback
-                    .with_velocity_x(self.velocity_x)
-                    .with_velocity_y(self.velocity_y)
-                    .with_rotational_rate(self.rotational_rate)
-                    .apply(parameters, modules))
+        distance_to_target = self._get_distance_to_pose(current_pose, self.target_pose)
+        if distance_to_target > self.max_distance ** 2:
+            return self.fallback.with_velocity_x(self.velocity_x).with_velocity_y(self.velocity_y).with_rotational_rate(self.rotational_rate).apply(parameters, modules)
 
         target_direction = self.target_pose.rotation() + parameters.operator_forward_direction
         rotated_velocity = Translation2d(self.velocity_x, self.velocity_y).rotateBy(-target_direction)
 
-        # Velocity in the target direction
         velocity_towards_pose = rotated_velocity.X()
 
         current_y = current_pose.translation().rotateBy(-target_direction).Y()
@@ -187,10 +180,8 @@ class DriverAssist(SwerveRequest):
             parameters.timestamp
         )
 
-        # Construct final velocity vector and rotate it back to field-relative coordinates
         field_relative_velocity = Translation2d(velocity_towards_pose, horizontal_velocity).rotateBy(target_direction)
 
-        # Reduce speed when elevator is up
         if self.elevator_up_function():
             field_relative_velocity *= 0.25
 
@@ -198,10 +189,7 @@ class DriverAssist(SwerveRequest):
             self._field_centric_facing_angle
             .with_velocity_x(field_relative_velocity.X())
             .with_velocity_y(field_relative_velocity.Y())
-            .with_target_direction(
-                target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE
-                else current_pose.rotation()
-            )
+            .with_target_direction(target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE else current_pose.rotation())
             .with_deadband(self.deadband)
             .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)
