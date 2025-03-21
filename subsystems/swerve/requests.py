@@ -183,7 +183,7 @@ class DriverAssist(SwerveRequest):
         field_relative_velocity = Translation2d(velocity_towards_pose, horizontal_velocity).rotateBy(target_direction)
 
         if self.elevator_up_function():
-            field_relative_velocity *= 0.25
+            field_relative_velocity *= 0.3333
 
         return (
             self._field_centric_facing_angle
