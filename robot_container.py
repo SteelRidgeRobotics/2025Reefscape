@@ -168,51 +168,26 @@ class RobotContainer:
                 lambda: self._point.with_module_direction(Rotation2d(-hid.getLeftY(), -hid.getLeftX()))
             )
         )
-        
 
         Trigger(lambda: self._driver_controller.getLeftTriggerAxis() > 0.75).whileTrue(
-            self.drivetrain.apply_request_once(
+            self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
                 .with_fallback(self._field_centric)
-                .with_change_target_pose(True)
-                .with_branch_side(DriverAssist.BranchSide.LEFT)
-            )
-            .andThen(
-                self.drivetrain.apply_request(
-                lambda: self._driver_assist
-                .with_velocity_x(-hid.getLeftY() * self._max_speed)
-                .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
-                .with_fallback(self._field_centric)
-                .with_change_target_pose(False)
-                .with_branch_side(DriverAssist.BranchSide.LEFT)
-            )
+                .with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.LEFT))
             )
         )
 
         Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).whileTrue(
-            self.drivetrain.apply_request_once(
+            self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
                 .with_fallback(self._field_centric)
-                .with_change_target_pose(True)
-                .with_branch_side(DriverAssist.BranchSide.RIGHT)
-            )
-            .andThen(
-                self.drivetrain.apply_request(
-                lambda: self._driver_assist
-                .with_velocity_x(-hid.getLeftY() * self._max_speed)
-                .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
-                .with_fallback(self._field_centric)
-                .with_change_target_pose(False)
-                .with_branch_side(DriverAssist.BranchSide.LEFT)
-            )
+                .with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.RIGHT))
             )
         )
 
