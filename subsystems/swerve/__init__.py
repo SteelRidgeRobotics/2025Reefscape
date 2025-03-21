@@ -239,6 +239,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._auto_target_pub.set(pose))
         PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
 
+        self._closest_branch_pub = table.getStructTopic("Closest Branch", Pose2d).publish()
+
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
         self._steer_characterization = swerve.requests.SysIdSwerveSteerGains()
@@ -370,8 +372,11 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
     def get_closest_branch(self, branch_side: BranchSide) -> Pose2d:
         if branch_side == self.BranchSide.LEFT:
-            return self._closest_left_branch
-        return self._closest_right_branch
+            closest_branch =  self._closest_left_branch
+        else:
+            closest_branch = self._closest_right_branch
+        self._closest_branch_pub.set(closest_branch)
+        return closest_branch
 
     def periodic(self) -> None:
         """
