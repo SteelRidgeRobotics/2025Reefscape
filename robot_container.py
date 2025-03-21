@@ -250,7 +250,7 @@ class RobotContainer:
                 (button.whileTrue(
                     self.superstructure.set_goal_command(goal)
                     .alongWith(self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_INTAKE)))
-                 .onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)))
+                    .onFalse(self.intake.set_desired_state_command(self.intake.SubsystemState.ALGAE_HOLD)))
             else:
                 button.onTrue(self.superstructure.set_goal_command(goal))
 
@@ -275,18 +275,6 @@ class RobotContainer:
             cmd.parallel(
                 self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT),
                 self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
-            )
-        )
-
-        Trigger(self.intake.has_coral).onTrue(
-            cmd.parallel(
-                self.rumble_command(self._driver_controller, 0.3, 0.5),
-                self.rumble_command(self._function_controller, 0.3, 0.5)
-            )
-        ).onFalse(
-            cmd.parallel(
-                self.rumble_command(self._driver_controller, 0.1, 0.25),
-                self.rumble_command(self._function_controller, 0.1, 0.25)
             )
         )
 

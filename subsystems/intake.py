@@ -2,7 +2,7 @@ from enum import auto, Enum
 
 from commands2 import Command, cmd
 from phoenix6 import utils
-from phoenix6.configs import CANrangeConfiguration, TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, HardwareLimitSwitchConfigs, ProximityParamsConfigs
+from phoenix6.configs import CANrangeConfiguration, TalonFXConfiguration, MotorOutputConfigs, FeedbackConfigs, HardwareLimitSwitchConfigs, ProximityParamsConfigs, CurrentLimitsConfigs
 from phoenix6.controls import DutyCycleOut
 from phoenix6.hardware import TalonFX, CANrange
 from phoenix6.signals import NeutralModeValue, ForwardLimitValue, ForwardLimitSourceValue
@@ -18,6 +18,7 @@ class IntakeSubsystem(StateSubsystem):
 
     class SubsystemState(Enum):
         HOLD = auto()
+        ALGAE_HOLD = auto()
         CORAL_INTAKE = auto()
         FUNNEL_INTAKE = auto()
         CORAL_OUTPUT = auto()
@@ -31,6 +32,7 @@ class IntakeSubsystem(StateSubsystem):
                      .with_slot0(Constants.IntakeConstants.GAINS)
                      .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ElevatorConstants.GEAR_RATIO))
+                     .with_current_limits(CurrentLimitsConfigs().with_supply_current_limit_enable(True).with_supply_current_limit(Constants.IntakeConstants.SUPPLY_CURRENT))
                      )
 
     _limit_switch_config = HardwareLimitSwitchConfigs()
@@ -39,6 +41,7 @@ class IntakeSubsystem(StateSubsystem):
 
     _state_configs: dict[SubsystemState, tuple[int, bool]] = {
         SubsystemState.HOLD: (0, False),
+        SubsystemState.ALGAE_HOLD: (Constants.IntakeConstants.ALGAE_HOLD, True),
         SubsystemState.CORAL_INTAKE: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
         SubsystemState.FUNNEL_INTAKE: (Constants.IntakeConstants.FUNNEL_INTAKE_SPEED, False),
         SubsystemState.CORAL_OUTPUT: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
