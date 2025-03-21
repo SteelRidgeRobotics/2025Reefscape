@@ -45,11 +45,17 @@
             "/NT/CameraPublisher/USB Camera 0",
             "/PathPlanner",
             "/NT/LiveWindow/.status",
-            "/NT/PathPlanner"
+            "/NT/Elevator",
+            "/NT/Vision",
+            "/NT/Telemetry",
+            "/NT/Superstructure",
+            "/NT/SmartDashboard",
+            "/NT/Shuffleboard",
+            "/NT/Pivot"
           ]
         },
         "tabs": {
-          "selected": 6,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -150,6 +156,16 @@
                     "options": {
                       "timeRange": "enabled"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Telemetry/Closest Branch",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Oil Spill",
+                      "color": "#00ffff"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
@@ -160,14 +176,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 90,
                 "cameraPosition": [
-                  -6.953556664897187,
-                  3.606912776722745,
-                  1.3812420074452845
+                  -2.2200975144275037,
+                  2.38228329637397,
+                  2.8763793200252437
                 ],
                 "cameraTarget": [
-                  -6.726722303929858,
-                  2.105284781940462,
-                  0.4799010408993422
+                  -2.845409369094013,
+                  0.7503815954337896,
+                  1.7952193305315167
                 ]
               },
               "controlsHeight": 200
@@ -258,13 +274,22 @@
                     "options": {
                       "timeRange": "enabled"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Telemetry/Closest Branch",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
                 "bumpers": "auto",
                 "origin": "blue",
                 "orientation": 0,
-                "size": 24
+                "size": 30
               },
               "controllerUUID": "mgek5e9v859tdyzodro4hnhi2ihhmqar",
               "renderer": null,
