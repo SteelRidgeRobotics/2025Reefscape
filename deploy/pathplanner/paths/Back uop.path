@@ -33,20 +33,33 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "flor",
-      "waypointRelativePos": 0,
+      "name": "Default",
+      "waypointRelativePos": 0.10798650168728612,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "Floor"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Default"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Hold"
+              }
+            }
+          ]
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 1.333,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,

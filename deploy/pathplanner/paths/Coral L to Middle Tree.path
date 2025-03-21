@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3798749615722414,
-        "y": 5.621971179159976
+        "x": 3.2179487179487176,
+        "y": 5.902435660194696
       },
       "isLocked": false,
       "linkedName": "Coral L"
@@ -24,8 +24,8 @@
         "y": 5.531425923639248
       },
       "nextControl": {
-        "x": 0.969071403116408,
-        "y": 4.831899998939677
+        "x": 1.4441477924937067,
+        "y": 5.042551239997787
       },
       "isLocked": false,
       "linkedName": null
@@ -33,15 +33,15 @@
     {
       "anchor": {
         "x": 1.2265056818181819,
-        "y": 4.029985795459531
+        "y": 4.458764204545455
       },
       "prevControl": {
-        "x": 0.9775292479474214,
-        "y": 4.274239865870112
+        "x": 1.235445887462423,
+        "y": 4.80743222467087
       },
       "nextControl": {
-        "x": 1.5603805203731211,
-        "y": 3.702443597762816
+        "x": 1.2165340909090911,
+        "y": 4.069872159090909
       },
       "isLocked": false,
       "linkedName": null
@@ -78,26 +78,35 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9,
-      "rotationDegrees": -142.674
+      "waypointRelativePos": 0.106571936056831,
+      "rotationDegrees": -59.99999999999999
     },
     {
-      "waypointRelativePos": 1.214920071047951,
-      "rotationDegrees": -100.09306786603598
-    },
-    {
-      "waypointRelativePos": 3.856127886323289,
+      "waypointRelativePos": 3.8561278863232893,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
     {
       "name": "Slow Zone 2",
-      "minWaypointRelativePos": 3.4634420697412436,
+      "minWaypointRelativePos": 2.6726659167603897,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
-        "maxVelocity": 0.75,
+        "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1600.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Inital slow",
+      "minWaypointRelativePos": 0.8818897637795253,
+      "maxWaypointRelativePos": 1.4128233970753563,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 1600.0,
         "nominalVoltage": 12.0,
@@ -105,27 +114,40 @@
       }
     }
   ],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.2,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.3858267716535393,
+      "maxWaypointRelativePos": 1.62879640044996,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "Grab le Coral",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.107986501687283,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "Floor"
-        }
-      }
-    },
-    {
-      "name": "Stop Intake",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Hold"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Floor"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Coral Intake"
+              }
+            }
+          ]
         }
       }
     },
@@ -143,7 +165,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 1.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,

@@ -38,13 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Fast Coral I to Left Tree"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left Tree to Coral L"
+            "pathName": "Fast Coral I to Coral L"
           }
         },
         {
@@ -112,7 +106,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }
