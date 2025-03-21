@@ -179,7 +179,7 @@ class RobotContainer:
                 .with_fallback(self._field_centric)
                 .with_change_target_pose(True)
                 .with_branch_side(DriverAssist.BranchSide.LEFT)
-            ).alongWith(self.rumble_command(self._function_controller, 0.25, 0.25))
+            )
             .andThen(
                 self.drivetrain.apply_request(
                 lambda: self._driver_assist
@@ -202,7 +202,7 @@ class RobotContainer:
                 .with_fallback(self._field_centric)
                 .with_change_target_pose(True)
                 .with_branch_side(DriverAssist.BranchSide.RIGHT)
-            ).alongWith(self.rumble_command(self._function_controller, 0.25, 0.25))
+            )
             .andThen(
                 self.drivetrain.apply_request(
                 lambda: self._driver_assist
