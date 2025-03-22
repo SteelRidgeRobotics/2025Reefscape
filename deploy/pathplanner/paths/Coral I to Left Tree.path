@@ -61,7 +61,7 @@
   "eventMarkers": [
     {
       "name": "Grab le Coral",
-      "waypointRelativePos": 0.0887850467289698,
+      "waypointRelativePos": 0.23993685872138287,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
