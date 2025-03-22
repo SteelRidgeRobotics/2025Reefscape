@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.043845921681484,
-        "y": 5.075731231211766
+        "x": 6.004039804203144,
+        "y": 5.463286423841059
       },
       "isLocked": false,
       "linkedName": null
@@ -30,17 +30,17 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8926919518963922,
+      "waypointRelativePos": 0.4493783303729951,
       "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Final Slowdown",
-      "minWaypointRelativePos": 0.55,
+      "minWaypointRelativePos": 0.2969628796400477,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 4.0,
+        "maxVelocity": 1.25,
         "maxAcceleration": 1.0,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 1000.0,
@@ -53,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 0.06471981057616784,
+      "waypointRelativePos": 0.01,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

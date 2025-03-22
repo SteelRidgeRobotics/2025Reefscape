@@ -1,0 +1,178 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.255705128205128,
+        "y": 5.046730769230769
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.380705128205128,
+        "y": 5.263237120176878
+      },
+      "isLocked": false,
+      "linkedName": "Coral I"
+    },
+    {
+      "anchor": {
+        "x": 5.255705128205128,
+        "y": 6.27359375
+      },
+      "prevControl": {
+        "x": 5.783522727272728,
+        "y": 5.914616477272727
+      },
+      "nextControl": {
+        "x": 4.842264207551894,
+        "y": 6.554781596695772
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4658238636363636,
+        "y": 5.864758522727272
+      },
+      "prevControl": {
+        "x": 1.4658238636363636,
+        "y": 6.364758522727272
+      },
+      "nextControl": {
+        "x": 1.4658238636363636,
+        "y": 5.364758522727272
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.717948717948717,
+        "y": 5.036410256410257
+      },
+      "prevControl": {
+        "x": 3.092948717948717,
+        "y": 6.118942011140804
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral L"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.31971580817050227,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 2.5523978685612687,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Move Away from Reef",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.2350956130483737,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1600.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Move into Reef",
+      "minWaypointRelativePos": 2.4769403824522023,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 900.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.2,
+        "y": 5.8
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.6400449943757063,
+      "maxWaypointRelativePos": 1.849268841394819,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Floor",
+      "waypointRelativePos": 0.18897637795274969,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Floor"
+        }
+      }
+    },
+    {
+      "name": "sUCK",
+      "waypointRelativePos": 1.451068616422949,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Coral Intake"
+        }
+      }
+    },
+    {
+      "name": "L4 Coral",
+      "waypointRelativePos": 2.085489313835759,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4 Coral"
+        }
+      }
+    },
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 2.3824521934758156,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Hold"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "Men",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": false
+}

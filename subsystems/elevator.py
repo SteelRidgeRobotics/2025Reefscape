@@ -34,6 +34,7 @@ class ElevatorSubsystem(StateSubsystem):
         L2_ALGAE = Constants.ElevatorConstants.L2_ALGAE_POSITION
         L3_ALGAE = Constants.ElevatorConstants.L3_ALGAE_POSITION
         NET = Constants.ElevatorConstants.NET_SCORE_POSITION
+        PROCESSOR = Constants.ElevatorConstants.PROCESSOR_SCORE_POSITION
 
     _candi_config = CANdiConfiguration()
 

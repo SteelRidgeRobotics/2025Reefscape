@@ -46,6 +46,7 @@ class Constants:
         L2_ALGAE_POSITION = 3.198
         L3_ALGAE_POSITION = 5
         NET_SCORE_POSITION = 6.052246
+        PROCESSOR_SCORE_POSITION = 0.8205
         ELEVATOR_MAX = 6.096924
 
         DEFAULT_POSITION = 0
@@ -74,7 +75,7 @@ class Constants:
 
     class PivotConstants:
         INSIDE_ELEVATOR_ANGLE = 0.2 # Used for subsystem collision checking
-        ELEVATOR_PRIORITY_ANGLE = 0.168 # We move the pivot to this position until the elevator has reached its setpoint.
+        ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543
         FUNNEL_INTAKE_ANGLE = 0.286
@@ -82,8 +83,8 @@ class Constants:
         HIGH_SCORING_ANGLE =  0.21
         MID_SCORING_ANGLE = 0.22
         LOW_SCORING_ANGLE = -0.081543
-        NET_SCORING_ANGLE = 0.123535
-        PROCESSOR_SCORING_ANGLE = 0.004639
+        NET_SCORING_ANGLE = 0.131
+        PROCESSOR_SCORING_ANGLE = 0.001
         CLIMBER_PRIORITY_ANGLE = 0.201943
 
         MINIMUM_ANGLE = -0.091
@@ -116,8 +117,11 @@ class Constants:
         CORAL_OUTPUT_SPEED = 0.6
         L1_OUTPUT_SPEED = -0.4
 
-        ALGAE_INTAKE_SPEED = 1
+        ALGAE_HOLD = 0.125
+        ALGAE_INTAKE_SPEED = 0.75
         ALGAE_OUTPUT_SPEED = -1
+
+        SUPPLY_CURRENT = 35
 
         GEAR_RATIO = 4
         GAINS = (Slot0Configs()
