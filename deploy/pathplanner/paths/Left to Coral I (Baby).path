@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.255705128205128,
-        "y": 5.046730769230769
+        "x": 4.977051282051281,
+        "y": 5.201538461538462
       },
       "prevControl": {
-        "x": 5.480705128205128,
-        "y": 5.436442200933767
+        "x": 5.202051282051281,
+        "y": 5.59124989324146
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral I"
+      "linkedName": "Coral J"
     }
   ],
   "rotationTargets": [
