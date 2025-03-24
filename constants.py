@@ -13,11 +13,8 @@ class Constants:
         INTAKE_TALON = 12
         LEFT_PIVOT_TALON = 13
         RIGHT_PIVOT_TALON = 14
-<<<<<<< Updated upstream
-=======
         CLIMB_TALON = 15
         WINCH_TALON = 16
->>>>>>> Stashed changes
         FUNNEL_TALON = 22
 
         ELEVATOR_CANDI = 20
