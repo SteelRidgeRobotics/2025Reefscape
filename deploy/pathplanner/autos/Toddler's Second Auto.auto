@@ -38,13 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral I to Left Tree"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left Tree to Coral L"
+            "pathName": "Coral J pickup Left Tree to Coral L"
           }
         },
         {

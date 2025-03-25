@@ -4,14 +4,13 @@
   "holonomicMode": true,
   "pathFolders": [
     "Babies",
-    "Elders'",
+    "Mid",
     "Men",
-    "Blind",
     "Toddlers"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 7.0,
+  "defaultMaxVel": 2.75,
+  "defaultMaxAccel": 6.0,
   "defaultMaxAngVel": 720.0,
   "defaultMaxAngAccel": 1600.0,
   "defaultNominalVoltage": 12.0,

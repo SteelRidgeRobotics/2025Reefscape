@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.455852272727273,
-        "y": 5.855546357615894
+        "x": 1.3561363636363635,
+        "y": 6.263622159090909
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9099015290951418,
-        "y": 5.855546357615894
+        "x": 1.8101856200042323,
+        "y": 6.263622159090909
       },
       "isLocked": false,
       "linkedName": "Left Tree"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.717948717948717,
-        "y": 5.036410256410257
+        "x": 3.709431818181818,
+        "y": 5.086974431818182
       },
       "prevControl": {
-        "x": 3.5303253145516433,
-        "y": 5.36138352378298
+        "x": 3.5218084147847444,
+        "y": 5.411947699190905
       },
       "nextControl": null,
       "isLocked": false,
@@ -81,7 +81,7 @@
   "folder": "Toddlers",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -148.81502534126165
   },
   "useDefaultConstraints": false
 }
