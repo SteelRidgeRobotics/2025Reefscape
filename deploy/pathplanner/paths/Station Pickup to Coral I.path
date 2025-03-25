@@ -1,0 +1,101 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.6353409090909095,
+        "y": 7.330582386363636
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5759282471768294,
+        "y": 6.985675704139287
+      },
+      "isLocked": false,
+      "linkedName": "Station"
+    },
+    {
+      "anchor": {
+        "x": 4.000362297236766,
+        "y": 6.3942263387668525
+      },
+      "prevControl": {
+        "x": 3.2881452722067976,
+        "y": 6.689951021453069
+      },
+      "nextControl": {
+        "x": 4.712579322266734,
+        "y": 6.098501656080636
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.284943181818181,
+        "y": 5.06703125
+      },
+      "prevControl": {
+        "x": 5.784943181818181,
+        "y": 5.933056653784439
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral I"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8596802841918314,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Raise Elevator",
+      "minWaypointRelativePos": 0.9538807649043841,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 1.25,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 500.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "L4 Coral",
+      "waypointRelativePos": 1.3138357705286854,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4 Coral"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1600.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -54.0
+  },
+  "useDefaultConstraints": true
+}

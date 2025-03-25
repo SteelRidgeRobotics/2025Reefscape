@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Coral I (Man)"
+            "pathName": "Left to Coral J"
           }
         },
         {
@@ -38,7 +38,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral J pickup Left Tree to Coral L"
+            "pathName": "Coral J to Station Pickup"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Funnel Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Station Pickup to Coral I"
           }
         },
         {
@@ -69,32 +88,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral L pickup Center Tree to Coral A"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Coral Output"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.25
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Hold"
-                }
-              }
-            ]
+            "pathName": "Coral I Back"
           }
         }
       ]

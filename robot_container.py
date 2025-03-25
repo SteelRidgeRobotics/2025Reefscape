@@ -70,6 +70,7 @@ class RobotContainer:
         NamedCommands.registerCommand("Hold", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.HOLD))
         NamedCommands.registerCommand("Coral Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_INTAKE))
         NamedCommands.registerCommand("Coral Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUT))
+        NamedCommands.registerCommand("Funnel Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.FUNNEL_INTAKE).until(self.intake.has_coral))
         NamedCommands.registerCommand("Algae Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKE))
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
 

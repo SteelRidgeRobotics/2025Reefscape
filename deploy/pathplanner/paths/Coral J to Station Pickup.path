@@ -3,45 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.588380681818182,
-        "y": 7.251
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 5.911356724478738,
-        "y": 6.787114113140313
-      },
-      "isLocked": false,
-      "linkedName": "Man Start"
-    },
-    {
-      "anchor": {
         "x": 4.995767045454546,
         "y": 5.246519886363636
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.495767045454546,
+        "y": 6.112545290148074
+      },
+      "isLocked": false,
+      "linkedName": "Coral J"
+    },
+    {
+      "anchor": {
+        "x": 1.6353409090909095,
+        "y": 7.330582386363636
+      },
       "prevControl": {
-        "x": 5.220767045454545,
-        "y": 5.636231318066634
+        "x": 2.223126161383383,
+        "y": 6.5215653919886885
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral J"
+      "linkedName": "Station"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.788632326820613,
+      "waypointRelativePos": 0.18117229129662593,
       "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.4026996625421896,
-      "maxWaypointRelativePos": 1.0,
+      "name": "Lower Elevator",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.6884139482564694,
       "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.0,
+        "maxVelocity": 1.25,
+        "maxAcceleration": 1.25,
         "maxAngularVelocity": 180.0,
         "maxAngularAcceleration": 500.0,
         "nominalVoltage": 12.0,
@@ -52,13 +52,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4 Coral",
-      "waypointRelativePos": 0.43194600674916184,
+      "name": "Default",
+      "waypointRelativePos": 0.3217097862767106,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "L4 Coral"
+          "name": "Default"
         }
       }
     }
@@ -73,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -54.0
   },
   "reversed": false,
-  "folder": "Men",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }

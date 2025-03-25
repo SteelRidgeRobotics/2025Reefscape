@@ -3,10 +3,7 @@
   "robotLength": 0.9398,
   "holonomicMode": true,
   "pathFolders": [
-    "Babies",
-    "Mid",
-    "Men",
-    "Toddlers"
+    "Mid"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.75,
