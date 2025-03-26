@@ -111,6 +111,10 @@ class VisionSubsystem(StateSubsystem):
             return camera, None
         return camera, pose
 
+    def set_throttle(self, throttle: int) -> None:
+        for camera in self._cameras:
+            LimelightHelpers.set_throttle(camera, throttle)
+
     @staticmethod
     def _is_better_estimate(new_estimate: PoseEstimate, current_best: PoseEstimate) -> bool:
         if not current_best:

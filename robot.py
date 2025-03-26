@@ -88,7 +88,10 @@ class Leviathan(TimedCommandRobot):
         SignalLogger.start()
 
     def disabledInit(self):
-        pass
+        self.container.vision.set_throttle(150)
+
+    def disabledExit(self):
+        self.container.vision.set_throttle(0)
 
     def testExit(self):
         DataLogManager.log("Test period ended")
