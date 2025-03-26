@@ -889,6 +889,24 @@ class LimelightHelpers:
 		LimelightHelpers.set_limelight_NTDouble(limelight_name, "imumode_set", mode)
 
 	@staticmethod
+	def set_imu_assist_alpha(limelight_name: str, alpha: float) -> None:
+		"""
+		Configures the complementary filter alpha value for IMU Assist Modes (Modes 3 and 4)
+		@param limelight_name Name/identifier of the Limelight
+		@param alpha Defaults to .001. Higher values will cause the internal IMU to converge onto the assist source more rapidly.
+		"""
+		LimelightHelpers.set_limelight_NTDouble(limelight_name, "imuassistalpha_set", alpha)
+
+	@staticmethod
+	def set_throttle(limelight_name: str, throttle: int) -> None:
+		"""
+		Configures the throttle value. Set to 100-200 while disabled to reduce thermal output/temperature.
+		@param limelight_name Name/identifier of the Limelight
+		@param throttle Defaults to 0. Your Limelight will process one frame after skipping <throttle> frames.
+		"""
+		LimelightHelpers.set_limelight_NTDouble(limelight_name, "throttle_set", throttle)
+
+	@staticmethod
 	def set_fiducial_id_filters_override(limelight_name: str, valid_ids: list[int]) -> None:
 		"""
 		Overrides the valid AprilTag IDs that will be used for localization.
