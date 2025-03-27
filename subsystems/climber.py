@@ -27,7 +27,7 @@ class ClimberSubsystem(StateSubsystem):
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ClimberConstants.GAINS)
-                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.COAST))
+                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ClimberConstants.GEAR_RATIO))
                      )
     
