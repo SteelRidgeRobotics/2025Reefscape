@@ -34,7 +34,6 @@ class Constants:
 
         VOLTAGE_INWARDS = 16
         VOLTAGE_OUTWARDS = -5
-        TENSION_VOLTAGE = 0.5
         CLIMB_IN_VOLTAGE = 5
 
 
