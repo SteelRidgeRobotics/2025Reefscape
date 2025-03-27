@@ -19,6 +19,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.climber import ClimberSubsystem
 from subsystems.swerve.requests import DriverAssist
 from subsystems.vision import VisionSubsystem
 
@@ -32,7 +33,7 @@ class RobotContainer:
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        #self.climber = ClimberSubsystem()
+        self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
@@ -46,7 +47,7 @@ class RobotContainer:
         )
 
         self.superstructure = Superstructure(
-            self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.intake
+            self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.climber, self.intake
         )
 
         self._setup_swerve_requests()
@@ -70,7 +71,6 @@ class RobotContainer:
         NamedCommands.registerCommand("Hold", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.HOLD))
         NamedCommands.registerCommand("Coral Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_INTAKE))
         NamedCommands.registerCommand("Coral Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUT))
-        NamedCommands.registerCommand("Funnel Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.FUNNEL_INTAKE).until(self.intake.has_coral))
         NamedCommands.registerCommand("Algae Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKE))
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
 
@@ -254,10 +254,10 @@ class RobotContainer:
             )
         )
 
-        """
+      
         self._function_controller.povLeft().onTrue(
             cmd.parallel(
-                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE),
+                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_OUT),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
 
@@ -265,11 +265,11 @@ class RobotContainer:
 
         self._function_controller.povRight().onTrue(
             cmd.parallel(
-                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE),
+                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_IN),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
-        """
+    
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)
@@ -290,12 +290,12 @@ class RobotContainer:
         reverse_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
 
         # Dynamic Tests
-        forward_btn.whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
-        reverse_btn.whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        forward_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        reverse_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
         # Quasistatic Tests (POV Up for forward, POV Down for reverse)
-        controller.back().and_(forward_btn).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
-        controller.back().and_(reverse_btn).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        controller.back().and_(forward_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
+        controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
     def get_autonomous_command(self) -> commands2.Command:
         return self._auto_chooser.getSelected()

@@ -13,6 +13,7 @@ class Constants:
         RIGHT_ELEVATOR_TALON = 11
         INTAKE_TALON = 12
         LEFT_PIVOT_TALON = 13
+        CLIMB_TALON = 15
         FUNNEL_TALON = 22
 
         ELEVATOR_CANDI = 20
@@ -21,7 +22,7 @@ class Constants:
         INTAKE_CANRANGE = 23
 
     class ClimberConstants:
-        GEAR_RATIO = 61504/189
+        GEAR_RATIO = 48
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
@@ -32,7 +33,8 @@ class Constants:
         )
 
         VOLTAGE_INWARDS = 16
-        VOLTAGE_OUTWARDS = -4
+        VOLTAGE_OUTWARDS = -5
+        CLIMB_IN_VOLTAGE = 5
 
         SERVO_PORT = 0
         SERVO_ENGAGED_ANGLE = 0
