@@ -1,5 +1,6 @@
 from enum import auto, Enum
 
+from phoenix6 import utils
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VoltageOut
@@ -58,16 +59,18 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_request = VoltageOut(0)
         self._winch_request = VoltageOut(0)
 
-        self._climber_mechanism = Mechanism2d(1, 1)
-        self._climber_root = self._climber_mechanism.getRoot("Root", 1 / 2, 0)
-        self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
-        self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
-        SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
+        if utils.is_simulation():
+            self._climber_mechanism = Mechanism2d(1, 1)
+            self._climber_root = self._climber_mechanism.getRoot("Root", 1 / 2, 0)
+            self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
+            self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
+            SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
 
     def periodic(self):
         super().periodic()
         self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
 
+    def simulationPeriodic(self) -> None:
         self._climber_arm.setAngle(self.get_position() * 360)
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
