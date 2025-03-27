@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Coral I"
+            "pathName": "Left to Coral J"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.25
                 }
               },
               {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Fast Coral I to Coral L"
+            "pathName": "Coral J pickup Left Tree to Coral L"
           }
         },
         {
@@ -54,7 +54,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.25
                 }
               },
               {
@@ -69,38 +69,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral L to Middle Tree"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Coral Output"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Hold"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Back uop"
+            "pathName": "Coral L to Station"
           }
         }
       ]

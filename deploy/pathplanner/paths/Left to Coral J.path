@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.941659902597403,
-        "y": 7.493689123376623
+        "x": 7.588380681818182,
+        "y": 7.251
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.264635945257958,
-        "y": 7.029803236516936
+        "x": 5.911356724478738,
+        "y": 6.787114113140313
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Man Start"
     },
     {
       "anchor": {
-        "x": 4.977051282051281,
-        "y": 5.201538461538462
+        "x": 4.995767045454546,
+        "y": 5.246519886363636
       },
       "prevControl": {
-        "x": 5.202051282051281,
-        "y": 5.59124989324146
+        "x": 5.220767045454545,
+        "y": 5.636231318066634
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,20 +30,20 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6107823800131499,
+      "waypointRelativePos": 0.788632326820613,
       "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.55,
+      "minWaypointRelativePos": 0.4026996625421896,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 4.0,
+        "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
-        "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1000.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 500.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -53,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 0.06471981057616784,
+      "waypointRelativePos": 0.43194600674916184,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -64,10 +64,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.25,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 2.75,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -76,10 +76,10 @@
     "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Babies",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

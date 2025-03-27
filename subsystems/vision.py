@@ -18,7 +18,7 @@ class VisionSubsystem(StateSubsystem):
     This is primarily used for combining MegaTag pose estimates and ensuring no conflicts between Limelights.
 
     Our vision system consists of:
-    - 1 Limelight 4 (back of the funnel, horizontal)
+    - 1 Limelight 4 (center back of the elevator crossbeam)
     - 1 Limelight 4 (under the pivot, 20-degree inclination)
     - 2 Limelight 3As (front swerve covers, 15-degree outward incline)
 
@@ -76,7 +76,7 @@ class VisionSubsystem(StateSubsystem):
                 )
                 all_measurements.append(estimate.pose)
 
-                if best_estimate is None or self._is_better_estimate(estimate, best_estimate):
+                if self._is_better_estimate(estimate, best_estimate):
                     best_estimate = estimate
             except Exception as e:
                 DataLogManager.log(f"Vision processing failed for a camera: {e}")
@@ -97,33 +97,25 @@ class VisionSubsystem(StateSubsystem):
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
-
         for camera in self._cameras:
             LimelightHelpers.set_fiducial_id_filters_override(camera, desired_state.value)
 
     def _process_camera(self, camera: str) -> tuple[str, PoseEstimate | None]:
         state = self._swerve.get_state_copy()
         LimelightHelpers.set_robot_orientation(
-            camera,
-            state.pose.rotation().degrees(),
-            state.speeds.omega_dps, 0, 0, 0, 0
+            camera, state.pose.rotation().degrees(), 0, 0, 0, 0, 0
         )
         pose = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
 
         if pose is None or pose.tag_count == 0:
             return camera, None
-
         return camera, pose
 
     @staticmethod
     def _is_better_estimate(new_estimate: PoseEstimate, current_best: PoseEstimate) -> bool:
-        if new_estimate.tag_count > current_best.tag_count:
-            return True
-        if new_estimate.tag_count == current_best.tag_count:
-            new_ambiguity = sum(f.ambiguity for f in new_estimate.raw_fiducials) / new_estimate.tag_count
-            current_ambiguity = sum(f.ambiguity for f in current_best.raw_fiducials) / current_best.tag_count
-            return new_ambiguity < current_ambiguity
-        return False
+        if not current_best:
+            return new_estimate.avg_tag_dist < 4.125
+        return new_estimate.avg_tag_dist < current_best.avg_tag_dist
 
     @staticmethod
     def _get_dynamic_std_devs(estimate: PoseEstimate) -> tuple[float, float, float]:

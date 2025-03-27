@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left to Coral I (Baby)"
+            "pathName": "Left to Coral J"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.25
                 }
               },
               {
@@ -38,13 +38,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral I to Left Tree"
+            "pathName": "Coral J to Station Pickup"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Funnel Intake"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left Tree to Coral L"
+            "pathName": "Station Pickup to Coral I"
           }
         },
         {
@@ -60,7 +73,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.25
                 }
               },
               {
@@ -75,7 +88,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral L to Station"
+            "pathName": "Coral I Back"
           }
         }
       ]

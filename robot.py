@@ -20,7 +20,7 @@ class Leviathan(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        SignalLogger.enable_auto_logging(DriverStation.isFMSAttached())
+        SignalLogger.enable_auto_logging(True)
         DataLogManager.start(period=0.2)
         DriverStation.startDataLog(DataLogManager.getLog())
 
@@ -85,9 +85,10 @@ class Leviathan(TimedCommandRobot):
         DataLogManager.log("Test period started")
         CommandScheduler.getInstance().cancelAll()
         elasticlib.select_tab("Debug")
+        SignalLogger.start()
 
     def disabledInit(self):
-        SignalLogger.stop()
+        pass
 
     def testExit(self):
         DataLogManager.log("Test period ended")
@@ -96,4 +97,7 @@ class Leviathan(TimedCommandRobot):
         pass
 
     def teleopPeriodic(self) -> None:
+        pass
+
+    def testPeriodic(self) -> None:
         pass

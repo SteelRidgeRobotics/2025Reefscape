@@ -3,47 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.910575331125828,
-        "y": 5.463286423841059
+        "x": 4.995767045454546,
+        "y": 5.246519886363636
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.004039804203144,
-        "y": 5.463286423841059
+        "x": 5.495767045454546,
+        "y": 6.112545290148074
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral J"
     },
     {
       "anchor": {
-        "x": 4.977051282051281,
-        "y": 5.201538461538462
+        "x": 1.6353409090909095,
+        "y": 7.330582386363636
       },
       "prevControl": {
-        "x": 5.227051282051281,
-        "y": 5.634551163430681
+        "x": 2.223126161383383,
+        "y": 6.5215653919886885
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral J"
+      "linkedName": "Station"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4493783303729951,
+      "waypointRelativePos": 0.18117229129662593,
       "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [
     {
-      "name": "Final Slowdown",
-      "minWaypointRelativePos": 0.2969628796400477,
-      "maxWaypointRelativePos": 1.0,
+      "name": "Lower Elevator",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.6884139482564694,
       "constraints": {
         "maxVelocity": 1.25,
-        "maxAcceleration": 1.0,
-        "maxAngularVelocity": 720.0,
-        "maxAngularAcceleration": 1000.0,
+        "maxAcceleration": 1.25,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 500.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -52,34 +52,34 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4 Coral",
-      "waypointRelativePos": 0.01,
+      "name": "Default",
+      "waypointRelativePos": 0.3217097862767106,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "L4 Coral"
+          "name": "Default"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 2.75,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1600.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "velocity": 0,
+    "rotation": -54.0
   },
   "reversed": false,
-  "folder": "Toddlers",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -119.99999999999999
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

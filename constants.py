@@ -12,7 +12,6 @@ class Constants:
         RIGHT_ELEVATOR_TALON = 11
         INTAKE_TALON = 12
         LEFT_PIVOT_TALON = 13
-        RIGHT_PIVOT_TALON = 14
         CLIMB_TALON = 15
         WINCH_TALON = 16
         FUNNEL_TALON = 22

@@ -1,0 +1,180 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.709431818181818,
+        "y": 5.086974431818182
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.4594318181818178,
+        "y": 5.5199871337104005
+      },
+      "isLocked": false,
+      "linkedName": "Coral L"
+    },
+    {
+      "anchor": {
+        "x": 1.1766477272727274,
+        "y": 5.1966619318181815
+      },
+      "prevControl": {
+        "x": 1.6196978558979278,
+        "y": 5.878564084235898
+      },
+      "nextControl": {
+        "x": 0.857851422056913,
+        "y": 4.705999876524255
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4658238636363636,
+        "y": 4.000071022727272
+      },
+      "prevControl": {
+        "x": 1.072554796766375,
+        "y": 4.005442611927242
+      },
+      "nextControl": {
+        "x": 2.465730595080895,
+        "y": 3.9864134822490613
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.1609943181818183,
+        "y": 4.179559659090909
+      },
+      "prevControl": {
+        "x": 2.6609943181818183,
+        "y": 4.179559659090909
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral A"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.34103019538187307,
+      "rotationDegrees": -59.99999999999999
+    },
+    {
+      "waypointRelativePos": 2.45,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Lower Elevator",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.9718785151855976,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 1.25,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 500.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Raise Elevator",
+      "minWaypointRelativePos": 1.4983127109111654,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 1.25,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 1600.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.2,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 1.5995500562429683,
+      "name": "Center Tree"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Floor",
+      "waypointRelativePos": 0.2902137232845947,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Floor"
+        }
+      }
+    },
+    {
+      "name": "Coral Intake",
+      "waypointRelativePos": 0.9246344206974122,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Coral Intake"
+        }
+      }
+    },
+    {
+      "name": "L4 Coral",
+      "waypointRelativePos": 1.8357705286839172,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "L4 Coral"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Hold"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 1600.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.3819662047291033
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "useDefaultConstraints": true
+}
