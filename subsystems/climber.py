@@ -27,20 +27,20 @@ class ClimberSubsystem(StateSubsystem):
 
     _motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ClimberConstants.GAINS)
-                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
+                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.COAST))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ClimberConstants.GEAR_RATIO))
                      )
     _winch_motor_config = (TalonFXConfiguration()
                      .with_slot0(Constants.ClimberConstants.GAINS)
-                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.COAST))
+                     .with_motor_output(MotorOutputConfigs().with_neutral_mode(NeutralModeValue.BRAKE))
                      .with_feedback(FeedbackConfigs().with_sensor_to_mechanism_ratio(Constants.ClimberConstants.GEAR_RATIO))
                      )
 
-    _state_configs: dict[SubsystemState, tuple[int, units.degrees]] = {
-        SubsystemState.STOP: (0, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
-        SubsystemState.CLIMB_IN: (Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
-        SubsystemState.CLIMB_IN_FULL: (Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
-        SubsystemState.CLIMB_OUT: (Constants.ClimberConstants.CLIMB_STALL_VOLTAGE, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE),
+    _state_configs: dict[SubsystemState, tuple[int, int, units.degrees]] = {
+        SubsystemState.STOP: (0, 0, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_IN: (Constants.ClimberConstants.CLIMB_IN_VOLTAGE, Constants.ClimberConstants.TENSION_VOLTAGE, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_IN_FULL: (0, Constants.ClimberConstants.VOLTAGE_INWARDS, Constants.ClimberConstants.SERVO_DISENGAGED_ANGLE),
+        SubsystemState.CLIMB_OUT: (Constants.ClimberConstants.VOLTAGE_OUTWARDS, Constants.ClimberConstants.TENSION_VOLTAGE, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE)
     }
 
     def __init__(self) -> None:
@@ -77,8 +77,9 @@ class ClimberSubsystem(StateSubsystem):
         if not super().set_desired_state(desired_state):
             return
 
-        output, servo_angle = self._state_configs.get(desired_state, (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE))
-        self._climb_request.output = output
+        climb_output, winch_output, servo_angle = self._state_configs.get(desired_state, (0, 0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE))
+        self._climb_request.output = climb_output 
+        self._winch_request.output = winch_output
         self._climb_servo.setAngle(servo_angle)
 
         self._climb_motor.set_control(self._climb_request)

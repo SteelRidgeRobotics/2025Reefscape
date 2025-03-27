@@ -22,7 +22,7 @@ class Constants:
         INTAKE_CANRANGE = 23
 
     class ClimberConstants:
-        GEAR_RATIO = 61504/189
+        GEAR_RATIO = 48/1
         GAINS = (Slot0Configs()
             .with_k_p(1.0)
             .with_k_i(0.0)
@@ -33,9 +33,9 @@ class Constants:
         )
 
         VOLTAGE_INWARDS = 16
-        VOLTAGE_INWARDS
         VOLTAGE_OUTWARDS = -5
-        CLIMB_STALL_VOLTAGE = 0.5
+        TENSION_VOLTAGE = 0.5
+        CLIMB_IN_VOLTAGE = 5
 
 
         SERVO_PORT = 0
