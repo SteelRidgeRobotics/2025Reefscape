@@ -34,7 +34,10 @@ class Constants:
         )
 
         VOLTAGE_INWARDS = 16
-        VOLTAGE_OUTWARDS = -4
+        VOLTAGE_INWARDS
+        VOLTAGE_OUTWARDS = -5
+        CLIMB_STALL_VOLTAGE = 0.5
+
 
         SERVO_PORT = 0
         SERVO_ENGAGED_ANGLE = 0

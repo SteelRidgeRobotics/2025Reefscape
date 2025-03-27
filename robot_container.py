@@ -19,6 +19,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.climber import ClimberSubsystem
 from subsystems.swerve.requests import DriverAssist
 from subsystems.vision import VisionSubsystem
 
@@ -32,7 +33,7 @@ class RobotContainer:
         self._function_controller = commands2.button.CommandXboxController(1)
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        #self.climber = ClimberSubsystem()
+        self.climber = ClimberSubsystem()
         self.pivot = PivotSubsystem()
         self.intake = IntakeSubsystem()
         self.elevator = ElevatorSubsystem()
@@ -46,7 +47,7 @@ class RobotContainer:
         )
 
         self.superstructure = Superstructure(
-            self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision
+            self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.climber
         )
 
         self._setup_swerve_requests()
@@ -253,7 +254,7 @@ class RobotContainer:
             )
         )
 
-        """
+      
         self._function_controller.povLeft().onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_OUT),
@@ -264,11 +265,11 @@ class RobotContainer:
 
         self._function_controller.povRight().onTrue(
             cmd.parallel(
-                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_OUT),
+                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_IN),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
-        """
+    
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)

@@ -12,6 +12,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 from subsystems.vision import VisionSubsystem
+from subsystems.climber import ClimberSubsystem
 
 
 class Superstructure(Subsystem):
@@ -29,10 +30,13 @@ class Superstructure(Subsystem):
         L3_ALGAE = auto()
         PROCESSOR = auto()
         NET = auto()
+        CLIMBING = auto()
+        
 
         FUNNEL = auto()
         FLOOR = auto()
-        CLIMBING = auto()
+        CLIMB_OUT = auto()
+        CLIMB_IN = auto()
 
     # Map each goal to each subsystem state to reduce code complexity
     _goal_to_states: dict[Goal,
@@ -53,10 +57,11 @@ class Superstructure(Subsystem):
         Goal.NET: (PivotSubsystem.SubsystemState.NET_SCORING, ElevatorSubsystem.SubsystemState.NET, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
         Goal.FUNNEL: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
         Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
-        Goal.CLIMBING: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.NO_ESTIMATES)
+        Goal.CLIMB_OUT: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.NO_ESTIMATES),
+        Goal.CLIMB_IN: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.NO_ESTIMATES)
     }
 
-    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem) -> None:
+    def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem, climber: ClimberSubsystem) -> None:
         """
         Constructs the superstructure using instance of each subsystem.
 
@@ -77,6 +82,7 @@ class Superstructure(Subsystem):
         self.elevator = elevator
         self.funnel = funnel
         self.vision = vision
+        self.climber = climber
 
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
@@ -105,6 +111,10 @@ class Superstructure(Subsystem):
                 self.elevator.is_at_setpoint() or self._desired_pivot_state.value < Constants.PivotConstants.INSIDE_ELEVATOR_ANGLE):
             self.pivot.unfreeze()
             self.pivot.set_desired_state(self._desired_pivot_state)
+
+        #If climber motor position is at the top position (1 is the placeholder for what the value would actually be), it will go to the full climb state
+        if self.climber._climb_motor.get_position().value > 1 and self.climber.get_current_state() is ClimberSubsystem.SubsystemState.CLIMB_IN:
+            self.climber.set_desired_state(ClimberSubsystem.SubsystemState.CLIMB_IN_FULL)
 
     def simulationPeriodic(self) -> None:
         self._elevator_mech.setLength(self.elevator.get_height())
