@@ -44,8 +44,10 @@ class ClimberSubsystem(StateSubsystem):
         super().__init__("Climber", self.SubsystemState.STOP)
 
         self._climb_servo = Servo(Constants.ClimberConstants.SERVO_PORT)
-        self._climb_motor = TalonFX(Constants.CanIDs.CLIMB_TALON)
+        self._climb_motor = TalonFX(Constants.CanIDs.CLIMB_TALON, "Drivetrain")
         self._climb_motor.configurator.apply(self._motor_config)
+
+        self._climb_motor.set_position(0)
 
         self._add_talon_sim_model(self._climb_motor, DCMotor.falcon500FOC(1), Constants.ClimberConstants.GEAR_RATIO)
         self._servo_desired_angle_pub = self.get_network_table().getFloatTopic("Servo Desired Angle").publish()
