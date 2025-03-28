@@ -7,7 +7,9 @@ from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
 from wpilib import Servo, Mechanism2d, Color8Bit, SmartDashboard
 from wpimath import units
+from wpimath.geometry import Pose3d, Rotation3d
 from wpimath.system.plant import DCMotor
+from wpimath.units import rotationsToRadians
 
 from constants import Constants
 from subsystems import StateSubsystem
@@ -76,3 +78,6 @@ class ClimberSubsystem(StateSubsystem):
 
     def get_position(self) -> float:
         return self._climb_motor.get_position().value
+
+    def get_component_pose(self) -> Pose3d:
+        return Pose3d(0, 0.292100, 0.463550, Rotation3d(rotationsToRadians(self.get_position()), 0, 0))

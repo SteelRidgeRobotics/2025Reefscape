@@ -36,6 +36,8 @@ class Constants:
         VOLTAGE_OUTWARDS = -5
         CLIMB_IN_VOLTAGE = 5
 
+        CLIMB_FULL_THRESHOLD = 0.44
+
         SERVO_PORT = 0
         SERVO_ENGAGED_ANGLE = 0
         SERVO_DISENGAGED_ANGLE = 90

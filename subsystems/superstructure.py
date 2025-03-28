@@ -115,7 +115,7 @@ class Superstructure(Subsystem):
             self.pivot.set_desired_state(self._desired_pivot_state)
 
         # If climber motor position is at the top position (1 is the placeholder for what the value would actually be), it will go to the full climb state
-        if self.climber.get_position() > 1 and self.climber.get_current_state() is ClimberSubsystem.SubsystemState.CLIMB_IN:
+        if self.climber.get_position() > Constants.ClimberConstants.CLIMB_FULL_THRESHOLD and self.climber.get_current_state() is ClimberSubsystem.SubsystemState.CLIMB_IN:
             self.climber.set_desired_state(ClimberSubsystem.SubsystemState.CLIMB_IN_FULL)
         
         first_stage_pose, carriage_pose = self.elevator.get_component_poses()
@@ -124,7 +124,8 @@ class Superstructure(Subsystem):
             self.funnel.get_component_pose(),
             first_stage_pose,
             carriage_pose,
-            pivot_pose
+            pivot_pose,
+            self.climber.get_component_pose()
         ])
 
         first_stage_pose, carriage_pose = self.elevator.get_target_poses()
