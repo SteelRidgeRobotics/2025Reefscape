@@ -79,7 +79,7 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_motor.set_control(self._climb_request)
 
     def get_position(self) -> float:
-        return self._climb_motor.get_position().value
+        return self._climb_motor.get_position().value * (9/64)
 
     def get_component_pose(self) -> Pose3d:
         return Pose3d(0, 0.292100, 0.463550, Rotation3d(rotationsToRadians(self.get_position()), 0, 0))
