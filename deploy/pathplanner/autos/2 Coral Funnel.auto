@@ -42,13 +42,38 @@
           }
         },
         {
-          "type": "race",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
+                  "name": "Funnel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "Funnel Intake"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Default"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Hold"
+                      }
+                    }
+                  ]
                 }
               }
             ]

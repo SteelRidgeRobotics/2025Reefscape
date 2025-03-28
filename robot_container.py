@@ -7,7 +7,7 @@ from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController, Trigger
 from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import NamedCommands, PathPlannerAuto
-from phoenix6 import SignalLogger, swerve
+from phoenix6 import SignalLogger, swerve, utils
 from wpilib import DriverStation, SendableChooser, XboxController, SmartDashboard, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
@@ -73,6 +73,7 @@ class RobotContainer:
         NamedCommands.registerCommand("Coral Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.CORAL_OUTPUT))
         NamedCommands.registerCommand("Algae Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_INTAKE))
         NamedCommands.registerCommand("Algae Output", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.ALGAE_OUTPUT))
+        NamedCommands.registerCommand("Funnel Intake", self.intake.set_desired_state_command(IntakeSubsystem.SubsystemState.FUNNEL_INTAKE).repeatedly().until(lambda: self.intake.has_coral() or utils.is_simulation()))
 
         # Build AutoChooser
         self._auto_chooser = SendableChooser()
