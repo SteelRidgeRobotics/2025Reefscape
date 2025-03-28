@@ -20,7 +20,7 @@ class Leviathan(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        SignalLogger.enable_auto_logging(True)
+        SignalLogger.start()
         DataLogManager.start(period=0.2)
         DriverStation.startDataLog(DataLogManager.getLog())
 

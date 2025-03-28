@@ -255,13 +255,11 @@ class RobotContainer:
             )
         )
 
-      
         self._function_controller.povLeft().onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_OUT),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
-
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
 
         self._function_controller.povRight().onTrue(
@@ -270,7 +268,10 @@ class RobotContainer:
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
-    
+
+        self._function_controller.povUp().onTrue(
+            self.superstructure.set_goal_command(self.superstructure.Goal.FINISH)
+        )
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)

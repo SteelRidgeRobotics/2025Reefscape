@@ -32,9 +32,9 @@ class Constants:
             .with_k_a(0.0)
         )
 
-        VOLTAGE_INWARDS = 16
+        VOLTAGE_INWARDS = 4
         VOLTAGE_OUTWARDS = -5
-        CLIMB_IN_VOLTAGE = 5
+        CLIMB_IN_VOLTAGE = 2.5
 
         CLIMB_FULL_THRESHOLD = 0.44
 
