@@ -130,23 +130,6 @@ class Superstructure(Subsystem):
             self.climber.get_component_pose()
         ])
 
-        first_stage_pose, carriage_pose = self.elevator.get_target_poses()
-        self._component_targets.set([
-            self.funnel.get_target_pose(),
-            first_stage_pose,
-            carriage_pose,
-            self.pivot.get_component_pose(carriage_pose)
-        ])
-
-        known_coral = []
-        if self.intake.has_coral() or utils.is_simulation():
-            intake_coral_pose = (Pose3d(self.drivetrain.get_state().pose)
-                                 .transformBy(Transform3d(Pose3d(), pivot_pose))
-                                 .transformBy(Transform3d(0.214048*1.75, 0.0, 0, Rotation3d(0, -degreesToRadians(36), 0))))
-            known_coral.append(intake_coral_pose)
-
-        self._coral.set(known_coral)
-
     def simulationPeriodic(self) -> None:
         self._elevator_mech.setLength(self.elevator.get_height())
         self._pivot_mech.setAngle(self.pivot.get_position() * 360 - 90)

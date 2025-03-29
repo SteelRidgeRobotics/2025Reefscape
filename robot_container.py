@@ -114,7 +114,7 @@ class RobotContainer:
     def _setup_swerve_requests(self):
         common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.VELOCITY
-        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.MOTION_MAGIC_EXPO)
+        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
         self._field_centric: swerve.requests.FieldCentric = common_settings(swerve.requests.FieldCentric())
         self._robot_centric: swerve.requests.RobotCentric = common_settings(swerve.requests.RobotCentric())
 

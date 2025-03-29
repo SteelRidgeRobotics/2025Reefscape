@@ -1,6 +1,7 @@
 from phoenix6 import CANBus, configs, hardware, signals, swerve, units
-from subsystems.swerve import SwerveSubsystem
 from wpimath.units import inchesToMeters
+
+from subsystems.swerve import SwerveSubsystem
 
 
 class TunerConstants:
@@ -15,23 +16,23 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(50.891)
+        .with_k_p(100)
         .with_k_i(0)
-        .with_k_d(3.0703)
-        .with_k_s(0.26295)
-        .with_k_v(2.5787)
-        .with_k_a(0.068813)
+        .with_k_d(0.3)
+        .with_k_s(0.14)
+        .with_k_v(1.91)
+        .with_k_a(0)
         .with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
     )
     # When using closed-loop control, the drive motor uses the control
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0.17238)
+        .with_k_p(0.1)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0.19179)
-        .with_k_v(0.12549)
+        .with_k_s(0.17)
+        .with_k_v(0.121)
     )
 
     # The closed-loop output type to use for the steer motors;
