@@ -82,7 +82,7 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.289
+        FUNNEL_INTAKE_ANGLE = 0.28
         ALGAE_INTAKE_ANGLE = -0.05
         HIGH_SCORING_ANGLE =  0.21
         MID_SCORING_ANGLE = 0.22
@@ -174,15 +174,15 @@ class Constants:
 
         MAX_DISTANCE = 3.6343
         
-        TRANSLATION_P = 12
+        TRANSLATION_P = 9
         TRANSLATION_I = 0
         TRANSLATION_D = 0.1
         
-        HEADING_P = 2
+        HEADING_P = 1
         HEADING_I = 0
         HEADING_D = 0.2
         
-        HEADING_TOLERANCE = 2
+        HEADING_TOLERANCE = 25
 
-        VELOCITY_DEADBAND = 0.1
+        VELOCITY_DEADBAND = 0.2
         ROTATIONAL_DEADBAND = 0.02

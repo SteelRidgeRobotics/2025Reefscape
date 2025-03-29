@@ -86,7 +86,7 @@
     },
     {
       "name": "Raise Elevator",
-      "minWaypointRelativePos": 1.85,
+      "minWaypointRelativePos": 1.5677570093457955,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 1.25,
@@ -135,7 +135,7 @@
     },
     {
       "name": "Raise and Hold",
-      "waypointRelativePos": 2.0776152980877387,
+      "waypointRelativePos": 1.7453271028037463,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -159,10 +159,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.75,
-    "maxAcceleration": 6.0,
-    "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 1200.0,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 500.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -176,5 +176,5 @@
     "velocity": 0,
     "rotation": -119.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

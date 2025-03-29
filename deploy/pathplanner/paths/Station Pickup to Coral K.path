@@ -8,55 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5478881908280124,
-        "y": 7.01883706777411
+        "x": 2.5620512820512813,
+        "y": 6.749615384615384
       },
       "isLocked": false,
       "linkedName": "Station"
     },
     {
       "anchor": {
-        "x": 4.000362297236766,
-        "y": 6.3942263387668525
+        "x": 4.027564102564102,
+        "y": 5.1912179487179495
       },
       "prevControl": {
-        "x": 3.2881452722067976,
-        "y": 6.689951021453069
-      },
-      "nextControl": {
-        "x": 4.712579322266734,
-        "y": 6.098501656080636
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.284943181818181,
-        "y": 5.06703125
-      },
-      "prevControl": {
-        "x": 5.784943181818181,
-        "y": 5.933056653784439
+        "x": 3.2225641025641014,
+        "y": 6.140705128205128
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral I"
+      "linkedName": "Coral K"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.8596802841918314,
-      "rotationDegrees": -119.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Raise Elevator",
-      "minWaypointRelativePos": 0.9538807649043841,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.45404984423676287,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.25,
+        "maxVelocity": 1.0,
         "maxAcceleration": 1.25,
         "maxAngularVelocity": 180.0,
         "maxAngularAcceleration": 500.0,
@@ -69,7 +48,7 @@
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 1.3138357705286854,
+      "waypointRelativePos": 0.25155763239875606,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -80,8 +59,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.75,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 2.465,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -89,7 +68,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": null,
@@ -97,5 +76,5 @@
     "velocity": 0,
     "rotation": -54.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

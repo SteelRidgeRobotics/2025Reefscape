@@ -1,3 +1,4 @@
+import math
 from typing import Callable, Self
 
 from phoenix6 import StatusCode
@@ -69,11 +70,12 @@ class DriverAssist(SwerveRequest):
         corrected_velocity = Translation2d(rotated_velocity.X(), horizontal_velocity)
 
         field_relative_velocity = corrected_velocity.rotateBy(target_direction)
+        magnitude = math.sqrt(self.velocity_x ** 2 + self.velocity_y ** 2)
 
         return (
             self._field_centric_facing_angle
-            .with_velocity_x(field_relative_velocity.X())
-            .with_velocity_y(field_relative_velocity.Y())
+            .with_velocity_x(field_relative_velocity.X() * magnitude)
+            .with_velocity_y(field_relative_velocity.Y() * magnitude)
             .with_target_direction(
                 target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE
                 else current_pose.rotation()

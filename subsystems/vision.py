@@ -128,6 +128,6 @@ class VisionSubsystem(StateSubsystem):
             return 0.5, 0.5, 0.5
 
         avg_dist = sum(f.dist_to_camera for f in estimate.raw_fiducials) / estimate.tag_count
-        factor = 1 + (avg_dist ** 2 / 30)
+        factor = 0.9 + (avg_dist ** 2 / 30)
 
         return 0.5 * factor, 0.5 * factor, math.inf if estimate.is_megatag_2 else (0.5 * factor)

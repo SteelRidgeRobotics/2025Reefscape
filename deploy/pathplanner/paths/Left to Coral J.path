@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.911356724478738,
-        "y": 6.787114113140313
+        "x": 5.534358974358975,
+        "y": 6.470961538461538
       },
       "isLocked": false,
       "linkedName": "Man Start"
@@ -20,8 +20,8 @@
         "y": 5.220414438951359
       },
       "prevControl": {
-        "x": 5.214201520355718,
-        "y": 5.610125870654357
+        "x": 5.489201520355718,
+        "y": 6.086439842735797
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,14 +30,14 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.788632326820613,
+      "waypointRelativePos": 0.5200525969756734,
       "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.4026996625421896,
+      "minWaypointRelativePos": 0.239096573208729,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.0,
@@ -53,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "L4 Coral",
-      "waypointRelativePos": 0.43194600674916184,
+      "waypointRelativePos": 0.26090342679128514,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -65,9 +65,9 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.75,
-    "maxAcceleration": 6.0,
-    "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 1200.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 270.0,
+    "maxAngularAcceleration": 500.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -81,5 +81,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
