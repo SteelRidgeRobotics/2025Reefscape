@@ -344,8 +344,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ),
             PPHolonomicDriveController(
-                PIDConstants(5.0, 0.0, 0.0),
-                PIDConstants(5.0, 0.0, 0.0),
+                PIDConstants(2.75, 0.0, 0.0),
+                PIDConstants(2.75, 0.0, 0.0),
                 period=0.004
             ),
             config,

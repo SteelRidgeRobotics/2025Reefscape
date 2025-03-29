@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Station Pickup to Coral I"
+            "pathName": "Station Pickup to Coral K"
           }
         },
         {
@@ -113,7 +113,45 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral I Back"
+            "pathName": "Coral K to Station"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Funnel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Funnel Intake"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Default"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Hold"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
