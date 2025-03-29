@@ -65,11 +65,11 @@ class Constants:
 
         GEAR_RATIO = 31/4
         GAINS = (Slot0Configs()
-            .with_k_g(0.36)
+            .with_k_g(0.352)
             .with_k_p(40)
             .with_k_i(0.0)
             .with_k_d(0.0)
-            .with_k_s(0.11)
+            .with_k_s(0.062)
             .with_k_v(0.0)
             .with_k_a(0.0)
             .with_gravity_type(GravityTypeValue.ELEVATOR_STATIC)
@@ -82,7 +82,7 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543
-        FUNNEL_INTAKE_ANGLE = 0.333
+        FUNNEL_INTAKE_ANGLE = 0.289
         ALGAE_INTAKE_ANGLE = -0.05
         HIGH_SCORING_ANGLE =  0.21
         MID_SCORING_ANGLE = 0.22

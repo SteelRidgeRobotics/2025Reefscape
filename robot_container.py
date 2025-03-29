@@ -50,6 +50,9 @@ class RobotContainer:
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.climber, self.intake
         )
 
+        self._cached_left_branch = None
+        self._cached_right_branch = None
+
         self._setup_swerve_requests()
         self._pathplanner_setup()
         self._setup_controller_bindings()
@@ -112,9 +115,9 @@ class RobotContainer:
         return pose
 
     def _setup_swerve_requests(self):
-        common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(self._max_speed * 0.01).with_rotational_deadband(self._max_angular_rate * 0.01).with_drive_request_type(
+        common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(0).with_rotational_deadband(0).with_drive_request_type(
             swerve.SwerveModule.DriveRequestType.VELOCITY
-        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.MOTION_MAGIC_EXPO)
+        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
         self._field_centric: swerve.requests.FieldCentric = common_settings(swerve.requests.FieldCentric())
         self._robot_centric: swerve.requests.RobotCentric = common_settings(swerve.requests.RobotCentric())
 
@@ -122,7 +125,6 @@ class RobotContainer:
             DriverAssist()
             .with_translation_pid(Constants.AutoAlignConstants.TRANSLATION_P, Constants.AutoAlignConstants.TRANSLATION_I, Constants.AutoAlignConstants.TRANSLATION_D)
             .with_heading_pid(Constants.AutoAlignConstants.HEADING_P, Constants.AutoAlignConstants.HEADING_I, Constants.AutoAlignConstants.HEADING_D)
-            .with_max_distance(Constants.AutoAlignConstants.MAX_DISTANCE)
             .with_elevator_up_function(lambda: not self.elevator.get_current_state() == self.elevator.SubsystemState.DEFAULT)
             )
         
@@ -148,7 +150,6 @@ class RobotContainer:
             )
         )
 
-        
         self._driver_controller.leftBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._robot_centric
@@ -171,25 +172,27 @@ class RobotContainer:
             )
         )
 
-        Trigger(lambda: self._driver_controller.getLeftTriggerAxis() > 0.75).whileTrue(
+        Trigger(lambda: self._driver_controller.getLeftTriggerAxis() > 0.75).onTrue(
+            self.drivetrain.runOnce(lambda: setattr(self, "_cached_left_branch", self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.LEFT)))
+        ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
-                .with_fallback(self._field_centric)
-                .with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.LEFT))
+                .with_target_pose(self._cached_left_branch)
             )
         )
 
-        Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).whileTrue(
+        Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).onTrue(
+            self.drivetrain.runOnce(lambda: setattr(self, "_cached_right_branch", self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.RIGHT)))
+        ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
                 .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
-                .with_fallback(self._field_centric)
-                .with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.RIGHT))
+                .with_target_pose(self._cached_right_branch)
             )
         )
 

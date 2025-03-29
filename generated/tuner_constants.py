@@ -1,6 +1,7 @@
 from phoenix6 import CANBus, configs, hardware, signals, swerve, units
-from subsystems.swerve import SwerveSubsystem
 from wpimath.units import inchesToMeters
+
+from subsystems.swerve import SwerveSubsystem
 
 
 class TunerConstants:
@@ -15,23 +16,23 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(50.891)
+        .with_k_p(100)
         .with_k_i(0)
-        .with_k_d(3.0703)
-        .with_k_s(0.26295)
-        .with_k_v(2.5787)
-        .with_k_a(0.068813)
+        .with_k_d(0.3)
+        .with_k_s(0.14)
+        .with_k_v(1.91)
+        .with_k_a(0)
         .with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
     )
     # When using closed-loop control, the drive motor uses the control
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0.17238)
+        .with_k_p(0.1)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0.19179)
-        .with_k_v(0.12549)
+        .with_k_s(0.17)
+        .with_k_v(0.121)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -131,7 +132,7 @@ class TunerConstants:
     _front_left_drive_motor_id = 3
     _front_left_steer_motor_id = 7
     _front_left_encoder_id = 7
-    _front_left_encoder_offset: units.rotation = 0.14990234375
+    _front_left_encoder_offset: units.rotation = 0.155029296875
     _front_left_steer_motor_inverted = True
     _front_left_encoder_inverted = False
 
@@ -142,7 +143,7 @@ class TunerConstants:
     _front_right_drive_motor_id = 1
     _front_right_steer_motor_id = 5
     _front_right_encoder_id = 5
-    _front_right_encoder_offset: units.rotation = -0.28076171875
+    _front_right_encoder_offset: units.rotation = -0.29833984375
     _front_right_steer_motor_inverted = True
     _front_right_encoder_inverted = False
 
@@ -153,7 +154,7 @@ class TunerConstants:
     _back_left_drive_motor_id = 4
     _back_left_steer_motor_id = 8
     _back_left_encoder_id = 8
-    _back_left_encoder_offset: units.rotation = -0.173583984375
+    _back_left_encoder_offset: units.rotation = -0.23046875
     _back_left_steer_motor_inverted = True
     _back_left_encoder_inverted = False
 
@@ -164,7 +165,7 @@ class TunerConstants:
     _back_right_drive_motor_id = 2
     _back_right_steer_motor_id = 6
     _back_right_encoder_id = 6
-    _back_right_encoder_offset: units.rotation = -0.06982421875
+    _back_right_encoder_offset: units.rotation = -0.06689453125
     _back_right_steer_motor_inverted = True
     _back_right_encoder_inverted = False
 

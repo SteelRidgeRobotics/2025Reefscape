@@ -1,12 +1,12 @@
 from typing import Callable, Self
 
 from phoenix6 import StatusCode
-from phoenix6.swerve import SwerveModule, SwerveControlParameters
-from phoenix6.swerve.requests import FieldCentric, FieldCentricFacingAngle, ForwardPerspectiveValue, SwerveRequest
+from phoenix6.swerve import SwerveModule, SwerveControlParameters, Translation2d
+from phoenix6.swerve.requests import FieldCentricFacingAngle, ForwardPerspectiveValue, SwerveRequest
 from phoenix6.swerve.utility.phoenix_pid_controller import PhoenixPIDController
-from phoenix6.units import meters_per_second, meter, radians_per_second
+from phoenix6.units import meters_per_second, radians_per_second
 from wpilib import DriverStation
-from wpimath.geometry import Pose2d, Translation2d
+from wpimath.geometry import Pose2d
 
 from constants import Constants
 
@@ -30,9 +30,6 @@ class DriverAssist(SwerveRequest):
 
         self.forward_perspective: ForwardPerspectiveValue = ForwardPerspectiveValue.OPERATOR_PERSPECTIVE  # Operator perspective is forward
 
-        self.fallback: FieldCentric = FieldCentric()  # Fallback if we are too far from the target pose
-        self.max_distance: meter = 0  # Max distance we can be from the target pose
-
         self.target_pose: Pose2d = Pose2d()
 
         self.translation_controller = PhoenixPIDController(0.0, 0.0, 0.0)  # PID controller for translation
@@ -42,46 +39,45 @@ class DriverAssist(SwerveRequest):
         self._field_centric_facing_angle = FieldCentricFacingAngle()
         self.heading_controller = self._field_centric_facing_angle.heading_controller
 
-    @staticmethod
-    def _get_distance_to_pose(robot_pose: Pose2d, target_pose: Pose2d) -> float:
-        """
-        Get distance from the robot to a pose. This is used to determine whether we should align or not.
-        """
-        return (target_pose.X() - robot_pose.X()) ** 2 + (target_pose.Y() - robot_pose.Y()) ** 2
-
     def apply(self, parameters: SwerveControlParameters, modules: list[SwerveModule]) -> StatusCode:
         current_pose = parameters.current_pose
         alliance = DriverStation.getAlliance()
 
-        distance_to_target = self._get_distance_to_pose(current_pose, self.target_pose)
-        if distance_to_target > self.max_distance ** 2:
-            return self.fallback.with_velocity_x(self.velocity_x).with_velocity_y(self.velocity_y).with_rotational_rate(self.rotational_rate).apply(parameters, modules)
-
         target_direction = self.target_pose.rotation() + parameters.operator_forward_direction
-        rotated_velocity = Translation2d(self.velocity_x, self.velocity_y).rotateBy(-target_direction)
 
-        velocity_towards_pose = rotated_velocity.X()
+        cos_theta = target_direction.cos()
+        sin_theta = target_direction.sin()
 
-        current_y = current_pose.translation().rotateBy(-target_direction).Y()
-        target_y = self.target_pose.translation().rotateBy(-target_direction).Y()
-
-        # Adjust for red alliance to ensure consistent motion correction
-        horizontal_velocity = self.translation_controller.calculate(
-            -current_y if alliance == DriverStation.Alliance.kRed else current_y,
-            -target_y if alliance == DriverStation.Alliance.kRed else target_y,
-            parameters.timestamp
+        rotated_velocity = Translation2d(
+            self.velocity_x * cos_theta + self.velocity_y * sin_theta,
+            -self.velocity_x * sin_theta + self.velocity_y * cos_theta
         )
+
+        current_transformed = current_pose.translation().rotateBy(-target_direction)
+        target_transformed = self.target_pose.translation().rotateBy(-target_direction)
+
+        y_error = current_transformed.Y() - target_transformed.Y()
+
+        if alliance == DriverStation.Alliance.kRed:
+            y_error = -y_error
+
+        horizontal_velocity = self.translation_controller.calculate(y_error, 0, parameters.timestamp)
 
         if self.elevator_up_function():
             horizontal_velocity *= 0.3333
 
-        field_relative_velocity = Translation2d(velocity_towards_pose, horizontal_velocity).rotateBy(target_direction)
+        corrected_velocity = Translation2d(rotated_velocity.X(), horizontal_velocity)
+
+        field_relative_velocity = corrected_velocity.rotateBy(target_direction)
 
         return (
             self._field_centric_facing_angle
             .with_velocity_x(field_relative_velocity.X())
             .with_velocity_y(field_relative_velocity.Y())
-            .with_target_direction(target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE else current_pose.rotation())
+            .with_target_direction(
+                target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE
+                else current_pose.rotation()
+            )
             .with_deadband(self.deadband)
             .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)
@@ -90,18 +86,6 @@ class DriverAssist(SwerveRequest):
             .with_forward_perspective(self.forward_perspective)
             .apply(parameters, modules)
         )
-
-    def with_fallback(self, fallback) -> Self:
-        """
-        Modifies the fallback request and returns this request for method chaining.
-
-        :param fallback: The fallback request
-        :type fallback: SwerveRequest
-        :returns: This request
-        :rtype: DriverAssist
-        """
-        self.fallback = fallback
-        return self
 
     def with_target_pose(self, new_target_pose: Pose2d) -> Self:
         """
@@ -112,18 +96,6 @@ class DriverAssist(SwerveRequest):
         :rtype: DriverAssist
         """
         self.target_pose = new_target_pose
-        return self
-
-    def with_max_distance(self, max_distance: meter) -> Self:
-        """
-        Modifies the maximum distance we can be away from the target pose to be considered "close enough" (in meters) and returns this request for method chaining.
-
-        :param max_distance: The maximum distance we can be away from the target pose to be considered "close enough"
-        :type max_distance: meter
-        :returns: This request
-        :rtype: DriverAssist
-        """
-        self.max_distance = max_distance
         return self
 
     def with_velocity_x(self, velocity_x: meters_per_second) -> Self:
