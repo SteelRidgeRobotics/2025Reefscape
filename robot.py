@@ -1,9 +1,10 @@
 import os.path
 
 from commands2 import CommandScheduler, TimedCommandRobot
+from cscore import CameraServer
 from ntcore import NetworkTableInstance
 from phoenix6 import SignalLogger
-from wpilib import DataLogManager, DriverStation, Timer, CameraServer
+from wpilib import DataLogManager, DriverStation, Timer
 from wpinet import WebServer, PortForwarder
 
 from constants import Constants
@@ -24,7 +25,8 @@ class Leviathan(TimedCommandRobot):
         DataLogManager.start(period=0.25)
         DriverStation.startDataLog(DataLogManager.getLog())
 
-        CameraServer.launch()
+        CameraServer.startAutomaticCapture()
+        CameraServer.startAutomaticCapture()
 
         WebServer.getInstance().start(5800, self.get_deploy_directory())
         port_forwarder = PortForwarder.getInstance()
