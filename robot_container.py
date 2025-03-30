@@ -1,25 +1,23 @@
 import os
-from typing import Callable
 
 import commands2
 import commands2.button
 from commands2 import cmd, InstantCommand
 from commands2.button import CommandXboxController, Trigger
-from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import NamedCommands, PathPlannerAuto
-from phoenix6 import SignalLogger, swerve, utils
+from phoenix6 import swerve, utils
 from wpilib import DriverStation, SendableChooser, XboxController, SmartDashboard, getDeployDirectory
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.units import rotationsToRadians
 
 from constants import Constants
 from generated.tuner_constants import TunerConstants
+from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
-from subsystems.climber import ClimberSubsystem
 from subsystems.swerve.requests import DriverAssist
 from subsystems.vision import VisionSubsystem
 
@@ -91,7 +89,6 @@ class RobotContainer:
         self._auto_chooser.onChange(
             lambda _: self._set_correct_swerve_position()
         )
-        # Add basic leave
         self._auto_chooser.addOption("Basic Leave",
             self.drivetrain.apply_request(lambda: self._robot_centric.with_velocity_x(1)).withTimeout(1.0)
         )
@@ -115,18 +112,31 @@ class RobotContainer:
         return pose
 
     def _setup_swerve_requests(self):
-        common_settings: Callable[[swerve.requests.SwerveRequest], swerve.requests.SwerveRequest] = lambda req: req.with_deadband(0).with_rotational_deadband(0).with_drive_request_type(
-            swerve.SwerveModule.DriveRequestType.VELOCITY
-        ).with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
-        self._field_centric: swerve.requests.FieldCentric = common_settings(swerve.requests.FieldCentric())
-        self._robot_centric: swerve.requests.RobotCentric = common_settings(swerve.requests.RobotCentric())
+        self._field_centric = (
+            swerve.requests.FieldCentric()
+            .with_deadband(0)
+            .with_rotational_deadband(0)
+            .with_drive_request_type(swerve.SwerveModule.DriveRequestType.VELOCITY)
+            .with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
+        )
 
-        self._driver_assist: DriverAssist = common_settings(
+        self._robot_centric: swerve.requests.RobotCentric = (
+            swerve.requests.RobotCentric()
+            .with_deadband(0)
+            .with_rotational_deadband(0)
+            .with_drive_request_type(swerve.SwerveModule.DriveRequestType.VELOCITY)
+            .with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
+        )
+
+        self._driver_assist: DriverAssist = (
             DriverAssist()
+            .with_deadband(0)
+            .with_rotational_deadband(self._max_angular_rate * 0.02)
+            .with_drive_request_type(swerve.SwerveModule.DriveRequestType.VELOCITY)
+            .with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
             .with_translation_pid(Constants.AutoAlignConstants.TRANSLATION_P, Constants.AutoAlignConstants.TRANSLATION_I, Constants.AutoAlignConstants.TRANSLATION_D)
             .with_heading_pid(Constants.AutoAlignConstants.HEADING_P, Constants.AutoAlignConstants.HEADING_I, Constants.AutoAlignConstants.HEADING_D)
-            .with_elevator_up_function(lambda: not self.elevator.get_current_state() == self.elevator.SubsystemState.DEFAULT)
-            )
+        )
         
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
@@ -179,7 +189,6 @@ class RobotContainer:
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
                 .with_target_pose(self._cached_left_branch)
             )
         )
@@ -191,27 +200,11 @@ class RobotContainer:
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_rotational_rate(-self._driver_controller.getRightX() * self._max_angular_rate)
                 .with_target_pose(self._cached_right_branch)
             )
         )
 
         self._driver_controller.start().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric()))
-
-        self._setup_sysid_bindings(
-            self._driver_controller, self.drivetrain,
-            self._driver_controller.y(), self._driver_controller.a()
-        )
-
-        self._setup_sysid_bindings(
-            self._function_controller, self.elevator,
-            self._function_controller.y(), self._function_controller.a()
-        )
-
-        self._setup_sysid_bindings(
-            self._function_controller, self.pivot,
-            self._function_controller.b(), self._function_controller.x()
-        )
 
         goal_bindings = {
             self._function_controller.y(): self.superstructure.Goal.L4_CORAL,
@@ -287,20 +280,6 @@ class RobotContainer:
         ).onFalse(
             self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
         )
-
-    def _setup_sysid_bindings(self, controller, subsystem, forward_btn, reverse_btn):
-        forward_dynamic = subsystem.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        reverse_dynamic = subsystem.sys_id_dynamic(SysIdRoutine.Direction.kReverse)
-        forward_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        reverse_quasistatic = subsystem.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
-
-        # Dynamic Tests
-        forward_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
-        reverse_btn.onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_dynamic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
-
-        # Quasistatic Tests (POV Up for forward, POV Down for reverse)
-        controller.back().and_(forward_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(forward_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
-        controller.back().and_(reverse_btn).onTrue(commands2.InstantCommand(lambda: SignalLogger.start())).whileTrue(reverse_quasistatic.onlyIf(lambda: not DriverStation.isFMSAttached() and DriverStation.isTest()))
 
     def get_autonomous_command(self) -> commands2.Command:
         return self._auto_chooser.getSelected()

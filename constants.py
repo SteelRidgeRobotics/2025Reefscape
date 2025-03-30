@@ -171,9 +171,6 @@ class Constants:
         STATOR_CURRENT = 50
     
     class AutoAlignConstants:
-
-        MAX_DISTANCE = 3.6343
-        
         TRANSLATION_P = 9
         TRANSLATION_I = 0
         TRANSLATION_D = 0.1
@@ -181,8 +178,3 @@ class Constants:
         HEADING_P = 1
         HEADING_I = 0
         HEADING_D = 0.2
-        
-        HEADING_TOLERANCE = 25
-
-        VELOCITY_DEADBAND = 0.2
-        ROTATIONAL_DEADBAND = 0.02
