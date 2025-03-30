@@ -11,7 +11,7 @@ from pathplannerlib.logging import PathPlannerLogging
 from phoenix6 import swerve, units, utils, SignalLogger
 from phoenix6.swerve.requests import ApplyRobotSpeeds
 from phoenix6.swerve.swerve_drivetrain import DriveMotorT, SteerMotorT, EncoderT
-from wpilib import DriverStation, Notifier, RobotController, Field2d, SmartDashboard
+from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
@@ -216,14 +216,8 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._sim_notifier: Notifier | None = None
         self._last_sim_time: units.second = 0.0
 
-        self._field = Field2d()
-        SmartDashboard.putData("Field", self._field)
-        self._field.setRobotPose(Pose2d())
-
         # Keep track if we've ever applied the operator perspective before or not
         self._has_applied_operator_perspective = False
-
-        self._closest_left_branch, self._closest_right_branch = Pose2d(), Pose2d()
 
         table = NetworkTableInstance.getDefault().getTable("Telemetry")
 
@@ -396,7 +390,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
                 self._has_applied_operator_perspective = True
 
         state = self.get_state_copy()
-        self._field.setRobotPose(state.pose)
         self._pose_pub.set(state.pose)
         self._odom_freq.set(1.0 / state.odometry_period)
         self._module_states_pub.set(state.module_states)
