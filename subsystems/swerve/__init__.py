@@ -232,7 +232,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._odom_freq = table.getDoubleTopic("odometry_frequency").publish()
         self._module_states_pub = table.getStructArrayTopic("module_states", SwerveModuleState).publish()
         self._module_targets_pub = table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
-        self._wheels_stalled_pub = table.getBooleanTopic("Wheels Stalled").publish()
 
         self._auto_target_pub = table.getStructTopic("auto_target", Pose2d).publish()
         self._auto_path_pub = table.getStructArrayTopic("auto_path", Pose2d).publish()
@@ -372,10 +371,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         return self._sys_id_routine_to_apply.dynamic(direction)
 
     def get_closest_branch(self, branch_side: BranchSide) -> Pose2d:
-        if branch_side == self.BranchSide.LEFT:
-            closest_branch =  self._closest_left_branch
-        else:
-            closest_branch = self._closest_right_branch
+        closest_branch = min(self._branch_targets[DriverStation.getAlliance()][branch_side], key=lambda pose: self.get_distance_to_line(self.get_state().pose, pose))
         self._closest_branch_pub.set(closest_branch)
         return closest_branch
 
@@ -406,20 +402,6 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         self._module_states_pub.set(state.module_states)
         self._module_targets_pub.set(state.module_targets)
         self._speeds_pub.set(state.speeds)
-
-        modules_stalled = 0
-        for module in self.modules:
-            target_speed = abs(module.get_target_state().speed)
-            current_speed = abs(module.get_current_state().speed)
-
-            if 0 != target_speed > 0 and current_speed < 1e-5:
-                modules_stalled += 1
-        self._wheels_stalled_pub.set(modules_stalled >= 3)
-
-        # Calculate the closest branch
-        if alliance_color:
-            self._closest_left_branch = min(self._branch_targets[alliance_color][self.BranchSide.LEFT], key=lambda pose: self.get_distance_to_line(state.pose, pose))
-            self._closest_right_branch = min(self._branch_targets[alliance_color][self.BranchSide.RIGHT], key=lambda pose: self.get_distance_to_line(state.pose, pose))
 
     @staticmethod
     def get_distance_to_line(robot_pose: Pose2d, target_pose: Pose2d) -> float:
