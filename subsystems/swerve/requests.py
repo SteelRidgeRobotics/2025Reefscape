@@ -53,7 +53,7 @@ class DriverAssist(SwerveRequest):
             .with_velocity_y(field_relative_velocity.Y())
             .with_target_direction(target_rotation)
             .with_deadband(self.deadband)
-            .with_rotational_deadband(self.rotational_deadband / field_relative_velocity.norm())
+            .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)
             .with_steer_request_type(self.steer_request_type)
             .with_desaturate_wheel_speeds(self.desaturate_wheel_speeds)
