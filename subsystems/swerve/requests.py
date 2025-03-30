@@ -36,22 +36,37 @@ class DriverAssist(SwerveRequest):
 
     def apply(self, parameters: SwerveControlParameters, modules: list[SwerveModule]) -> StatusCode:
         current_pose = parameters.current_pose
-        target_rotation = self.target_pose.rotation() + parameters.operator_forward_direction
+        target_pose = self.target_pose
+        op_dir = parameters.operator_forward_direction
+        vel_x = self.velocity_x
+        vel_y = self.velocity_y
+        controller = self.translation_controller
+        timestamp = parameters.timestamp
 
-        y_error = current_pose.translation().rotateBy(-target_rotation).Y() - self.target_pose.translation().rotateBy(-target_rotation).Y()
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            y_error *= -1
+        target_rot = target_pose.rotation() + op_dir
+        neg_rot = -target_rot
 
-        field_relative_velocity = Translation2d(
-            self.velocity_x * target_rotation.cos() + self.velocity_y * target_rotation.sin(),
-            self.translation_controller.calculate(y_error, 0, parameters.timestamp) * 0.333
-        ).rotateBy(target_rotation)
+        current_trans = current_pose.translation()
+        target_trans = target_pose.translation()
+        rotated_current_y = current_trans.rotateBy(neg_rot).Y()
+        rotated_target_y = target_trans.rotateBy(neg_rot).Y()
+        y_error = rotated_current_y - rotated_target_y
 
+        y_error *= -1 if DriverStation.getAlliance() == DriverStation.Alliance.kRed else 1
+
+        cos_rot = target_rot.cos()
+        sin_rot = target_rot.sin()
+
+        controller_output = controller.calculate(y_error, 0, timestamp) * 0.333
+        frv_x = vel_x * cos_rot + vel_y * sin_rot
+        frv_y = controller_output
+        field_relative_velocity = Translation2d(frv_x, frv_y).rotateBy(target_rot)
+
+        builder = self._field_centric_facing_angle
         return (
-            self._field_centric_facing_angle
-            .with_velocity_x(field_relative_velocity.X())
+            builder.with_velocity_x(field_relative_velocity.X())
             .with_velocity_y(field_relative_velocity.Y())
-            .with_target_direction(target_rotation)
+            .with_target_direction(target_rot)
             .with_deadband(self.deadband)
             .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)

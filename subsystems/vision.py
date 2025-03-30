@@ -55,45 +55,34 @@ class VisionSubsystem(StateSubsystem):
     def periodic(self):
         super().periodic()
 
-        if (
-                self._subsystem_state is self.SubsystemState.NO_ESTIMATES or
-                abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720
-        ):
+        if (self._subsystem_state is self.SubsystemState.NO_ESTIMATES or
+                abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720):
             return
 
         try:
-            results = list(self._executor.map(self._process_camera, self._cameras))
+            results = [r for r in self._executor.map(self._process_camera, self._cameras) if r[1] and r[1].tag_count > 0]
         except Exception as e:
             DataLogManager.log(f"Vision processing execution failed: {e}")
-            return
+            results = []
 
-        valid_results = [(est.pose, est) for _, est in results if est and est.tag_count > 0]
-
-        if not valid_results:
+        if not results:
             self._final_measurement_pub.set(Pose2d())
             self._vision_measurements.set([])
             self._visible_tags_pub.set([])
             return
 
-        visible_tags = list(
-            itertools.chain.from_iterable(
-                map(lambda fid: Constants.FIELD_LAYOUT.getTagPose(fid.fiducial_id), est.raw_fiducials)
-                for _, est in valid_results
-            )
-        )
+        best_estimate = max(results, key=lambda x: self._is_better_estimate(x[1], None))[1]
 
-        best_estimate = max(valid_results, key=lambda x: self._is_better_estimate(x[1], None))[1]
+        field_layout = Constants.FIELD_LAYOUT
+        visible_tags = [
+            field_layout.getTagPose(fid.id)
+            for est in (r[1] for r in results)
+            for fid in est.raw_fiducials
+        ]
 
-        updates = defaultdict(
-            lambda: None, {
-                self._final_measurement_pub: best_estimate.pose,
-                self._vision_measurements: list(map(lambda x: x[0], valid_results)),
-                self._visible_tags_pub: visible_tags,
-            }
-        )
-
-        for pub, value in updates.items():
-            pub.set(value)
+        self._final_measurement_pub.set(best_estimate.pose)
+        self._vision_measurements.set([r[0] for r in results])
+        self._visible_tags_pub.set(visible_tags)
 
         self._swerve.add_vision_measurement(
             best_estimate.pose,
