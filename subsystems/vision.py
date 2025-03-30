@@ -1,5 +1,4 @@
 import concurrent.futures
-import heapq
 import itertools
 import math
 from collections import defaultdict
@@ -83,7 +82,7 @@ class VisionSubsystem(StateSubsystem):
             )
         )
 
-        best_estimate = heapq.nlargest(1, valid_results, key=lambda x: self._is_better_estimate(x[1], None))[0][1]
+        best_estimate = max(valid_results, key=lambda x: self._is_better_estimate(x[1], None))[1]
 
         updates = defaultdict(
             lambda: None, {
