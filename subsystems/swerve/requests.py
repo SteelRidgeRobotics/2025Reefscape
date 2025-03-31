@@ -15,7 +15,7 @@ class DriverAssist(SwerveRequest):
         self.velocity_x: meters_per_second = 0  # Velocity forward/back
         self.velocity_y: meters_per_second = 0  # Velocity left/right
 
-        self.target_pose = Pose2d()  # The target pose we align to
+        self._target_pose = Pose2d()  # The target pose we align to
 
         self.deadband: meters_per_second = 0  # Deadband on linear velocity
         self.rotational_deadband: radians_per_second = 0  # Deadband on angular velocity
@@ -27,16 +27,18 @@ class DriverAssist(SwerveRequest):
 
         self.forward_perspective: ForwardPerspectiveValue = ForwardPerspectiveValue.OPERATOR_PERSPECTIVE  # Operator perspective is forward
 
-        self.target_pose: Pose2d = Pose2d()
+        self._target_pose: Pose2d = Pose2d()
 
         self.translation_controller = PhoenixPIDController(0.0, 0.0, 0.0)  # PID controller for translation
 
         self._field_centric_facing_angle = FieldCentricFacingAngle()
         self.heading_controller = self._field_centric_facing_angle.heading_controller
 
+        self._target_pose = Pose2d()
+
     def apply(self, parameters: SwerveControlParameters, modules: list[SwerveModule]) -> StatusCode:
         current_pose = parameters.current_pose
-        target_pose = self.target_pose
+        target_pose = self._target_pose
         op_dir = parameters.operator_forward_direction
         vel_x = self.velocity_x
         vel_y = self.velocity_y
@@ -76,6 +78,14 @@ class DriverAssist(SwerveRequest):
             .apply(parameters, modules)
         )
 
+    @property
+    def target_pose(self) -> Pose2d:
+        return self._target_pose
+
+    @target_pose.setter
+    def target_pose(self, value: Pose2d) -> None:
+        self._target_pose = value
+
     def with_target_pose(self, new_target_pose: Pose2d) -> Self:
         """
         Modifies the pose to align with.
@@ -84,7 +94,7 @@ class DriverAssist(SwerveRequest):
         :return: This request
         :rtype: DriverAssist
         """
-        self.target_pose = new_target_pose
+        self._target_pose = new_target_pose
         return self
 
     def with_velocity_x(self, velocity_x: meters_per_second) -> Self:

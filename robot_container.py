@@ -18,6 +18,7 @@ from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.superstructure import Superstructure
+from subsystems.swerve import SwerveSubsystem
 from subsystems.swerve.requests import DriverAssist
 from subsystems.vision import VisionSubsystem
 
@@ -47,9 +48,6 @@ class RobotContainer:
         self.superstructure = Superstructure(
             self.drivetrain, self.pivot, self.elevator, self.funnel, self.vision, self.climber, self.intake
         )
-
-        self._cached_left_branch = None
-        self._cached_right_branch = None
 
         self._setup_swerve_requests()
         self._pathplanner_setup()
@@ -141,6 +139,9 @@ class RobotContainer:
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
 
+    def initialize_driver_assist(self, branch_side: SwerveSubsystem.BranchSide) -> None:
+        self._driver_assist._target_pose = self.drivetrain.get_closest_branch(branch_side)
+
     @staticmethod
     def rumble_command(controller: CommandXboxController, duration: float, intensity: float):
         return cmd.sequence(
@@ -183,24 +184,22 @@ class RobotContainer:
         )
 
         Trigger(lambda: self._driver_controller.getLeftTriggerAxis() > 0.75).onTrue(
-            self.drivetrain.runOnce(lambda: setattr(self, "_cached_left_branch", self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.LEFT)))
+            self.drivetrain.runOnce(lambda: self.initialize_driver_assist(self.drivetrain.BranchSide.LEFT))
         ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_target_pose(self._cached_left_branch)
             )
         )
 
         Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).onTrue(
-            self.drivetrain.runOnce(lambda: setattr(self, "_cached_right_branch", self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.RIGHT)))
+            self.drivetrain.runOnce(lambda: self.initialize_driver_assist(self.drivetrain.BranchSide.RIGHT))
         ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist
                 .with_velocity_x(-hid.getLeftY() * self._max_speed)
                 .with_velocity_y(-hid.getLeftX() * self._max_speed)
-                .with_target_pose(self._cached_right_branch)
             )
         )
 
