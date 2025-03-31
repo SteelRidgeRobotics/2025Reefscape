@@ -166,11 +166,11 @@ class RobotContainer:
         
         Trigger(lambda: self.intake.has_coral()).onTrue(
             self.rumble_command(self._driver_controller, 2, 0.75)
-            .alongWith(self.rumble_command(self._driver_controller, 2, 0.75))
+            .alongWith(self.rumble_command(self._function_controller, 2, 0.75))
             .alongWith(self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT))
         ).onFalse(
             self.rumble_command(self._driver_controller, 2, 0.75)
-            .alongWith(self.rumble_command(self._driver_controller, 2, 0.75))
+            .alongWith(self.rumble_command(self._function_controller, 2, 0.75))
         )
 
 
