@@ -37,10 +37,12 @@ class DriverAssist(SwerveRequest):
         if self.forward_perspective == ForwardPerspectiveValue.OPERATOR_PERSPECTIVE:
             target_rot += parameters.operator_forward_direction
 
+        # Get Y error (rotated to robot relative to align horizontally)
         y_error = parameters.current_pose.translation().rotateBy(-target_rot).Y() - self.target_pose.translation().rotateBy(-target_rot).Y()
         if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             y_error *= -1
 
+        # Rotate robot relative velocity back to field centric view
         field_relative_velocity = Translation2d(
             self.velocity_x * target_rot.cos() + self.velocity_y * target_rot.sin(),
             self.translation_controller.calculate(y_error, 0, parameters.timestamp) * 0.333
