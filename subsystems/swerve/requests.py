@@ -45,7 +45,7 @@ class DriverAssist(SwerveRequest):
         # Rotate robot relative velocity back to field centric view
         field_relative_velocity = Translation2d(
             self.velocity_x * target_rot.cos() + self.velocity_y * target_rot.sin(),
-            self.translation_controller.calculate(y_error, 0, parameters.timestamp) * 0.333
+            max(-1.5, min(self.translation_controller.calculate(y_error, 0, parameters.timestamp), 1.5)) # Clamp value to ensure we don't tip
         ).rotateBy(target_rot)
 
         return (self._field_centric_facing_angle
