@@ -1,5 +1,7 @@
 import concurrent.futures
+import itertools
 import math
+from collections import defaultdict
 from enum import Enum
 
 from phoenix6 import utils
@@ -53,46 +55,39 @@ class VisionSubsystem(StateSubsystem):
     def periodic(self):
         super().periodic()
 
-        state = self._subsystem_state
-        if state is self.SubsystemState.NO_ESTIMATES or abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720:
+        if (self._subsystem_state is self.SubsystemState.NO_ESTIMATES or
+                abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720):
             return
 
-        futures = [
-            self._executor.submit(self._process_camera, cam)
-            for cam in self._cameras
-        ]
+        try:
+            results = [r for r in self._executor.map(self._process_camera, self._cameras) if r[1] and r[1].tag_count > 0]
+        except Exception as e:
+            DataLogManager.log(f"Vision processing execution failed: {e}")
+            results = []
 
-        best_estimate = None
-        visible_tags = []
-        all_measurements = []
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                camera, estimate = future.result()
-                if not estimate or estimate.tag_count == 0:
-                    continue
-
-                visible_tags.extend(
-                    Constants.FIELD_LAYOUT.getTagPose(f.id) for f in estimate.raw_fiducials
-                )
-                all_measurements.append(estimate.pose)
-
-                if self._is_better_estimate(estimate, best_estimate):
-                    best_estimate = estimate
-            except Exception as e:
-                DataLogManager.log(f"Vision processing failed for a camera: {e}")
-
-        if best_estimate:
-            self._swerve.add_vision_measurement(
-                best_estimate.pose,
-                utils.fpga_to_current_time(best_estimate.timestamp_seconds),
-                self._get_dynamic_std_devs(best_estimate),
-            )
-            self._final_measurement_pub.set(best_estimate.pose)
-        else:
+        if not results:
             self._final_measurement_pub.set(Pose2d())
+            self._vision_measurements.set([])
+            self._visible_tags_pub.set([])
+            return
 
-        self._vision_measurements.set(all_measurements)
-        self._visible_tags_pub.set(list(visible_tags))
+        best_estimate = max(results, key=lambda x: self._is_better_estimate(x[1], None))[1]
+
+        self._final_measurement_pub.set(best_estimate.pose)
+        self._vision_measurements.set([r[0] for r in results])
+        
+        field_layout = Constants.FIELD_LAYOUT
+        self._visible_tags_pub.set([
+            field_layout.getTagPose(fid.id)
+            for est in (r[1] for r in results)
+            for fid in est.raw_fiducials
+        ])
+
+        self._swerve.add_vision_measurement(
+            best_estimate.pose,
+            utils.fpga_to_current_time(best_estimate.timestamp_seconds),
+            self._get_dynamic_std_devs(best_estimate),
+        )
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):

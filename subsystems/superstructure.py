@@ -3,19 +3,17 @@ from typing import Optional
 
 from commands2 import Command, Subsystem, cmd
 from ntcore import NetworkTableInstance
-from phoenix6 import utils
-from wpilib import DriverStation, Mechanism2d, Color8Bit, SmartDashboard, Timer
-from wpimath.geometry import Pose3d, Rotation3d, Transform3d
-from wpimath.units import degreesToRadians
+from wpilib import DriverStation
+from wpimath.geometry import Pose3d
 
 from constants import Constants
+from subsystems.climber import ClimberSubsystem
 from subsystems.elevator import ElevatorSubsystem
 from subsystems.funnel import FunnelSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.pivot import PivotSubsystem
 from subsystems.swerve import SwerveSubsystem
 from subsystems.vision import VisionSubsystem
-from subsystems.climber import ClimberSubsystem
 
 
 class Superstructure(Subsystem):
@@ -91,15 +89,6 @@ class Superstructure(Subsystem):
         table = NetworkTableInstance.getDefault().getTable("Superstructure")
         self._current_goal_pub = table.getStringTopic("Current Goal").publish()
         self._component_poses = table.getStructArrayTopic("Components", Pose3d).publish()
-        self._component_targets = table.getStructArrayTopic("Component Targets", Pose3d).publish()
-        self._coral = table.getStructArrayTopic("Known Coral", Pose3d).publish()
-
-        if utils.is_simulation():
-            self._superstructure_mechanism = Mechanism2d(1, 5, Color8Bit(0, 0, 105))
-            self._superstructure_root = self._superstructure_mechanism.getRoot("Root", 1 / 2, 0.125)
-            self._elevator_mech = self._superstructure_root.appendLigament("Elevator", 0.2794, 90, 5, Color8Bit(194, 194, 194))
-            self._pivot_mech = self._elevator_mech.appendLigament("Pivot", 0.635, 90, 4, Color8Bit(19, 122, 127))
-            SmartDashboard.putData("Superstructure Mechanism", self._superstructure_mechanism)
 
     def periodic(self):
         if DriverStation.isDisabled():
@@ -129,10 +118,6 @@ class Superstructure(Subsystem):
             pivot_pose,
             self.climber.get_component_pose()
         ])
-
-    def simulationPeriodic(self) -> None:
-        self._elevator_mech.setLength(self.elevator.get_height())
-        self._pivot_mech.setAngle(self.pivot.get_position() * 360 - 90)
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal

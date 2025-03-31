@@ -1,5 +1,4 @@
-import math
-from typing import Callable, Self
+from typing import Self
 
 from phoenix6 import StatusCode
 from phoenix6.swerve import SwerveModule, SwerveControlParameters, Translation2d
@@ -9,17 +8,12 @@ from phoenix6.units import meters_per_second, radians_per_second
 from wpilib import DriverStation
 from wpimath.geometry import Pose2d
 
-from constants import Constants
-
 
 class DriverAssist(SwerveRequest):
 
     def __init__(self) -> None:
         self.velocity_x: meters_per_second = 0  # Velocity forward/back
         self.velocity_y: meters_per_second = 0  # Velocity left/right
-        self.rotational_rate: radians_per_second = 0  # Angular rate, CCW positive
-
-        self.target_pose = Pose2d()  # The target pose we align to
 
         self.deadband: meters_per_second = 0  # Deadband on linear velocity
         self.rotational_deadband: radians_per_second = 0  # Deadband on angular velocity
@@ -31,55 +25,33 @@ class DriverAssist(SwerveRequest):
 
         self.forward_perspective: ForwardPerspectiveValue = ForwardPerspectiveValue.OPERATOR_PERSPECTIVE  # Operator perspective is forward
 
-        self.target_pose: Pose2d = Pose2d()
-
         self.translation_controller = PhoenixPIDController(0.0, 0.0, 0.0)  # PID controller for translation
 
-        self.elevator_up_function = lambda: False  # Callback for whether the elevator is up or not
+        self.target_pose: Pose2d = Pose2d() # Pose to align to
 
         self._field_centric_facing_angle = FieldCentricFacingAngle()
         self.heading_controller = self._field_centric_facing_angle.heading_controller
 
     def apply(self, parameters: SwerveControlParameters, modules: list[SwerveModule]) -> StatusCode:
-        current_pose = parameters.current_pose
-        alliance = DriverStation.getAlliance()
+        target_rot = self.target_pose.rotation()
+        if self.forward_perspective == ForwardPerspectiveValue.OPERATOR_PERSPECTIVE:
+            target_rot += parameters.operator_forward_direction
 
-        target_direction = self.target_pose.rotation() + parameters.operator_forward_direction
+        # Get Y error (rotated to robot relative to align horizontally)
+        y_error = parameters.current_pose.translation().rotateBy(-target_rot).Y() - self.target_pose.translation().rotateBy(-target_rot).Y()
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            y_error *= -1
 
-        cos_theta = target_direction.cos()
-        sin_theta = target_direction.sin()
+        # Rotate robot relative velocity back to field centric view
+        field_relative_velocity = Translation2d(
+            self.velocity_x * target_rot.cos() + self.velocity_y * target_rot.sin(),
+            max(-1.5, min(self.translation_controller.calculate(y_error, 0, parameters.timestamp), 1.5)) # Clamp value to ensure we don't tip
+        ).rotateBy(target_rot)
 
-        rotated_velocity = Translation2d(
-            self.velocity_x * cos_theta + self.velocity_y * sin_theta,
-            -self.velocity_x * sin_theta + self.velocity_y * cos_theta
-        )
-
-        current_transformed = current_pose.translation().rotateBy(-target_direction)
-        target_transformed = self.target_pose.translation().rotateBy(-target_direction)
-
-        y_error = current_transformed.Y() - target_transformed.Y()
-
-        if alliance == DriverStation.Alliance.kRed:
-            y_error = -y_error
-
-        horizontal_velocity = self.translation_controller.calculate(y_error, 0, parameters.timestamp)
-
-        if self.elevator_up_function():
-            horizontal_velocity *= 0.3333
-
-        corrected_velocity = Translation2d(rotated_velocity.X(), horizontal_velocity)
-
-        field_relative_velocity = corrected_velocity.rotateBy(target_direction)
-        magnitude = math.sqrt(self.velocity_x ** 2 + self.velocity_y ** 2)
-
-        return (
-            self._field_centric_facing_angle
-            .with_velocity_x(field_relative_velocity.X() * magnitude)
-            .with_velocity_y(field_relative_velocity.Y() * magnitude)
-            .with_target_direction(
-                target_direction if abs(target_direction.degrees() - current_pose.rotation().degrees()) >= Constants.AutoAlignConstants.HEADING_TOLERANCE
-                else current_pose.rotation()
-            )
+        return (self._field_centric_facing_angle
+            .with_velocity_x(field_relative_velocity.X())
+            .with_velocity_y(field_relative_velocity.Y())
+            .with_target_direction(target_rot)
             .with_deadband(self.deadband)
             .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)
@@ -122,18 +94,6 @@ class DriverAssist(SwerveRequest):
         :rtype: DriverAssist
         """
         self.velocity_y = velocity_y
-        return self
-
-    def with_rotational_rate(self, rotational_rate: radians_per_second) -> Self:
-        """
-        Modifies the angular velocity we travel at and returns this request for method chaining.
-
-        :param rotational_rate: The angular velocity we travel at
-        :type rotational_rate: radians_per_second
-        :returns: This request
-        :rtype: DriverAssist
-        """
-        self.rotational_rate = rotational_rate
         return self
 
     def with_drive_request_type(self, new_drive_request_type: SwerveModule.DriveRequestType) -> Self:
@@ -218,16 +178,4 @@ class DriverAssist(SwerveRequest):
         :rtype: DriverAssist
         """
         self.rotational_deadband = rotational_deadband
-        return self
-
-    def with_elevator_up_function(self, elevator_up_function: Callable[[], bool]) -> Self:
-        """
-        Modifies the function that returns whether the elevator is up and returns this request for method chaining.
-
-        :param elevator_up_function: The function for whether the elevator is up or not
-        :type elevator_up_function: Callable
-        :returns: This request
-        :rtype: DriverAssist
-        """
-        self.elevator_up_function = elevator_up_function
         return self

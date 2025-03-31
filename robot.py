@@ -22,7 +22,7 @@ class Leviathan(TimedCommandRobot):
         self.container = RobotContainer()
 
         SignalLogger.start()
-        DataLogManager.start(period=0.2)
+        DataLogManager.start(period=0.25)
         DriverStation.startDataLog(DataLogManager.getLog())
 
         CameraServer.startAutomaticCapture()

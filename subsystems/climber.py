@@ -1,11 +1,10 @@
 from enum import auto, Enum
 
-from phoenix6 import utils
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.config_groups import NeutralModeValue, MotorOutputConfigs, FeedbackConfigs
 from phoenix6.controls import VoltageOut
 from phoenix6.hardware import TalonFX
-from wpilib import Servo, Mechanism2d, Color8Bit, SmartDashboard
+from wpilib import Servo
 from wpimath import units
 from wpimath.geometry import Pose3d, Rotation3d
 from wpimath.system.plant import DCMotor
@@ -54,20 +53,6 @@ class ClimberSubsystem(StateSubsystem):
         
         self._climb_request = VoltageOut(0)
 
-        if utils.is_simulation():
-            self._climber_mechanism = Mechanism2d(1, 1)
-            self._climber_root = self._climber_mechanism.getRoot("Root", 1 / 2, 0)
-            self._climber_base = self._climber_root.appendLigament("Base", units.inchesToMeters(18.25), 90, 5, Color8Bit(194, 194, 194))
-            self._climber_arm = self._climber_base.appendLigament("Arm", units.inchesToMeters(9.424631), 0, 3, Color8Bit(100, 100, 100))
-            SmartDashboard.putData("Climber Mechanism", self._climber_mechanism)
-
-    def periodic(self):
-        super().periodic()
-        self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
-
-    def simulationPeriodic(self) -> None:
-        self._climber_arm.setAngle(self.get_position() * 360)
-
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
             return
@@ -75,6 +60,7 @@ class ClimberSubsystem(StateSubsystem):
         climb_output, servo_angle = self._state_configs.get(desired_state, (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE))
         self._climb_request.output = climb_output 
         self._climb_servo.setAngle(servo_angle)
+        self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
 
         self._climb_motor.set_control(self._climb_request)
 
