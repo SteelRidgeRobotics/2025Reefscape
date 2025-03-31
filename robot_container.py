@@ -139,9 +139,6 @@ class RobotContainer:
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
 
-    def initialize_driver_assist(self, branch_side: SwerveSubsystem.BranchSide) -> None:
-        self._driver_assist._target_pose = self.drivetrain.get_closest_branch(branch_side)
-
     @staticmethod
     def rumble_command(controller: CommandXboxController, duration: float, intensity: float):
         return cmd.sequence(
@@ -184,7 +181,7 @@ class RobotContainer:
         )
 
         Trigger(lambda: self._driver_controller.getLeftTriggerAxis() > 0.75).onTrue(
-            self.drivetrain.runOnce(lambda: self.initialize_driver_assist(self.drivetrain.BranchSide.LEFT))
+            self.drivetrain.runOnce(lambda: self._driver_assist.with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.LEFT)))
         ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist
@@ -194,7 +191,7 @@ class RobotContainer:
         )
 
         Trigger(lambda: self._driver_controller.getRightTriggerAxis() > 0.75).onTrue(
-            self.drivetrain.runOnce(lambda: self.initialize_driver_assist(self.drivetrain.BranchSide.RIGHT))
+            self.drivetrain.runOnce(lambda: self._driver_assist.with_target_pose(self.drivetrain.get_closest_branch(self.drivetrain.BranchSide.RIGHT)))
         ).whileTrue(
             self.drivetrain.apply_request(
                 lambda: self._driver_assist

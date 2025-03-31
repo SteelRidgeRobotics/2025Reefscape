@@ -73,16 +73,15 @@ class VisionSubsystem(StateSubsystem):
 
         best_estimate = max(results, key=lambda x: self._is_better_estimate(x[1], None))[1]
 
+        self._final_measurement_pub.set(best_estimate.pose)
+        self._vision_measurements.set([r[0] for r in results])
+        
         field_layout = Constants.FIELD_LAYOUT
-        visible_tags = [
+        self._visible_tags_pub.set([
             field_layout.getTagPose(fid.id)
             for est in (r[1] for r in results)
             for fid in est.raw_fiducials
-        ]
-
-        self._final_measurement_pub.set(best_estimate.pose)
-        self._vision_measurements.set([r[0] for r in results])
-        self._visible_tags_pub.set(visible_tags)
+        ])
 
         self._swerve.add_vision_measurement(
             best_estimate.pose,

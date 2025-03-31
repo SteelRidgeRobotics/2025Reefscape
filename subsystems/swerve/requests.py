@@ -15,8 +15,6 @@ class DriverAssist(SwerveRequest):
         self.velocity_x: meters_per_second = 0  # Velocity forward/back
         self.velocity_y: meters_per_second = 0  # Velocity left/right
 
-        self._target_pose = Pose2d()  # The target pose we align to
-
         self.deadband: meters_per_second = 0  # Deadband on linear velocity
         self.rotational_deadband: radians_per_second = 0  # Deadband on angular velocity
 
@@ -27,46 +25,29 @@ class DriverAssist(SwerveRequest):
 
         self.forward_perspective: ForwardPerspectiveValue = ForwardPerspectiveValue.OPERATOR_PERSPECTIVE  # Operator perspective is forward
 
-        self._target_pose: Pose2d = Pose2d()
-
         self.translation_controller = PhoenixPIDController(0.0, 0.0, 0.0)  # PID controller for translation
+
+        self.target_pose: Pose2d = Pose2d() # Pose to align to
 
         self._field_centric_facing_angle = FieldCentricFacingAngle()
         self.heading_controller = self._field_centric_facing_angle.heading_controller
 
-        self._target_pose = Pose2d()
-
     def apply(self, parameters: SwerveControlParameters, modules: list[SwerveModule]) -> StatusCode:
-        current_pose = parameters.current_pose
-        target_pose = self._target_pose
-        op_dir = parameters.operator_forward_direction
-        vel_x = self.velocity_x
-        vel_y = self.velocity_y
-        controller = self.translation_controller
-        timestamp = parameters.timestamp
+        target_rot = self.target_pose.rotation()
+        if self.forward_perspective == ForwardPerspectiveValue.OPERATOR_PERSPECTIVE:
+            target_rot += parameters.operator_forward_direction
 
-        target_rot = target_pose.rotation() + op_dir
-        neg_rot = -target_rot
+        y_error = parameters.current_pose.translation().rotateBy(-target_rot).Y() - self.target_pose.translation().rotateBy(-target_rot).Y()
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            y_error *= -1
 
-        current_trans = current_pose.translation()
-        target_trans = target_pose.translation()
-        rotated_current_y = current_trans.rotateBy(neg_rot).Y()
-        rotated_target_y = target_trans.rotateBy(neg_rot).Y()
-        y_error = rotated_current_y - rotated_target_y
+        field_relative_velocity = Translation2d(
+            self.velocity_x * target_rot.cos() + self.velocity_y * target_rot.sin(),
+            self.translation_controller.calculate(y_error, 0, parameters.timestamp) * 0.333
+        ).rotateBy(target_rot)
 
-        y_error *= -1 if DriverStation.getAlliance() == DriverStation.Alliance.kRed else 1
-
-        cos_rot = target_rot.cos()
-        sin_rot = target_rot.sin()
-
-        controller_output = controller.calculate(y_error, 0, timestamp) * 0.333
-        frv_x = vel_x * cos_rot + vel_y * sin_rot
-        frv_y = controller_output
-        field_relative_velocity = Translation2d(frv_x, frv_y).rotateBy(target_rot)
-
-        builder = self._field_centric_facing_angle
-        return (
-            builder.with_velocity_x(field_relative_velocity.X())
+        return (self._field_centric_facing_angle
+            .with_velocity_x(field_relative_velocity.X())
             .with_velocity_y(field_relative_velocity.Y())
             .with_target_direction(target_rot)
             .with_deadband(self.deadband)
@@ -78,14 +59,6 @@ class DriverAssist(SwerveRequest):
             .apply(parameters, modules)
         )
 
-    @property
-    def target_pose(self) -> Pose2d:
-        return self._target_pose
-
-    @target_pose.setter
-    def target_pose(self, value: Pose2d) -> None:
-        self._target_pose = value
-
     def with_target_pose(self, new_target_pose: Pose2d) -> Self:
         """
         Modifies the pose to align with.
@@ -94,7 +67,7 @@ class DriverAssist(SwerveRequest):
         :return: This request
         :rtype: DriverAssist
         """
-        self._target_pose = new_target_pose
+        self.target_pose = new_target_pose
         return self
 
     def with_velocity_x(self, velocity_x: meters_per_second) -> Self:
