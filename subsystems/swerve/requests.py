@@ -7,6 +7,7 @@ from phoenix6.swerve.utility.phoenix_pid_controller import PhoenixPIDController
 from phoenix6.units import meters_per_second, radians_per_second
 from wpilib import DriverStation
 from wpimath.geometry import Pose2d
+from wpimath import applyDeadband
 
 
 class DriverAssist(SwerveRequest):
@@ -45,14 +46,14 @@ class DriverAssist(SwerveRequest):
         # Rotate robot relative velocity back to field centric view
         field_relative_velocity = Translation2d(
             self.velocity_x * target_rot.cos() + self.velocity_y * target_rot.sin(),
-            max(-1.5, min(self.translation_controller.calculate(y_error, 0, parameters.timestamp), 1.5)) # Clamp value to ensure we don't tip
+            self.deadbandFunc(max(-1.5, min(self.translation_controller.calculate(y_error, 0, parameters.timestamp), 1.5)), self.deadband) # Clamp value to ensure we don't tip
         ).rotateBy(target_rot)
 
         return (self._field_centric_facing_angle
             .with_velocity_x(field_relative_velocity.X())
             .with_velocity_y(field_relative_velocity.Y())
             .with_target_direction(target_rot)
-            .with_deadband(self.deadband)
+            .with_deadband(0)
             .with_rotational_deadband(self.rotational_deadband)
             .with_drive_request_type(self.drive_request_type)
             .with_steer_request_type(self.steer_request_type)
@@ -69,6 +70,11 @@ class DriverAssist(SwerveRequest):
     def target_pose(self, value: Pose2d) -> None:
         self._target_pose = value
         self._target_rot = value.rotation()
+
+    def deadbandFunc(self, value, deadband):
+        if abs(value) >= deadband:
+            return value
+        return 0
 
     def with_target_pose(self, new_target_pose: Pose2d) -> Self:
         """

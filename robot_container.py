@@ -128,7 +128,7 @@ class RobotContainer:
 
         self._driver_assist: DriverAssist = (
             DriverAssist()
-            .with_deadband(0)
+            .with_deadband(self._max_speed * 0.01)
             .with_rotational_deadband(self._max_angular_rate * 0.02)
             .with_drive_request_type(swerve.SwerveModule.DriveRequestType.VELOCITY)
             .with_steer_request_type(swerve.SwerveModule.SteerRequestType.POSITION)
