@@ -52,7 +52,7 @@
           },
           {
             "title": "Match Time",
-            "x": 256.0,
+            "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 256.0,
@@ -67,10 +67,10 @@
             }
           },
           {
-            "title": "USB Camera 0",
-            "x": 512.0,
+            "title": "Intake Cam",
+            "x": 256.0,
             "y": 128.0,
-            "width": 384.0,
+            "width": 256.0,
             "height": 256.0,
             "type": "Camera Stream",
             "properties": {
@@ -80,7 +80,7 @@
             }
           },
           {
-            "title": "limelight-front",
+            "title": "Front LL",
             "x": 896.0,
             "y": 0.0,
             "width": 384.0,
@@ -93,23 +93,16 @@
             }
           },
           {
-            "title": "Field",
-            "x": 0.0,
+            "title": "Back LL",
+            "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 384.0,
             "height": 256.0,
-            "type": "Field",
+            "type": "Camera Stream",
             "properties": {
-              "topic": "/SmartDashboard/Field",
+              "topic": "/CameraPublisher/limelight-back",
               "period": 0.06,
-              "field_game": "Reefscape",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4278190185,
-              "trajectory_color": 4294967295
+              "rotation_turns": 0
             }
           }
         ]
@@ -121,7 +114,7 @@
         "layouts": [],
         "containers": [
           {
-            "title": "limelight-front",
+            "title": "Front LL",
             "x": 768.0,
             "y": 0.0,
             "width": 512.0,
@@ -134,10 +127,10 @@
             }
           },
           {
-            "title": "USB Camera 0",
+            "title": "Intake Cam",
             "x": 0.0,
             "y": 0.0,
-            "width": 512.0,
+            "width": 256.0,
             "height": 384.0,
             "type": "Camera Stream",
             "properties": {
@@ -149,9 +142,9 @@
           {
             "title": "Match Time",
             "x": 512.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 384.0,
             "type": "Match Time",
             "properties": {
               "topic": "/Elastic/Match Time",
@@ -163,20 +156,16 @@
             }
           },
           {
-            "title": "Wheels Stalled",
-            "x": 512.0,
+            "title": "Climb Cam",
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
+            "height": 384.0,
+            "type": "Camera Stream",
             "properties": {
-              "topic": "/Telemetry/Wheels Stalled",
+              "topic": "/CameraPublisher/USB Camera 1",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "X"
+              "rotation_turns": 0
             }
           }
         ]
