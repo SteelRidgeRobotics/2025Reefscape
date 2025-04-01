@@ -32,7 +32,7 @@ class TunerConstants:
         .with_k_i(0)
         .with_k_d(0)
         .with_k_s(0.17)
-        .with_k_v(0.121)
+        .with_k_v(0.12)
     )
 
     # The closed-loop output type to use for the steer motors;
