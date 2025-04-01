@@ -38,7 +38,7 @@ class DriverAssist(SwerveRequest):
             target_rot += parameters.operator_forward_direction
 
         # Get Y error (rotated to robot relative to align horizontally)
-        y_error = parameters.current_pose.translation().rotateBy(-target_rot).Y() - self.target_pose.translation().rotateBy(-target_rot).Y()
+        y_error = (parameters.current_pose.X() * (-target_rot).sin() + parameters.current_pose.Y() * (-target_rot).cos()) - (self.target_pose.X() * (-target_rot).sin() + self.target_pose.Y() * (-target_rot).cos())
         if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             y_error *= -1
 
@@ -60,6 +60,15 @@ class DriverAssist(SwerveRequest):
             .with_forward_perspective(self.forward_perspective)
             .apply(parameters, modules)
         )
+
+    @property
+    def target_pose(self) -> Pose2d:
+        return self._target_pose
+    
+    @target_pose.setter
+    def target_pose(self, value: Pose2d) -> None:
+        self._target_pose = value
+        self._target_rot = value.rotation()
 
     def with_target_pose(self, new_target_pose: Pose2d) -> Self:
         """
