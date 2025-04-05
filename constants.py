@@ -81,12 +81,12 @@ class Constants:
         INSIDE_ELEVATOR_ANGLE = 0.2 # Used for subsystem collision checking
         ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
-        GROUND_INTAKE_ANGLE = -0.081543
+        GROUND_INTAKE_ANGLE = -0.119385
         FUNNEL_INTAKE_ANGLE = 0.28
         ALGAE_INTAKE_ANGLE = -0.05
         HIGH_SCORING_ANGLE =  0.21
         MID_SCORING_ANGLE = 0.22
-        LOW_SCORING_ANGLE = -0.081543
+        LOW_SCORING_ANGLE = -0.119385
         NET_SCORING_ANGLE = 0.131
         PROCESSOR_SCORING_ANGLE = 0.001
         CLIMBER_PRIORITY_ANGLE = 0.201943
@@ -99,18 +99,18 @@ class Constants:
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(0)
+                 .with_k_g(0.518)
                  .with_k_p(45)
                  .with_k_i(0.0)
                  .with_k_d(0.6343)
-                 .with_k_s(0.49)
+                 .with_k_s(0.26)
                  .with_k_v(0)
                  .with_k_a(0)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
         CANCODER_DISCONTINUITY = 0.5
-        CANCODER_OFFSET = 0.36962890625
+        CANCODER_OFFSET = 0.35009765625
 
         SETPOINT_TOLERANCE = 0.03125
 
