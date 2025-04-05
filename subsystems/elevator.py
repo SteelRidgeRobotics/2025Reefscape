@@ -63,7 +63,7 @@ class ElevatorSubsystem(StateSubsystem):
     _limit_switch_config.reverse_limit_remote_sensor_id = Constants.CanIDs.ELEVATOR_CANDI
     _limit_switch_config.reverse_limit_source = ForwardLimitSourceValue.REMOTE_CANDIS2  # Bottom Limit Switch
     _limit_switch_config.reverse_limit_autoset_position_value = Constants.ElevatorConstants.DEFAULT_POSITION
-    _limit_switch_config.reverse_limit_autoset_position_enable = True
+    _limit_switch_config.reverse_limit_autoset_position_enable = False
 
     def __init__(self) -> None:
         super().__init__("Elevator", self.SubsystemState.DEFAULT)
@@ -119,7 +119,7 @@ class ElevatorSubsystem(StateSubsystem):
             self._master_motor.get_position(), self._master_motor.get_velocity()
         )
         self._at_setpoint = abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE
-        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+        # self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):
@@ -146,7 +146,7 @@ class ElevatorSubsystem(StateSubsystem):
             self._master_motor.get_position(), self._master_motor.get_velocity()
         )
         self._at_setpoint = abs(latency_compensated_position - self._position_request.position) <= Constants.ElevatorConstants.SETPOINT_TOLERANCE
-        self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
+        # self.get_network_table().getEntry("At Setpoint").setBoolean(self._at_setpoint)
         return self._at_setpoint
 
     def stop(self) -> Command:

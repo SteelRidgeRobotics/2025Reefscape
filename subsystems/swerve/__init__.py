@@ -18,7 +18,6 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModuleState
 from wpimath.units import degreesToRadians
 
 from constants import Constants
-from subsystems.swerve.requests import DriverAssist
 
 
 class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
@@ -222,17 +221,17 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         table = NetworkTableInstance.getDefault().getTable("Telemetry")
 
         self._pose_pub = table.getStructTopic("current_pose", Pose2d).publish()
-        self._speeds_pub = table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
+        # self._speeds_pub = table.getStructTopic("chassis_speeds", ChassisSpeeds).publish()
         self._odom_freq = table.getDoubleTopic("odometry_frequency").publish()
-        self._module_states_pub = table.getStructArrayTopic("module_states", SwerveModuleState).publish()
-        self._module_targets_pub = table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
+        # self._module_states_pub = table.getStructArrayTopic("module_states", SwerveModuleState).publish()
+        # self._module_targets_pub = table.getStructArrayTopic("module_targets", SwerveModuleState).publish()
 
         self._auto_target_pub = table.getStructTopic("auto_target", Pose2d).publish()
-        self._auto_path_pub = table.getStructArrayTopic("auto_path", Pose2d).publish()
+        # self._auto_path_pub = table.getStructArrayTopic("auto_path", Pose2d).publish()
         PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self._auto_target_pub.set(pose))
-        PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
+        # PathPlannerLogging.setLogActivePathCallback(lambda poses: self._auto_path_pub.set(poses))
 
-        self._closest_branch_pub = table.getStructTopic("Closest Branch", Pose2d).publish()
+        # self._closest_branch_pub = table.getStructTopic("Closest Branch", Pose2d).publish()
 
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
@@ -366,7 +365,7 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
 
     def get_closest_branch(self, branch_side: BranchSide) -> Pose2d:
         closest_branch = min(self._branch_targets[DriverStation.getAlliance()][branch_side], key=lambda pose: self.get_distance_to_line(self.get_state().pose, pose))
-        self._closest_branch_pub.set(closest_branch)
+        # self._closest_branch_pub.set(closest_branch)
         return closest_branch
 
     def periodic(self) -> None:
@@ -392,9 +391,9 @@ class SwerveSubsystem(Subsystem, swerve.SwerveDrivetrain):
         state = self.get_state_copy()
         self._pose_pub.set(state.pose)
         self._odom_freq.set(1.0 / state.odometry_period)
-        self._module_states_pub.set(state.module_states)
-        self._module_targets_pub.set(state.module_targets)
-        self._speeds_pub.set(state.speeds)
+        # self._module_states_pub.set(state.module_states)
+        # self._module_targets_pub.set(state.module_targets)
+        # self._speeds_pub.set(state.speeds)
 
     @staticmethod
     def get_distance_to_line(robot_pose: Pose2d, target_pose: Pose2d) -> float:

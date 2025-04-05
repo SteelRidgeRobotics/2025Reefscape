@@ -42,7 +42,7 @@ class RobotContainer:
             Constants.VisionConstants.FRONT_RIGHT,
             Constants.VisionConstants.FRONT_CENTER,
             Constants.VisionConstants.FRONT_LEFT,
-            Constants.VisionConstants.BACK_CENTER,
+            #Constants.VisionConstants.BACK_CENTER,
         )
 
         self.superstructure = Superstructure(
@@ -247,14 +247,14 @@ class RobotContainer:
             )
         )
 
-        self._function_controller.povLeft().onTrue(
+        (self._function_controller.povLeft() | self._function_controller.povUpLeft() | self._function_controller.povDownLeft()).onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_OUT),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
             )
         ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
 
-        self._function_controller.povRight().onTrue(
+        (self._function_controller.povRight() | self._function_controller.povUpRight() | self._function_controller.povDownRight()).onTrue(
             cmd.parallel(
                 self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_IN),
                 self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)

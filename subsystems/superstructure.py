@@ -56,7 +56,7 @@ class Superstructure(Subsystem):
         Goal.FUNNEL: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
         Goal.FLOOR: (PivotSubsystem.SubsystemState.GROUND_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
         Goal.CLIMBING: (PivotSubsystem.SubsystemState.AVOID_CLIMBER, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES),
-        Goal.FINISH: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.DOWN, VisionSubsystem.SubsystemState.ALL_ESTIMATES)
+        Goal.FINISH: (PivotSubsystem.SubsystemState.FUNNEL_INTAKE, ElevatorSubsystem.SubsystemState.DEFAULT, FunnelSubsystem.SubsystemState.UP, VisionSubsystem.SubsystemState.ALL_ESTIMATES)
     }
 
     def __init__(self, drivetrain: SwerveSubsystem, pivot: PivotSubsystem, elevator: ElevatorSubsystem, funnel: FunnelSubsystem, vision: VisionSubsystem, climber: ClimberSubsystem, intake: IntakeSubsystem) -> None:
@@ -86,9 +86,9 @@ class Superstructure(Subsystem):
         self._goal = self.Goal.DEFAULT
         self.set_goal_command(self._goal)
 
-        table = NetworkTableInstance.getDefault().getTable("Superstructure")
-        self._current_goal_pub = table.getStringTopic("Current Goal").publish()
-        self._component_poses = table.getStructArrayTopic("Components", Pose3d).publish()
+        # table = NetworkTableInstance.getDefault().getTable("Superstructure")
+        # self._current_goal_pub = table.getStringTopic("Current Goal").publish()
+        # self._component_poses = table.getStructArrayTopic("Components", Pose3d).publish()
 
     def periodic(self):
         if DriverStation.isDisabled():
@@ -109,15 +109,15 @@ class Superstructure(Subsystem):
         if self.climber.get_position() > Constants.ClimberConstants.CLIMB_FULL_THRESHOLD and self.climber.get_current_state() is ClimberSubsystem.SubsystemState.CLIMB_IN:
             self.climber.set_desired_state(ClimberSubsystem.SubsystemState.CLIMB_IN_FULL)
         
-        first_stage_pose, carriage_pose = self.elevator.get_component_poses()
-        pivot_pose = self.pivot.get_component_pose(carriage_pose)
-        self._component_poses.set([
-            self.funnel.get_component_pose(),
-            first_stage_pose,
-            carriage_pose,
-            pivot_pose,
-            self.climber.get_component_pose()
-        ])
+        # first_stage_pose, carriage_pose = self.elevator.get_component_poses()
+        # pivot_pose = self.pivot.get_component_pose(carriage_pose)
+        # self._component_poses.set([
+        #     self.funnel.get_component_pose(),
+        #     first_stage_pose,
+        #     carriage_pose,
+        #     pivot_pose,
+        #     self.climber.get_component_pose()
+        # ])
 
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
@@ -143,7 +143,7 @@ class Superstructure(Subsystem):
         if vision_state:
             self.vision.set_desired_state(vision_state)
 
-        self._current_goal_pub.set(goal.name)
+        # self._current_goal_pub.set(goal.name)
 
     def _should_enable_safety_checks(self, pivot_state: PivotSubsystem.SubsystemState, elevator_state: ElevatorSubsystem.SubsystemState) -> bool:
         """Safety checks are always activated, unless we're already outside the elevator and the new state is also outside the elevator."""

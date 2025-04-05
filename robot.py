@@ -21,18 +21,19 @@ class Leviathan(TimedCommandRobot):
         DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        SignalLogger.start()
-        DataLogManager.start(period=0.25)
-        DriverStation.startDataLog(DataLogManager.getLog())
+        SignalLogger.enable_auto_logging(False)
+        SignalLogger.stop()
+        DataLogManager.start(period=0.3)
+        #DriverStation.startDataLog(DataLogManager.getLog())
 
         CameraServer.startAutomaticCapture()
         CameraServer.startAutomaticCapture()
 
-        WebServer.getInstance().start(5800, self.get_deploy_directory())
-        port_forwarder = PortForwarder.getInstance()
-        for i in range(10): # Forward limelight ports for use when tethered at events.
-            port_forwarder.add(5800 + i, f"{Constants.VisionConstants.FRONT_CENTER}.local", 5800 + i)
-            port_forwarder.add(5800 + i + 10, f"{Constants.VisionConstants.BACK_CENTER}.local", 5800 + i)
+        #WebServer.getInstance().start(5800, self.get_deploy_directory())
+        # port_forwarder = PortForwarder.getInstance()
+        # for i in range(10): # Forward limelight ports for use when tethered at events.
+        #     port_forwarder.add(5800 + i, f"{Constants.VisionConstants.FRONT_CENTER}.local", 5800 + i)
+        #     port_forwarder.add(5800 + i + 10, f"{Constants.VisionConstants.BACK_CENTER}.local", 5800 + i)
 
         DataLogManager.log("Robot initialized")
 

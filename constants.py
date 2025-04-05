@@ -34,7 +34,7 @@ class Constants:
 
         VOLTAGE_INWARDS = 4
         VOLTAGE_OUTWARDS = -5
-        CLIMB_IN_VOLTAGE = 2.5
+        CLIMB_IN_VOLTAGE = 4
 
         CLIMB_FULL_THRESHOLD = 0.44
 
@@ -99,18 +99,18 @@ class Constants:
 
         GEAR_RATIO = 961/36
         GAINS = (Slot0Configs()
-                 .with_k_g(0.27)
-                 .with_k_p(30 if RobotBase.isReal() else 60)
+                 .with_k_g(0)
+                 .with_k_p(45)
                  .with_k_i(0.0)
                  .with_k_d(0.6343)
-                 .with_k_s(0.19)
+                 .with_k_s(0.49)
                  .with_k_v(0)
                  .with_k_a(0)
                  .with_gravity_type(GravityTypeValue.ARM_COSINE)
         )
 
         CANCODER_DISCONTINUITY = 0.5
-        CANCODER_OFFSET = 0.380126953125
+        CANCODER_OFFSET = 0.36962890625
 
         SETPOINT_TOLERANCE = 0.03125
 

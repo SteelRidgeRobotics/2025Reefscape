@@ -43,13 +43,13 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         # Create NT folder for organization
         self._network_table = NetworkTableInstance.getDefault().getTable(name.title())
         self._nt_publishers = []
-        current_state_nt = self._network_table.getStringTopic("Current State")
-        self._current_state_pub = current_state_nt.publish()
-        self._current_state_pub.set("INITIALIZING")
+        # current_state_nt = self._network_table.getStringTopic("Current State")
+        # self._current_state_pub = current_state_nt.publish()
+        # self._current_state_pub.set("INITIALIZING")
 
-        frozen_nt = self._network_table.getBooleanTopic("Frozen")
-        self._frozen_pub = frozen_nt.publish()
-        self._frozen_pub.set(self._frozen)
+        # frozen_nt = self._network_table.getBooleanTopic("Frozen")
+        # self._frozen_pub = frozen_nt.publish()
+        # self._frozen_pub.set(self._frozen)
 
         self._sim_models: list[tuple[DCMotorSim, TalonFX]] = []
 
@@ -62,7 +62,7 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
         if current_state is desired_state or DriverStation.isTest() or self.is_frozen():
             return False
         self._subsystem_state = desired_state
-        self._current_state_pub.set(self.get_state_name())
+        # self._current_state_pub.set(self.get_state_name())
         return True
 
     def periodic(self):
@@ -93,12 +93,12 @@ class StateSubsystem(Subsystem, ABC, metaclass=StateSubsystemMeta):
     def freeze(self) -> None:
         """Prevents new state changes."""
         self._frozen = True
-        self._frozen_pub.set(True)
+        # self._frozen_pub.set(True)
 
     def unfreeze(self) -> None:
         """Allows state changes."""
         self._frozen = False
-        self._frozen_pub.set(False)
+        # self._frozen_pub.set(False)
 
     def is_frozen(self) -> bool:
         return self._frozen

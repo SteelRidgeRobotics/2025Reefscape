@@ -2,7 +2,7 @@ from typing import Self
 
 from phoenix6 import StatusCode
 from phoenix6.swerve import SwerveModule, SwerveControlParameters, Translation2d
-from phoenix6.swerve.requests import FieldCentricFacingAngle, ForwardPerspectiveValue, SwerveRequest
+from phoenix6.swerve.requests import FieldCentricFacingAngle, ForwardPerspectiveValue, RobotCentricFacingAngle, SwerveRequest
 from phoenix6.swerve.utility.phoenix_pid_controller import PhoenixPIDController
 from phoenix6.units import meters_per_second, radians_per_second
 from wpilib import DriverStation
@@ -194,3 +194,4 @@ class DriverAssist(SwerveRequest):
         """
         self.rotational_deadband = rotational_deadband
         return self
+    

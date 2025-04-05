@@ -46,9 +46,9 @@ class VisionSubsystem(StateSubsystem):
 
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(self._cameras))
 
-        self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tags", Pose3d).publish()
-        self._final_measurement_pub = self.get_network_table().getStructTopic("Best Measurement", Pose2d).publish()
-        self._vision_measurements = self.get_network_table().getStructArrayTopic("All Measurements", Pose2d).publish()
+        # self._visible_tags_pub = self.get_network_table().getStructArrayTopic("Visible Tags", Pose3d).publish()
+        # self._final_measurement_pub = self.get_network_table().getStructTopic("Best Measurement", Pose2d).publish()
+        # self._vision_measurements = self.get_network_table().getStructArrayTopic("All Measurements", Pose2d).publish()
 
     def periodic(self):
         super().periodic()
@@ -71,10 +71,10 @@ class VisionSubsystem(StateSubsystem):
                 if not estimate or estimate.tag_count == 0:
                     continue
 
-                visible_tags.extend(
-                    Constants.FIELD_LAYOUT.getTagPose(f.id) for f in estimate.raw_fiducials
-                )
-                all_measurements.append(estimate.pose)
+                # visible_tags.extend(
+                #     Constants.FIELD_LAYOUT.getTagPose(f.id) for f in estimate.raw_fiducials
+                # )
+                # all_measurements.append(estimate.pose)
 
                 if self._is_better_estimate(estimate, best_estimate):
                     best_estimate = estimate
@@ -87,12 +87,12 @@ class VisionSubsystem(StateSubsystem):
                 utils.fpga_to_current_time(best_estimate.timestamp_seconds),
                 self._get_dynamic_std_devs(best_estimate),
             )
-            self._final_measurement_pub.set(best_estimate.pose)
-        else:
-            self._final_measurement_pub.set(Pose2d())
+            # self._final_measurement_pub.set(best_estimate.pose)
+        # else:
+        #     self._final_measurement_pub.set(Pose2d())
 
-        self._vision_measurements.set(all_measurements)
-        self._visible_tags_pub.set(list(visible_tags))
+        # self._vision_measurements.set(all_measurements)
+        # self._visible_tags_pub.set(list(visible_tags))
 
     def set_desired_state(self, desired_state: SubsystemState) -> None:
         if not super().set_desired_state(desired_state):

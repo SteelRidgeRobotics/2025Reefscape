@@ -49,7 +49,7 @@ class ClimberSubsystem(StateSubsystem):
         self._climb_motor.set_position(0)
 
         self._add_talon_sim_model(self._climb_motor, DCMotor.falcon500FOC(1), Constants.ClimberConstants.GEAR_RATIO)
-        self._servo_desired_angle_pub = self.get_network_table().getFloatTopic("Servo Desired Angle").publish()
+        #self._servo_desired_angle_pub = self.get_network_table().getFloatTopic("Servo Desired Angle").publish()
         
         self._climb_request = VoltageOut(0)
 
@@ -60,7 +60,7 @@ class ClimberSubsystem(StateSubsystem):
         climb_output, servo_angle = self._state_configs.get(desired_state, (0, Constants.ClimberConstants.SERVO_ENGAGED_ANGLE))
         self._climb_request.output = climb_output 
         self._climb_servo.setAngle(servo_angle)
-        self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
+        #self._servo_desired_angle_pub.set(self._climb_servo.getAngle())
 
         self._climb_motor.set_control(self._climb_request)
 
