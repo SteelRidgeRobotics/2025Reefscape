@@ -172,6 +172,16 @@ class RobotContainer:
         ).onFalse(
             self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD)
         )
+        
+        Trigger(lambda: self.intake.has_coral()).onTrue(
+            self.rumble_command(self._driver_controller, 2, 0.75)
+            .alongWith(self.rumble_command(self._function_controller, 2, 0.75))
+            .alongWith(self.superstructure.set_goal_command(self.superstructure.Goal.DEFAULT))
+        ).onFalse(
+            self.rumble_command(self._driver_controller, 2, 0.75)
+            .alongWith(self.rumble_command(self._function_controller, 2, 0.75))
+        )
+
 
         self._driver_controller.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
         self._driver_controller.b().whileTrue(
