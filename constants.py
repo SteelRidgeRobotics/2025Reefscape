@@ -97,7 +97,7 @@ class Constants:
         CRUISE_VELOCITY = 3
         MM_ACCELERATION = 3
 
-        GEAR_RATIO = 961/36
+        GEAR_RATIO = 23/1
         GAINS = (Slot0Configs()
                  .with_k_g(0.518)
                  .with_k_p(45)
