@@ -1,6 +1,6 @@
 [tool.robotpy]
 
-robotpy_version = "2025.3.2.0"
+robotpy_version = "2025.3.2.2"
 
 robotpy_extras = [
     "apriltag",

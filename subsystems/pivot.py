@@ -54,7 +54,7 @@ class PivotSubsystem(StateSubsystem):
      .with_feedback_sensor_source(FeedbackSensorSourceValue.REMOTE_CANCODER)
      .with_feedback_remote_sensor_id(Constants.CanIDs.PIVOT_CANCODER)
      )
-    _master_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
+    _master_config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
     _master_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
 
     _master_config.with_slot0(Constants.PivotConstants.GAINS)
