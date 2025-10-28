@@ -78,18 +78,18 @@ class Constants:
         SETPOINT_TOLERANCE = 0.1
 
     class PivotConstants:
-        INSIDE_ELEVATOR_ANGLE = 0.2 # Used for subsystem collision checking
-        ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
-        STOW_ANGLE = 0.188
-        GROUND_INTAKE_ANGLE = -0.119385
-        FUNNEL_INTAKE_ANGLE = 0.28
-        ALGAE_INTAKE_ANGLE = -0.05
-        HIGH_SCORING_ANGLE =  0.21
-        MID_SCORING_ANGLE = 0.22
-        LOW_SCORING_ANGLE = -0.119385
+        INSIDE_ELEVATOR_ANGLE = 0.279297 # Used for subsystem collision checking
+        ELEVATOR_PRIORITY_ANGLE = 0.241943 # We move the pivot to this position until the elevator has reached its setpoint.
+        STOW_ANGLE = 0.267334
+        GROUND_INTAKE_ANGLE = -0.054688 
+        FUNNEL_INTAKE_ANGLE = 0.373
+        ALGAE_INTAKE_ANGLE = -0.04
+        HIGH_SCORING_ANGLE =  0.30
+        MID_SCORING_ANGLE = 0.30
+        LOW_SCORING_ANGLE = -0.065186
         NET_SCORING_ANGLE = 0.131
         PROCESSOR_SCORING_ANGLE = 0.001
-        CLIMBER_PRIORITY_ANGLE = 0.201943
+        CLIMBER_PRIORITY_ANGLE = 0.349365
 
         MINIMUM_ANGLE = -0.091
         MAXIMUM_ANGLE = 0.392822
@@ -110,16 +110,16 @@ class Constants:
         )
 
         CANCODER_DISCONTINUITY = 0.5
-        CANCODER_OFFSET = 0.35009765625
+        CANCODER_OFFSET = -0.168701171875
 
         SETPOINT_TOLERANCE = 0.03125
 
     class IntakeConstants:
 
-        CORAL_INTAKE_SPEED = 0.4*1.2*1.1
-        FUNNEL_INTAKE_SPEED = 0.8*0.75
-        CORAL_OUTPUT_SPEED = 0.6
-        L1_OUTPUT_SPEED = -0.4
+        CORAL_INTAKE_SPEED = 1
+        FUNNEL_INTAKE_SPEED = 1
+        CORAL_OUTPUT_SPEED = 2
+        L1_OUTPUT_SPEED = -0.6
 
         ALGAE_HOLD = 0.125
         ALGAE_INTAKE_SPEED = 0.75
